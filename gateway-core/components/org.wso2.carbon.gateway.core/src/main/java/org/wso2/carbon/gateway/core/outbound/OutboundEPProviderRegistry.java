@@ -24,13 +24,14 @@ import java.util.Map;
 /**
  * Store for Outbound Endpoint Providers
  */
-public class OutboundEPProviderRegistry implements ProviderRegistry{
+public class OutboundEPProviderRegistry implements ProviderRegistry {
 
     private Map<String, OutboundEPProvider> outboundEPProviders = new HashMap<>();
 
     private static OutboundEPProviderRegistry instance = new OutboundEPProviderRegistry();
 
-    private OutboundEPProviderRegistry() {}
+    private OutboundEPProviderRegistry() {
+    }
 
     public static OutboundEPProviderRegistry getInstance() {
         return instance;

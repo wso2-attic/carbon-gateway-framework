@@ -127,11 +127,11 @@ public class DSLLoader {
             log.debug("Loading Type 1 Java DSL ..");
         }
         // Call the DSL
-        GWConfigHolder GWConfigHolder =
-                javaConfigurationBuilder.configure().getGWConfigHolder();
+        GWConfigHolder configHolder =
+                javaConfigurationBuilder.configure().getConfigHolder();
 
         // Register the configuration
-        ConfigRegistry.getInstance().addGWConfig(GWConfigHolder);
+        ConfigRegistry.getInstance().addGWConfig(configHolder);
 
     }
 

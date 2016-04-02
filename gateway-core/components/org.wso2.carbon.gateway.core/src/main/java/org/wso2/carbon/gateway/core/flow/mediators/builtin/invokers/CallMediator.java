@@ -32,7 +32,7 @@ import org.wso2.carbon.messaging.CarbonMessage;
 /**
  * Send a Message out from Pipeline to an Outbound Endpoint
  */
-public class CallMediator extends AbstractMediator implements Invoker{
+public class CallMediator extends AbstractMediator implements Invoker {
 
 
     private String outboundEPKey;
@@ -63,14 +63,14 @@ public class CallMediator extends AbstractMediator implements Invoker{
 
     @Override
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback)
-               throws Exception {
+            throws Exception {
 
         OutboundEndpoint endpoint = outboundEndpoint;
         if (endpoint == null) {
             endpoint = ConfigRegistry.getInstance().getOutboundEndpoint(outboundEPKey);
 
             if (endpoint == null) {
-                log.error("Outbound Endpoint : " +  outboundEPKey + "not found ");
+                log.error("Outbound Endpoint : " + outboundEPKey + "not found ");
                 return false;
             }
         }

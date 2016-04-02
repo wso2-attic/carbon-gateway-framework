@@ -37,14 +37,14 @@ public abstract class WUMLConfigurationBuilder {
      */
     public static class IntegrationFlow {
 
-        private GWConfigHolder GWConfigHolder;
+        private GWConfigHolder configHolder;
 
         public IntegrationFlow(String name) {
-            GWConfigHolder = new GWConfigHolder(name);
+            configHolder = new GWConfigHolder(name);
         }
 
         public GWConfigHolder getGWConfigHolder() {
-            return GWConfigHolder;
+            return configHolder;
         }
 
     }

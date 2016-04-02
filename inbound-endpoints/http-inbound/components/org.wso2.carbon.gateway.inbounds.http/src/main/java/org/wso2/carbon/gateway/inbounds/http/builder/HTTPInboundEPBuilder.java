@@ -41,7 +41,6 @@ public class HTTPInboundEPBuilder {
         return new Port(port);
     }
 
-
     /**
      * Port
      */

@@ -29,7 +29,6 @@ import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
 public class InboundEPBuilder {
 
     GWConfigHolder parentConfig;
-    String pipeline;
     JavaConfigurationBuilder.IntegrationFlow integrationFlow;
 
 
@@ -48,11 +47,7 @@ public class InboundEPBuilder {
         this.integrationFlow = integrationFlow;
     }
 
-
-
     public PipelineBuilder pipeline(String pipeline) {
-        this.pipeline = pipeline;
-
         if (parentConfig.getInboundEndpoint() != null) {
             parentConfig.getInboundEndpoint().setPipeline(pipeline);
         }

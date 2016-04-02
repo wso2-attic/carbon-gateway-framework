@@ -19,10 +19,9 @@
 package org.wso2.carbon.gateway.core.config.dsl.internal.flow;
 
 
-import org.wso2.carbon.gateway.core.config.dsl.internal.flow.mediators.MediatorCollectionBuilder;
 import org.wso2.carbon.gateway.core.config.GWConfigHolder;
+import org.wso2.carbon.gateway.core.config.dsl.internal.flow.mediators.MediatorCollectionBuilder;
 import org.wso2.carbon.gateway.core.flow.Pipeline;
-
 
 /**
  * A class Pipeline Builder

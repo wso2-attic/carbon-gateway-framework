@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * An InboundEndpoint Manager class
- *
+ * <p>
  * This acts as the Deployer for HTTP Inbound Endpoint as well as a Transport Listener Manager
  */
 public class HTTPListenerManager implements TransportListenerManager, InboundEPDeployer {
@@ -58,7 +58,8 @@ public class HTTPListenerManager implements TransportListenerManager, InboundEPD
     }
 
     @Override
-    public synchronized void registerTransportListener(String id, TransportListener transportListener) {
+    public synchronized void registerTransportListener(String id,
+                                                       TransportListener transportListener) {
         listenerMap.put(id, transportListener);
         for (Map.Entry entry : earlyInbounds.entrySet()) {
             //TODO check relevant mapping listeners
@@ -108,7 +109,7 @@ public class HTTPListenerManager implements TransportListenerManager, InboundEPD
                /* if (inboundEndpoint instanceof HTTPSInboundEP) {
                     transportListener.listen(host, port, ((HTTPSInboundEP) inboundEndpoint).getParMap());
                 } else {*/
-                    transportListener.listen(host, port);
+                transportListener.listen(host, port);
                 //}
 
                 deployedInbounds.put(name, inboundEndpoint);

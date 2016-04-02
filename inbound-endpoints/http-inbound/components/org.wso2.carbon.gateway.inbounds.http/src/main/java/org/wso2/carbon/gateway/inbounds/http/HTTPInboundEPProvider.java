@@ -21,20 +21,18 @@ package org.wso2.carbon.gateway.inbounds.http;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.wso2.carbon.gateway.core.config.ConfigRegistry;
 import org.wso2.carbon.gateway.core.config.ConfigRegistryObserver;
 import org.wso2.carbon.gateway.core.inbound.Dispatcher;
 import org.wso2.carbon.gateway.core.inbound.InboundEPDeployer;
-import org.wso2.carbon.gateway.core.inbound.Provider;
 import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
+import org.wso2.carbon.gateway.core.inbound.Provider;
 import org.wso2.carbon.messaging.TransportListenerManager;
 
 /**
  * HTTP Inbound Provider
- *
+ * <p>
  * This is responsible for providing a http inbound endpoint instance to engine
  * And also this is responsible for registering other required services
- *
  */
 @Component(
         name = "org.wso2.carbon.gateway.inbounds.http.HTTPInboundEPProvider",

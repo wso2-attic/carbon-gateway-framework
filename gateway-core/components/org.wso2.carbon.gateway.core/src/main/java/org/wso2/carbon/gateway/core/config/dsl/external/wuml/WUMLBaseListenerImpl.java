@@ -18,8 +18,6 @@
 package org.wso2.carbon.gateway.core.config.dsl.external.wuml;
 
 
-
-
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.wso2.carbon.gateway.core.config.Parameter;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
@@ -30,10 +28,10 @@ import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLParse
 import org.wso2.carbon.gateway.core.flow.Mediator;
 import org.wso2.carbon.gateway.core.flow.MediatorProviderRegistry;
 import org.wso2.carbon.gateway.core.flow.Pipeline;
-import org.wso2.carbon.gateway.core.inbound.InboundEPProviderRegistry;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.Condition;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.FilterMediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.Source;
+import org.wso2.carbon.gateway.core.inbound.InboundEPProviderRegistry;
 import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
 import org.wso2.carbon.gateway.core.outbound.OutboundEPProviderRegistry;
 import org.wso2.carbon.gateway.core.outbound.OutboundEndpoint;
@@ -119,7 +117,7 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         }
 
         InboundEndpoint inboundEndpoint = InboundEPProviderRegistry.getInstance().getProvider(protocolName)
-                        .getInboundEndpoint();
+                .getInboundEndpoint();
         inboundEndpoint.setParameters(parameterHolder);
 
         integrationFlow.getGWConfigHolder().setInboundEndpoint(inboundEndpoint);
@@ -134,7 +132,8 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     }
 
     @Override
-    public void exitOutboundEndpointDefStatement(WUMLParser.OutboundEndpointDefStatementContext ctx) {
+    public void exitOutboundEndpointDefStatement(
+            WUMLParser.OutboundEndpointDefStatementContext ctx) {
         String protocolName = StringParserUtil.getValueWithinDoubleQuotes(ctx.outboundEndpointDef().
                 PROTOCOLDEF().getText());
 
@@ -148,13 +147,11 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
             parameterHolder.addParameter(new Parameter(key, value));
         }
 
-        OutboundEndpoint outboundEndpoint = OutboundEPProviderRegistry.getInstance().getProvider(protocolName).getEndpoint();
+        OutboundEndpoint outboundEndpoint =
+                OutboundEPProviderRegistry.getInstance().getProvider(protocolName).getEndpoint();
         outboundEndpoint.setName(ctx.IDENTIFIER().getText());
         outboundEndpoint.setParameters(parameterHolder);
 
-//        String uri = StringParserUtil.getValueWithinDoubleQuotes(ctx.outboundEndpointDef().HOSTDEF().getText());
-//        OutboundEndpoint outboundEndpoint = OutboundEndpointFactory.getOutboundEndpoint(OutboundEndpointType
-//                                                                                                .valueOf(protocolName), ctx.IDENTIFIER().getText(), uri);
         integrationFlow.getGWConfigHolder().addOutboundEndpoint(outboundEndpoint);
         super.exitOutboundEndpointDefStatement(ctx);
     }
@@ -233,13 +230,13 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         Mediator mediator = MediatorProviderRegistry.getInstance().getMediator("call");
 
         ParameterHolder parameterHolder = new ParameterHolder();
-        parameterHolder.addParameter(new Parameter("endpointKey",ctx.IDENTIFIER(1).getText()));
+        parameterHolder.addParameter(new Parameter("endpointKey", ctx.IDENTIFIER(1).getText()));
 
         mediator.setParameters(parameterHolder);
-        if(ifMultiThenBlockStarted) {
+        if (ifMultiThenBlockStarted) {
             filterMediatorStack.peek().addThenMediator(mediator);
 
-        } else if(ifElseBlockStarted) {
+        } else if (ifElseBlockStarted) {
             filterMediatorStack.peek().addOtherwiseMediator(mediator);
 
         } else {
@@ -262,10 +259,10 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     @Override
     public void exitInvokeToSource(WUMLParser.InvokeToSourceContext ctx) {
         Mediator mediator = MediatorProviderRegistry.getInstance().getMediator("respond");
-        if(ifMultiThenBlockStarted) {
+        if (ifMultiThenBlockStarted) {
             filterMediatorStack.peek().addThenMediator(mediator);
 
-        } else if(ifElseBlockStarted) {
+        } else if (ifElseBlockStarted) {
             filterMediatorStack.peek().addOtherwiseMediator(mediator);
 
         } else {
@@ -374,6 +371,5 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     public void exitExpression(WUMLParser.ExpressionContext ctx) {
         super.exitExpression(ctx);
     }
-
 
 }

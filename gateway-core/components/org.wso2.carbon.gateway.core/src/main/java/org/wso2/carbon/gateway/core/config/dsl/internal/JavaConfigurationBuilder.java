@@ -44,29 +44,29 @@ public abstract class JavaConfigurationBuilder {
      */
     public static class IntegrationFlow {
 
-        private GWConfigHolder GWConfigHolder;
+        private GWConfigHolder configHolder;
 
         public IntegrationFlow(String name) {
-            GWConfigHolder = new GWConfigHolder(name);
+            configHolder = new GWConfigHolder(name);
         }
 
-        public GWConfigHolder getGWConfigHolder() {
-            return GWConfigHolder;
+        public GWConfigHolder getConfigHolder() {
+            return configHolder;
         }
 
         /* For Inbound */
         public InboundEPBuilder inboundEndpoint(String name, InboundEndpoint inboundEndpoint) {
-            return InboundEPBuilder.inboundEndpoint(name, GWConfigHolder, this, inboundEndpoint);
+            return InboundEPBuilder.inboundEndpoint(name, configHolder, this, inboundEndpoint);
         }
 
         /* For Outbound */
         public OutboundEndpointBuilder outboundEndpoint(OutboundEndpoint outboundEndpoint) {
-            return OutboundEndpointBuilder.outboundEndpoint(outboundEndpoint, GWConfigHolder);
+            return OutboundEndpointBuilder.outboundEndpoint(outboundEndpoint, configHolder);
         }
 
         /* For Pipeline */
         public PipelineBuilder pipeline(String name) {
-            return PipelineBuilder.pipeline(name, GWConfigHolder);
+            return PipelineBuilder.pipeline(name, configHolder);
         }
 
     }

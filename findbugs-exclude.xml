@@ -1,0 +1,5 @@
+<FindBugsFilter>
+    <Match>
+        <Package name="org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated" />
+    </Match>
+</FindBugsFilter>

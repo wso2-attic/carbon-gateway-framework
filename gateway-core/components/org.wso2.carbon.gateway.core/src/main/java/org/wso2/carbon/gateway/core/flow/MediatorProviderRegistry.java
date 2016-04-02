@@ -22,9 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.FilterMediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.invokers.CallMediator;
+import org.wso2.carbon.gateway.core.flow.mediators.builtin.invokers.RespondMediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.manipulators.EnrichMediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.manipulators.LogMediator;
-import org.wso2.carbon.gateway.core.flow.mediators.builtin.invokers.RespondMediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.manipulators.TransformMediator;
 
 import java.util.HashMap;
@@ -69,8 +69,10 @@ public class MediatorProviderRegistry implements ProviderRegistry {
             try {
                 Mediator med = (Mediator) c.newInstance();
                 builtinMediators.put(med.getName(), c);
-            } catch (Exception e) {
-                log.error("Error while loading mediators to MediatorProviderRegistry");
+            } catch (InstantiationException e) {
+                log.error("Error while instantiation of mediator " + c.getName(), e);
+            } catch (IllegalAccessException e) {
+                log.error("Illegal Access error while instantiation of " + c.getName(), e);
             }
         }
     }
@@ -89,12 +91,14 @@ public class MediatorProviderRegistry implements ProviderRegistry {
 
         if (c != null) {
             try {
-                return  (Mediator) c.newInstance();
-            } catch (Exception e) {
-                log.error("Error while instantiation of " + name);
+                return (Mediator) c.newInstance();
+            } catch (InstantiationException e) {
+                log.error("Error while instantiation of " + name, e);
+            } catch (IllegalAccessException e) {
+                log.error("Illegal Access error while instantiation of " + name, e);
             }
 
-        } else if (mediatorProviders.containsKey(name)){
+        } else if (mediatorProviders.containsKey(name)) {
             return mediatorProviders.get(name).getMediator();
         } else {
             log.error("Mediator implementation not found for " + name);

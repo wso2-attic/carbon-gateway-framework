@@ -19,17 +19,16 @@
 package org.wso2.carbon.gateway.core.config;
 
 
+import org.wso2.carbon.gateway.core.flow.Pipeline;
 import org.wso2.carbon.gateway.core.inbound.InboundEPDeployer;
 import org.wso2.carbon.gateway.core.inbound.InboundEPProviderRegistry;
 import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
-import org.wso2.carbon.gateway.core.flow.Pipeline;
 import org.wso2.carbon.gateway.core.outbound.OutboundEndpoint;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 /**
  * This is the central place where all the configurations are stored at the runtime
@@ -101,20 +100,20 @@ public class ConfigRegistry {
 
     }
 
-    private void unDeployArtifacts(GWConfigHolder GWConfigHolder) {
+    private void unDeployArtifacts(GWConfigHolder configHolder) {
         //For Inbound Endpoint
-        InboundEndpoint inboundEndpoint = GWConfigHolder.getInboundEndpoint();
+        InboundEndpoint inboundEndpoint = configHolder.getInboundEndpoint();
         if (inboundEndpoint != null) {
             unregisterInboundEndpoint(inboundEndpoint);
         }
 
         //For Pipelines
-        for (Pipeline pipeline : GWConfigHolder.getPipelines().values()) {
+        for (Pipeline pipeline : configHolder.getPipelines().values()) {
             unregisterPipeline(pipeline);
         }
 
         //For Outbound Endpoints
-        for (OutboundEndpoint outboundEndpoint : GWConfigHolder.getOutboundEndpoints().values()) {
+        for (OutboundEndpoint outboundEndpoint : configHolder.getOutboundEndpoints().values()) {
             unregisterOutboundEndpoint(outboundEndpoint);
         }
 
@@ -182,7 +181,7 @@ public class ConfigRegistry {
     }
 
     public void unregisterOutboundEndpoint(OutboundEndpoint outboundEndpoint) {
-        outBoundEndpointMap.remove(outboundEndpoint);
+        outBoundEndpointMap.remove(outboundEndpoint.getName());
     }
 
 }

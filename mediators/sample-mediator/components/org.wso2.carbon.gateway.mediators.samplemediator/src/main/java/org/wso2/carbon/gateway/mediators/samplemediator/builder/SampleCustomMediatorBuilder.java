@@ -19,8 +19,8 @@
 package org.wso2.carbon.gateway.mediators.samplemediator.builder;
 
 
-import org.wso2.carbon.gateway.mediators.samplemediator.SampleCustomMediator;
 import org.wso2.carbon.gateway.core.flow.Mediator;
+import org.wso2.carbon.gateway.mediators.samplemediator.SampleCustomMediator;
 
 /**
  * Sample Custom Mediator Builder

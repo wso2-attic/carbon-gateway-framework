@@ -43,7 +43,6 @@ import org.wso2.carbon.kernel.deployment.exception.CarbonDeploymentException;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -97,10 +96,12 @@ public class IFlowDeployer implements Deployer {
             policy = ReferencePolicy.DYNAMIC,
             unbind = "removeOutboundProviderRegistry"
     )
-    protected void addOutboundProviderRegistry(org.wso2.carbon.gateway.core.outbound.ProviderRegistry registry) {
+    protected void addOutboundProviderRegistry(
+            org.wso2.carbon.gateway.core.outbound.ProviderRegistry registry) {
     }
 
-    protected void removeOutboundProviderRegistry(org.wso2.carbon.gateway.core.outbound.ProviderRegistry registry) {
+    protected void removeOutboundProviderRegistry(
+            org.wso2.carbon.gateway.core.outbound.ProviderRegistry registry) {
     }
 
     @Reference(
@@ -110,10 +111,12 @@ public class IFlowDeployer implements Deployer {
             policy = ReferencePolicy.DYNAMIC,
             unbind = "removeMediatorProviderRegistry"
     )
-    protected void addMediatorProviderRegistry(org.wso2.carbon.gateway.core.flow.ProviderRegistry registry) {
+    protected void addMediatorProviderRegistry(
+            org.wso2.carbon.gateway.core.flow.ProviderRegistry registry) {
     }
 
-    protected void removeMediatorProviderRegistry(org.wso2.carbon.gateway.core.flow.ProviderRegistry registry) {
+    protected void removeMediatorProviderRegistry(
+            org.wso2.carbon.gateway.core.flow.ProviderRegistry registry) {
     }
 
     @Override
@@ -128,15 +131,7 @@ public class IFlowDeployer implements Deployer {
 
     @Override
     public Object deploy(Artifact artifact) throws CarbonDeploymentException {
-        File file = artifact.getFile();
-
-        try {
-            InputStream inputStream = new FileInputStream(file);
-            updateESBConfig(file.getName(), inputStream);
-        } catch (FileNotFoundException e) {
-            logger.error("Error While Creating InputStream from file " + file.getName());
-        }
-
+        updateESBConfig(artifact);
         return artifact.getFile().getName();
     }
 
@@ -148,14 +143,7 @@ public class IFlowDeployer implements Deployer {
 
     @Override
     public Object update(Artifact artifact) throws CarbonDeploymentException {
-        File file = artifact.getFile();
-        try {
-            InputStream inputStream = new FileInputStream(file);
-            updateESBConfig(file.getName(), inputStream);
-        } catch (FileNotFoundException e) {
-            logger.error("Error while creating inputStream from file " + file.getName());
-        }
-
+        updateESBConfig(artifact);
         return artifact.getFile().getName();
     }
 
@@ -169,8 +157,13 @@ public class IFlowDeployer implements Deployer {
         return artifactType;
     }
 
-    private void updateESBConfig(String key, InputStream inputStream) {
+    private void updateESBConfig(Artifact artifact) {
+
+        InputStream inputStream = null;
         try {
+            File file = artifact.getFile();
+            inputStream = new FileInputStream(file);
+
             CharStream cs = new ANTLRInputStream(inputStream);
 
             // Passing the input to the lexer to create tokens
@@ -188,10 +181,10 @@ public class IFlowDeployer implements Deployer {
             parser.script();
 
             WUMLConfigurationBuilder.IntegrationFlow integrationFlow = wumlBaseListener.getIntegrationFlow();
-            GWConfigHolder GWConfigHolder = integrationFlow.getGWConfigHolder();
-            if (GWConfigHolder != null) {
-                artifactMap.put(key, GWConfigHolder);
-                ConfigRegistry.getInstance().addGWConfig(GWConfigHolder);
+            GWConfigHolder configHolder = integrationFlow.getGWConfigHolder();
+            if (configHolder != null) {
+                artifactMap.put(file.getName(), configHolder);
+                ConfigRegistry.getInstance().addGWConfig(configHolder);
             }
 
         } catch (IOException e) {

@@ -45,7 +45,8 @@ public class HTTPInboundEP extends InboundEndpoint {
         this.port = port;
     }
 
-    public HTTPInboundEP() {}
+    public HTTPInboundEP() {
+    }
 
     public HTTPInboundEP(String name, int port) {
         setName(name);
@@ -111,6 +112,6 @@ public class HTTPInboundEP extends InboundEndpoint {
 
     @Override
     public String getName() {
-        return host+port;
+        return host + port;
     }
 }

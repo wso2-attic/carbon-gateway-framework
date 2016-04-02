@@ -19,7 +19,6 @@ package org.wso2.carbon.gateway.inbounds.http;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.gateway.core.config.ConfigRegistry;
 import org.wso2.carbon.gateway.core.config.ConfigRegistryObserver;
 import org.wso2.carbon.gateway.core.inbound.Dispatcher;
 import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
@@ -40,14 +39,11 @@ public class HTTPInboundEPDispatcher implements Dispatcher, ConfigRegistryObserv
 
     private static final Logger log = LoggerFactory.getLogger(HTTPInboundEPDispatcher.class);
 
-
     private HashMap<Integer, ArrayList<HTTPInboundEP>> httpEPRegistry;
-
 
     public static HTTPInboundEPDispatcher getInstance() {
         return instance;
     }
-
 
     private HTTPInboundEPDispatcher() {
         httpEPRegistry = new HashMap<Integer, ArrayList<HTTPInboundEP>>();
@@ -56,7 +52,7 @@ public class HTTPInboundEPDispatcher implements Dispatcher, ConfigRegistryObserv
     @Override
     public boolean dispatch(CarbonMessage cMsg, CarbonCallback callback) {
 
-        int port = (int)cMsg.getProperty("LISTENER_PORT");
+        int port = (int) cMsg.getProperty("LISTENER_PORT");
 
         ArrayList<HTTPInboundEP> endpointsOnPort = httpEPRegistry.get(port);
         if (endpointsOnPort == null) {
@@ -65,9 +61,9 @@ public class HTTPInboundEPDispatcher implements Dispatcher, ConfigRegistryObserv
         }
 
         for (HTTPInboundEP endpoint : endpointsOnPort) {
-           if (endpoint.canReceive(cMsg)) {
-               endpoint.receive(cMsg, callback);
-           }
+            if (endpoint.canReceive(cMsg)) {
+                endpoint.receive(cMsg, callback);
+            }
         }
 
         return false;
@@ -82,7 +78,7 @@ public class HTTPInboundEPDispatcher implements Dispatcher, ConfigRegistryObserv
     @Override
     public void endpointAdded(InboundEndpoint endpoint) {
         if (!(endpoint instanceof HTTPInboundEP)) { //If not an HTTPInboundEP just skip
-           return;
+            return;
         }
 
         HTTPInboundEP httpInboundEP = (HTTPInboundEP) endpoint;
