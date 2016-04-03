@@ -105,7 +105,6 @@
                                 <goal>antlr4</goal>
                             </goals>
                             <configuration>
-                                <!--<sourceDirectory>${antlr.dir}</sourceDirectory>-->
                                 <listener>true</listener>
                                 <visitor>false</visitor>
                             </configuration>
