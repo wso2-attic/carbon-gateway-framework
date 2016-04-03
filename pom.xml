@@ -235,5 +235,6 @@
         <module>inbound-endpoints</module>
         <module>outbound-endpoints</module>
         <module>mediators</module>
+        <module>archetypes</module>
     </modules>
 </project>

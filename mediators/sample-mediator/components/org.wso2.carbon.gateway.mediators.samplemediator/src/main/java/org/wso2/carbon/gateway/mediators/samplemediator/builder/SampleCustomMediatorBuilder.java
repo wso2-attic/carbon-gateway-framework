@@ -28,9 +28,9 @@ import org.wso2.carbon.gateway.mediators.samplemediator.SampleCustomMediator;
 public class SampleCustomMediatorBuilder {
     public static Mediator customLog(String message) {
 
-        SampleCustomMediator m = new SampleCustomMediator();
-        m.setLogMessage(message);
-        return m;
+        SampleCustomMediator mediator = new SampleCustomMediator();
+        mediator.setLogMessage(message);
+        return mediator;
 
     }
 }
