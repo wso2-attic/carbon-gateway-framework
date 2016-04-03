@@ -78,7 +78,7 @@ public class InboundEPServiceComponent implements RequiredCapabilityListener {
     @Reference(
             name = "InboundEndpoint-Service",
             service = Provider.class,
-            cardinality = ReferenceCardinality.OPTIONAL,
+            cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC,
             unbind = "removeInboundProvider"
     )

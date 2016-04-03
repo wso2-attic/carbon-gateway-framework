@@ -75,7 +75,7 @@ public class OutboundServiceComponent implements RequiredCapabilityListener {
     @Reference(
             name = "OutboundEndpoint-Service",
             service = OutboundEPProvider.class,
-            cardinality = ReferenceCardinality.OPTIONAL,
+            cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC,
             unbind = "removeOutboundProvider"
     )

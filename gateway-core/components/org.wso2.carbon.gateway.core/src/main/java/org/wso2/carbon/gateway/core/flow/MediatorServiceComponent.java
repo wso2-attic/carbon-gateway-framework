@@ -78,7 +78,7 @@ public class MediatorServiceComponent implements RequiredCapabilityListener {
     @Reference(
             name = "Mediator-Service",
             service = MediatorProvider.class,
-            cardinality = ReferenceCardinality.OPTIONAL,
+            cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC,
             unbind = "unregisterMediatorProvider"
     )
