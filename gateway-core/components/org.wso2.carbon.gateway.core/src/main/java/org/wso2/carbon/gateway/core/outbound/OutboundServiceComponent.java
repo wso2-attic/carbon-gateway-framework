@@ -63,7 +63,6 @@ public class OutboundServiceComponent implements RequiredCapabilityListener {
             logger.debug("All Outbound Providers available");
         }
 
-        logger.info("$$$$$ All Outbound Providers available");
         isAllProviderAvailable = true;
 
         if (bundleContext != null) {
