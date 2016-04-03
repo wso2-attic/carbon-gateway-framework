@@ -81,10 +81,6 @@ public class MediatorProviderRegistry implements ProviderRegistry {
         mediatorProviders.remove(mediatorProvider.getName());
     }
 
-    public void unregisterMediatorProvider(String mediatorName) {
-        mediatorProviders.remove(mediatorName);
-    }
-
     public Mediator getMediator(String name) {
 
         Class c = builtinMediators.get(name);

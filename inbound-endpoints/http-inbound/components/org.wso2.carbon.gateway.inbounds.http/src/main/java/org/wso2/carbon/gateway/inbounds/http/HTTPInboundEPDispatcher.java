@@ -46,7 +46,7 @@ public class HTTPInboundEPDispatcher implements Dispatcher, ConfigRegistryObserv
     }
 
     private HTTPInboundEPDispatcher() {
-        httpEPRegistry = new HashMap<Integer, ArrayList<HTTPInboundEP>>();
+        httpEPRegistry = new HashMap<>();
     }
 
     @Override
@@ -87,7 +87,7 @@ public class HTTPInboundEPDispatcher implements Dispatcher, ConfigRegistryObserv
         ArrayList<HTTPInboundEP> endpointsForAPort = httpEPRegistry.get(port);
 
         if (endpointsForAPort == null) {
-            endpointsForAPort = new ArrayList<HTTPInboundEP>();
+            endpointsForAPort = new ArrayList<>();
             httpEPRegistry.put(port, endpointsForAPort);
         }
         endpointsForAPort.add(httpInboundEP);

@@ -30,13 +30,13 @@ public interface ConfigRegistryObserver {
      *
      * @param endpoint Inbound Endpoint which got added
      */
-    public void endpointAdded(InboundEndpoint endpoint);
+    void endpointAdded(InboundEndpoint endpoint);
 
     /**
      * Triggered when Endpoint is removed
      *
      * @param endpoint Inbound Endpoint which got removed
      */
-    public void endpointRemoved(InboundEndpoint endpoint);
+    void endpointRemoved(InboundEndpoint endpoint);
 
 }

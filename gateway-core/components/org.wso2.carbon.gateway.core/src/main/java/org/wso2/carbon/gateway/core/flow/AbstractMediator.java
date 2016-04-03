@@ -49,10 +49,7 @@ public abstract class AbstractMediator implements Mediator {
      */
     public boolean next(CarbonMessage carbonMessage, CarbonCallback carbonCallback)
             throws Exception {
-        if (hasNext()) {
-            return nextMediator.receive(carbonMessage, carbonCallback);
-        }
-        return false;
+        return hasNext() && nextMediator.receive(carbonMessage, carbonCallback);
     }
 
     /**

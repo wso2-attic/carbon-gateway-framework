@@ -18,8 +18,6 @@
 package org.wso2.carbon.gateway.core.inbound;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.config.ConfigRegistry;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.messaging.CarbonCallback;
@@ -29,8 +27,6 @@ import org.wso2.carbon.messaging.CarbonMessage;
  * Base for InboundEndpoints. All Inbound Endpoint types must extend this.
  */
 public abstract class InboundEndpoint {
-
-    private static final Logger log = LoggerFactory.getLogger(InboundEndpoint.class);
 
     private String name;
 

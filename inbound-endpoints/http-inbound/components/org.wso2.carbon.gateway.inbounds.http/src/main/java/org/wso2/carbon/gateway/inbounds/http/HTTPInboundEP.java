@@ -84,10 +84,7 @@ public class HTTPInboundEP extends InboundEndpoint {
     public boolean canReceive(CarbonMessage cMsg) {
 
         String uri = (String) cMsg.getProperty(Constants.TO);
-        if (uri.startsWith(context)) {
-            return true;
-        }
-        return false;
+        return uri.startsWith(context);
     }
 
     public boolean receive(CarbonMessage cMsg, CarbonCallback callback) {

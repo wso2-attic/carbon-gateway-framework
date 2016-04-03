@@ -42,8 +42,6 @@ public class ErrorHandler implements FaultHandler {
 
     private MediatorCollection mediatorCollection;
 
-    private CarbonCallback initiatedCallback;
-
     private String name;
 
 
@@ -57,7 +55,7 @@ public class ErrorHandler implements FaultHandler {
     public void handleFault(String errorcode, Throwable throwable, CarbonMessage carbonMessage,
                             CarbonCallback carbonCallback) {
 
-        initiatedCallback = getSuperParentCallback(carbonCallback);
+        CarbonCallback initiatedCallback = getSuperParentCallback(carbonCallback);
 
         if (mediatorCollection.getFirstMediator() instanceof RespondMediator) {
             DefaultCarbonMessage response = new DefaultCarbonMessage();
