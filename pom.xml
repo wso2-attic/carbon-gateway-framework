@@ -16,13 +16,15 @@
   ~ * limitations under the License.
   ~ */
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.wso2</groupId>
         <artifactId>wso2</artifactId>
-        <version>2</version>
+        <version>3</version>
     </parent>
 
     <groupId>org.wso2.carbon.gateway</groupId>
@@ -33,7 +35,8 @@
 
     <scm>
         <url>https://github.com/isudana/integration-bus.git</url>
-        <developerConnection>scm:git:https://github.com/isudana/integration-bus.git</developerConnection>
+        <developerConnection>scm:git:https://github.com/isudana/integration-bus.git
+        </developerConnection>
         <connection>scm:git:https://github.com/isudana/integration-bus.git</connection>
         <tag>HEAD</tag>
     </scm>
@@ -60,8 +63,8 @@
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>wso2carbon-kernel</artifactId>
-				<version>${carbon.kernel.version}</version>
-				 <type>zip</type>
+                <version>${carbon.kernel.version}</version>
+                <type>zip</type>
             </dependency>
 
             <dependency>
@@ -72,8 +75,8 @@
             <dependency>
                 <groupId>org.wso2.carbon.gateway</groupId>
                 <artifactId>org.wso2.carbon.gateway.core.feature</artifactId>
-				<version>${carbon.gw.version}</version>
-				 <type>zip</type>
+                <version>${carbon.gw.version}</version>
+                <type>zip</type>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.gateway.inbounds</groupId>
@@ -154,7 +157,29 @@
     <build>
         <pluginManagement>
             <plugins>
-                <!--plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>findbugs-maven-plugin</artifactId>
+                    <version>${maven.findbugsplugin.version}</version>
+                    <configuration>
+                        <effort>Max</effort>
+                        <threshold>Low</threshold>
+                        <xmlOutput>true</xmlOutput>
+                        <findbugsXmlOutputDirectory>${project.build.directory}/findbugs
+                        </findbugsXmlOutputDirectory>
+                        <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>analyze-compile</id>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
                     <executions>
@@ -172,32 +197,14 @@
                                 <consoleOutput>true</consoleOutput>
                                 <failsOnError>true</failsOnError>
                                 <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                                <excludes>**/generated/**/*</excludes>
                             </configuration>
                             <goals>
                                 <goal>check</goal>
                             </goals>
                         </execution>
                     </executions>
-                </plugin-->
-                <!--plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>findbugs-maven-plugin</artifactId>
-                    <configuration>
-                        <effort>Max</effort>
-                        <threshold>Low</threshold>
-                        <xmlOutput>true</xmlOutput>
-                        <findbugsXmlOutputDirectory>${project.build.directory}/findbugs</findbugsXmlOutputDirectory>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>analyze-compile</id>
-                            <phase>compile</phase>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin-->
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -211,7 +218,7 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-            <!--plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${maven.checkstyleplugin.version}</version>
@@ -220,18 +227,20 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
                 <version>${maven.findbugsplugin.version}</version>
-            </plugin-->
+            </plugin>
         </plugins>
     </build>
 
     <properties>
         <!-- Maven plugins -->
-        <maven.checkstyleplugin.version>2.16</maven.checkstyleplugin.version>
-        <maven.findbugsplugin.version>3.0.2</maven.findbugsplugin.version>
+        <maven.bundle.plugin.version>2.5.4</maven.bundle.plugin.version>
+        <maven.checkstyleplugin.version>2.17</maven.checkstyleplugin.version>
+        <maven.findbugsplugin.version>3.0.3</maven.findbugsplugin.version>
 
         <!-- Dependencies -->
         <carbon.kernel.version>5.0.0</carbon.kernel.version>
-        <carbon.kernel.package.import.version.range>[5.0.0, 6.0.0)</carbon.kernel.package.import.version.range>
+        <carbon.kernel.package.import.version.range>[5.0.0, 6.0.0)
+        </carbon.kernel.package.import.version.range>
 
         <carbon.gw.version>1.0.0-SNAPSHOT</carbon.gw.version>
         <carbon.gw.package.export.version>1.0.0</carbon.gw.package.export.version>
@@ -241,21 +250,26 @@
         <equinox.osgi.services.version>3.4.0.v20140312-2051</equinox.osgi.services.version>
 
         <spring.framework.version>4.1.6.wso2v1</spring.framework.version>
-        <spring.framework.package.import.version.range>[4.1.6, 4.2.0)</spring.framework.package.import.version.range>
+        <spring.framework.package.import.version.range>[4.1.6, 4.2.0)
+        </spring.framework.package.import.version.range>
 
 
         <slf4j.version>1.7.5</slf4j.version>
-        <slf4j.logging.package.import.version.range>[1.7.1, 2.0.0)</slf4j.logging.package.import.version.range>
+        <slf4j.logging.package.import.version.range>[1.7.1, 2.0.0)
+        </slf4j.logging.package.import.version.range>
 
         <carbon.transport.version>2.0.2-SNAPSHOT</carbon.transport.version>
-        <carbon.transport.package.import.version.range>[2.0.0, 2.1.0)</carbon.transport.package.import.version.range>
+        <carbon.transport.package.import.version.range>[2.0.0, 2.1.0)
+        </carbon.transport.package.import.version.range>
 
         <carbon.messaging.version>1.0.2-SNAPSHOT</carbon.messaging.version>
 
-        <carbon.messaging.package.import.version.range>[0.0.0, 2.0.0)</carbon.messaging.package.import.version.range>
+        <carbon.messaging.package.import.version.range>[0.0.0, 2.0.0)
+        </carbon.messaging.package.import.version.range>
 
         <osgi.framework.import.version.range>[1.8.0, 2.0.0)</osgi.framework.import.version.range>
-        <osgi.service.tracker.import.version.range>[1.5.1, 2.0.0)</osgi.service.tracker.import.version.range>
+        <osgi.service.tracker.import.version.range>[1.5.1, 2.0.0)
+        </osgi.service.tracker.import.version.range>
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
         <carbon.feature.plugin.version>2.0.0</carbon.feature.plugin.version>
 
