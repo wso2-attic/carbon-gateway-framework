@@ -16,42 +16,38 @@
  * under the License.
  */
 
-package org.wso2.carbon.gateway.core.flow.contentAwareSupport;
+package org.wso2.carbon.gateway.core.flow.contentaware;
 
-import org.slf4j.Logger;
-import org.osgi.framework.BundleContext;
-import org.osgi.service.component.annotations.*;
-import org.slf4j.LoggerFactory;
-import org.wso2.carbon.gateway.core.flow.contentAwareSupport.abstractContext.TypeConverter;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConverter;
 
 /**
  * Service component for type converters
  */
 @Component(
         name = "org.wso2.carbon.gateway.core.flow.contentAwareSupport.TypeConverterServiceComponent",
-        immediate = true
-)
-public class TypeConverterServiceComponent{
+        immediate = true)
 
-    private static final Logger logger = LoggerFactory.getLogger(TypeConverterServiceComponent.class);
-
-    private BundleContext bundleContext;
-
-    private boolean isAllProviderAvailable;
+public class TypeConverterServiceComponent {
 
     @Reference(
             name = "TypeConverter-Service",
             service = TypeConverter.class,
             cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC,
-            unbind = "removeTypeConverter"
-    )
+            unbind = "removeTypeConverter")
+
     protected void addTypeConverter(TypeConverter typeConverter) {
-        BaseTypeConverterRegistry.getInstance().addTypeConverter(typeConverter.getTargetType(),typeConverter.getSourceType(),typeConverter);
+        BaseTypeConverterRegistry.getInstance()
+                .addTypeConverter(typeConverter.getTargetType(), typeConverter.getSourceType(), typeConverter);
     }
 
     protected void removeTypeConverter(TypeConverter typeConverter) {
-        BaseTypeConverterRegistry.getInstance().removeTypeConverter(typeConverter.getTargetType(),typeConverter.getSourceType());
+        BaseTypeConverterRegistry.getInstance()
+                .removeTypeConverter(typeConverter.getTargetType(), typeConverter.getSourceType());
     }
 
 }

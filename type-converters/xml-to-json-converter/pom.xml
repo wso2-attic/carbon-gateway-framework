@@ -3,17 +3,18 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>org.wso2.carbon.gateway.parent</artifactId>
+        <artifactId>type-converters</artifactId>
         <groupId>org.wso2.carbon.gateway</groupId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>type-converters</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>org.wso2.carbon.gateway.converters.xmltojson.parent</artifactId>
     <packaging>pom</packaging>
+    
     <modules>
-        <module>json-to-xml-converter</module>
-        <module>xml-to-json-converter</module>
+        <module>components/org.wso2.carbon.gateway.converters.xmltojson</module>
+        <module>features/org.wso2.carbon.gateway.converters.xmltojson.feature</module>
     </modules>
 
 
