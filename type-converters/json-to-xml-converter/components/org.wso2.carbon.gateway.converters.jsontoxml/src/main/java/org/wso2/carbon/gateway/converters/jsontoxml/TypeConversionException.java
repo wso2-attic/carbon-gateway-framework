@@ -26,8 +26,8 @@ package org.wso2.carbon.gateway.converters.jsontoxml;
 public class TypeConversionException extends Exception {
     private static final long serialVersionUID = -6118520819865759886L;
 
-    private final transient Object value;
-    private final transient Class<?> type;
+    private final Object value;
+    private final Class<?> type;
 
     public TypeConversionException(Object value, Class<?> type, Throwable cause) {
         super(createMessage(value, type, cause), cause);

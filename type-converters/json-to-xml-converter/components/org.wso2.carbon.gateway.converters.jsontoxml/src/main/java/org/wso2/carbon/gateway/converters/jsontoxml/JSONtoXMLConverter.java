@@ -25,14 +25,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.AbstractTypeConverter;
 
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLEventWriter;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+
+/**
+ * Class for converting a JSON input stream into an XML input stream
+ */
 
 public class JSONtoXMLConverter extends AbstractTypeConverter {
     private static final Logger log = LoggerFactory.getLogger(JSONtoXMLConverter.class);
@@ -54,11 +58,9 @@ public class JSONtoXMLConverter extends AbstractTypeConverter {
 
             output.close();
             input.close();
-        }
-        catch (XMLStreamException e) {
+        } catch (XMLStreamException e) {
             log.error("Error in parsing the XML Stream", e);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             log.error("Error in I/O", e);
         }
 
