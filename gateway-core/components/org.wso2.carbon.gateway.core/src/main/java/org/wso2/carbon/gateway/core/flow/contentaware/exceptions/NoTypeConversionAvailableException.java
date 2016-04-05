@@ -16,20 +16,26 @@
  * under the License.
  */
 
-package org.wso2.carbon.gateway.core.flow.contentAwareSupport.exceptions;
+package org.wso2.carbon.gateway.core.flow.contentaware.exceptions;
 
 /**
- * Exception when failing during type conversion.
+ * An exception thrown if a value could not be converted to the required type
  *
  * @version
  */
-public class TypeConversionException extends Exception {
+public class NoTypeConversionAvailableException extends Exception {
 
-    private static final long serialVersionUID = -6118520819865759886L;
+    private static final long serialVersionUID = -8721487434390572636L;
     private final transient Object value;
     private final transient Class<?> type;
 
-    public TypeConversionException(Object value, Class<?> type, Throwable cause) {
+    public NoTypeConversionAvailableException(Object value, Class<?> type) {
+        super(createMessage(value, type));
+        this.value = value;
+        this.type = type;
+    }
+
+    public NoTypeConversionAvailableException(Object value, Class<?> type, Throwable cause) {
         super(createMessage(value, type, cause), cause);
         this.value = value;
         this.type = type;
@@ -62,14 +68,22 @@ public class TypeConversionException extends Exception {
     }
 
     /**
-     * Returns an error message for type conversion failed.
+     * Returns an error message for no type converter available.
      */
-    public static String createMessage(Object value, Class<?> type, Throwable cause) {
-        return "Error during type conversion from type: " + (value != null ? value.getClass().getCanonicalName() : null)
-                + " to the required type: " + type.getCanonicalName() + " with value " + value + " due " + cause
-                .getMessage();
+    public static String createMessage(Object value, Class<?> type) {
+        return "No type converter available to convert from type: " + (value != null ?
+                value.getClass().getCanonicalName() :
+                null) + " to the required type: " + type.getCanonicalName() + " with value " + value;
     }
 
+    /**
+     * Returns an error message for no type converter available with the cause.
+     */
+    public static String createMessage(Object value, Class<?> type, Throwable cause) {
+        return "Converting Exception when converting from type: " + (value != null ?
+                value.getClass().getCanonicalName() :
+                null) + " to the required type: " + type.getCanonicalName() + " with value " + value
+                + ", which is caused by " + cause;
+    }
 }
-
 

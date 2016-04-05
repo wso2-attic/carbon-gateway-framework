@@ -15,13 +15,13 @@
  *
  */
 
-package org.wso2.carbon.gateway.core.flow.contentAwareSupport;
+package org.wso2.carbon.gateway.core.flow.contentaware;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.config.ConfigRegistry;
-import org.wso2.carbon.gateway.core.flow.contentAwareSupport.abstractContext.TypeConverter;
-import org.wso2.carbon.gateway.core.flow.contentAwareSupport.exceptions.TypeConversionException;
+import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConverter;
+import org.wso2.carbon.gateway.core.flow.contentaware.exceptions.TypeConversionException;
 import org.wso2.carbon.messaging.CarbonMessage;
 
 import java.io.IOException;
@@ -30,22 +30,29 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+/**
+ * A class to decouple the mediators from the TypeConverterRegsitry and to handle
+ * the conversions.
+ */
 public class ConversionManager {
     private static final Logger log = LoggerFactory.getLogger(ConversionManager.class);
     private static ConversionManager manager;
 
     public static ConversionManager getInstance() {
-        if (manager == null)
+        if (manager == null) {
             manager = new ConversionManager();
+        }
+
         return manager;
     }
 
     public InputStream convertTo(CarbonMessage cMsg, String sourceType, String targetType) {
         TypeConverter converter = ConfigRegistry.getInstance()
-                .getTypeConverterRegistry().lookup(targetType,sourceType);
+                .getTypeConverterRegistry().lookup(targetType, sourceType);
 
-        if (converter == null)
+        if (converter == null) {
             return null;
+        }
 
         //aggregation and creating inputStream
         BlockingQueue<ByteBuffer> contentBuf = aggregateContent(cMsg);
