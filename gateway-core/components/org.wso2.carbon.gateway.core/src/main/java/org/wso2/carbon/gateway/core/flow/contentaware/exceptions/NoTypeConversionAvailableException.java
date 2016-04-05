@@ -26,8 +26,8 @@ package org.wso2.carbon.gateway.core.flow.contentaware.exceptions;
 public class NoTypeConversionAvailableException extends Exception {
 
     private static final long serialVersionUID = -8721487434390572636L;
-    private final transient Object value;
-    private final transient Class<?> type;
+    private final Object value;
+    private final Class<?> type;
 
     public NoTypeConversionAvailableException(Object value, Class<?> type) {
         super(createMessage(value, type));

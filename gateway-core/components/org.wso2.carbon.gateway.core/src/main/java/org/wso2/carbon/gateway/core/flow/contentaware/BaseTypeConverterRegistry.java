@@ -84,12 +84,14 @@ public class BaseTypeConverterRegistry implements TypeConverterRegistry {
                     log.error("Specified class cannot be accessed: " + converterEntry.get("converterClass"));
                 }
             });
+
+            inputStream.close();
         } catch (IOException e) {
             log.error("File not found", e);
         }
     }
 
-    public static BaseTypeConverterRegistry getInstance() {
+    public static synchronized BaseTypeConverterRegistry getInstance() {
         if (baseTypeConverterRegistry == null) {
             baseTypeConverterRegistry = new BaseTypeConverterRegistry();
         }

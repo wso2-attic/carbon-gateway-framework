@@ -23,8 +23,8 @@ package org.wso2.carbon.gateway.core.flow.contentaware.exceptions;
  */
 public class TypeConverterExistsException extends Exception {
 
-    private final transient Class<?> toType;
-    private final transient Class<?> fromType;
+    private final Class<?> toType;
+    private final Class<?> fromType;
 
     public TypeConverterExistsException(Class<?> toType, Class<?> fromType) {
         super("Failed to add type converter because a type converter exists. " + fromType + " -> " + toType);

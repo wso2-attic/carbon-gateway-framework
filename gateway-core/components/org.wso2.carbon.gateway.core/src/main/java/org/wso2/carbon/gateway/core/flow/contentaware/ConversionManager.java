@@ -38,7 +38,7 @@ public class ConversionManager {
     private static final Logger log = LoggerFactory.getLogger(ConversionManager.class);
     private static ConversionManager manager;
 
-    public static ConversionManager getInstance() {
+    public static synchronized ConversionManager getInstance() {
         if (manager == null) {
             manager = new ConversionManager();
         }
