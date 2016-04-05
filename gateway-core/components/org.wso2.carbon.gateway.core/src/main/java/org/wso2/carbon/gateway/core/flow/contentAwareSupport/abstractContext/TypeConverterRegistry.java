@@ -60,6 +60,15 @@ public interface TypeConverterRegistry {
     boolean removeTypeConverter(Class<?> toType, Class<?> fromType);
 
     /**
+     * Removes the type converter
+     *
+     * @param targetType        the type to convert to
+     * @param sourceType      the type to convert from
+     * @return <tt>true</tt> if removed, <tt>false</tt> if the type converter didn't exist
+     */
+    boolean removeTypeConverter(String targetType, String sourceType);
+
+    /**
      * Performs a lookup for a given type converter.
      *
      * @param toType        the type to convert to

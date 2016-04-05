@@ -134,6 +134,16 @@ public class BaseTypeConverterRegistry implements TypeConverterRegistry {
 
     }
 
+    @Override public boolean removeTypeConverter(String targetType, String sourceType) {
+        log.trace("Removing type converter from: {} to: {}", sourceType, targetType);
+        TypeMapper key = new TypeMapper(targetType, sourceType);
+        TypeConverter converter = typeMapping.remove(key);
+        if (converter != null) {
+            typeMapping.remove(key);
+        }
+        return converter != null;
+    }
+
     public TypeConverter getTypeConverter(Class<?> targetType, Class<?> sourceType) {
         TypeMapper key = new TypeMapper(targetType.getName(), sourceType.getName());
         return typeMapping.get(key);
