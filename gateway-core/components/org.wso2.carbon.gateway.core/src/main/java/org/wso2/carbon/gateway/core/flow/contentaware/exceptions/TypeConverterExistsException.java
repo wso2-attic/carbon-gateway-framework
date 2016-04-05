@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.gateway.core.flow.contentAwareSupport.exceptions;
+package org.wso2.carbon.gateway.core.flow.contentaware.exceptions;
 
 /**
  * Exception when failing to add type converters due there is already an existing type converter.

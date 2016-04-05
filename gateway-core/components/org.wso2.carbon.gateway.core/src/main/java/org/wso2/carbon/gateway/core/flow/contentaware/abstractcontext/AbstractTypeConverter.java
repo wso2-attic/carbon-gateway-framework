@@ -16,9 +16,9 @@
  * under the License.
  */
 
-package org.wso2.carbon.gateway.core.flow.contentAwareSupport.abstractContext;
+package org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext;
 
-import org.wso2.carbon.gateway.core.flow.contentAwareSupport.exceptions.TypeConversionException;
+import org.wso2.carbon.gateway.core.flow.contentaware.exceptions.TypeConversionException;
 
 import java.io.IOException;
 import java.io.InputStream;

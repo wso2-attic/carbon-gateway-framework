@@ -16,9 +16,8 @@
  * under the License.
  */
 
-package org.wso2.carbon.gateway.core.flow.contentAwareSupport.abstractContext;
+package org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext;
 
-import org.wso2.carbon.gateway.core.flow.contentAwareSupport.exceptions.TypeConverterExistsException;
 
 /**
  * Registry for type converters.
@@ -29,8 +28,6 @@ public interface TypeConverterRegistry {
     /**
      * Registers a new type converter.
      * <p/>
-     * This method may throw {@link TypeConverterExistsException} if configured to fail if an existing
-     * type converter already exists
      *
      * @param toType        the type to convert to
      * @param fromType      the type to convert from
@@ -41,8 +38,6 @@ public interface TypeConverterRegistry {
     /**
      * Registers a new type converter.
      * <p/>
-     * This method may throw {@link TypeConverterExistsException} if configured to fail if an existing
-     * type converter already exists
      *
      * @param targetType        the type to convert to
      * @param sourceType      the type to convert from

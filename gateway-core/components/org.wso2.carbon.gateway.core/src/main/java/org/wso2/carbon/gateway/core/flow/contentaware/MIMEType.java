@@ -15,7 +15,11 @@
  *
  */
 
-package org.wso2.carbon.gateway.core.flow.contentAwareSupport;
+package org.wso2.carbon.gateway.core.flow.contentaware;
+
+/**
+ * A class with String constants to represent internet media types
+ */
 
 public class MIMEType {
 

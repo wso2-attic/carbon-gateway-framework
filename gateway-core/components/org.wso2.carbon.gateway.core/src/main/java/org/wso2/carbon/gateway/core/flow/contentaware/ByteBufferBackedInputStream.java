@@ -15,7 +15,7 @@
  *  limitations under the License.
  * /
  */
-package org.wso2.carbon.gateway.core.flow.contentAwareSupport;
+package org.wso2.carbon.gateway.core.flow.contentaware;
 
 
 import org.slf4j.Logger;

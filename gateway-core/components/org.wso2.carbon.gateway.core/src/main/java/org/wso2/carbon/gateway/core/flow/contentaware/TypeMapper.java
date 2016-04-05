@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.gateway.core.flow.contentAwareSupport;
+package org.wso2.carbon.gateway.core.flow.contentaware;
 
 /**
  * map converters with source type and target Type
@@ -26,7 +26,7 @@ public class TypeMapper {
     private final String toType;
     private final String fromType;
 
-    public TypeMapper(String toType , String fromType){
+    public TypeMapper(String toType , String fromType) {
         this.toType = toType;
         this.fromType = fromType;
     }
@@ -42,8 +42,8 @@ public class TypeMapper {
 
     public int hashCode() {
         int answer = 0;
-        if (toType != null && fromType != null){
-            answer = 23 +(fromType+toType).hashCode();
+        if (toType != null && fromType != null) {
+            answer = 23 + (fromType + toType).hashCode();
         }
         return answer;
     }

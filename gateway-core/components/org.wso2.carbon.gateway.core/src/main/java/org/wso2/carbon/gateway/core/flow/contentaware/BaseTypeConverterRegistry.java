@@ -16,12 +16,12 @@
  * under the License.
  */
 
-package org.wso2.carbon.gateway.core.flow.contentAwareSupport;
+package org.wso2.carbon.gateway.core.flow.contentaware;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.gateway.core.flow.contentAwareSupport.abstractContext.TypeConverter;
-import org.wso2.carbon.gateway.core.flow.contentAwareSupport.abstractContext.TypeConverterRegistry;
+import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConverter;
+import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConverterRegistry;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -40,14 +40,14 @@ import java.util.Map;
  */
 public class BaseTypeConverterRegistry implements TypeConverterRegistry {
 
-    protected final static Logger log = LoggerFactory.getLogger(BaseTypeConverterRegistry.class);
+    private static final Logger log = LoggerFactory.getLogger(BaseTypeConverterRegistry.class);
     private static BaseTypeConverterRegistry baseTypeConverterRegistry;
 
     protected final Map<TypeMapper, TypeConverter> typeMapping = new HashMap<>();
 
     private BaseTypeConverterRegistry() {
         File convertersFile;
-        try{
+        try {
             String carbonHome = System.getProperty("carbon.home");
             convertersFile = new File(carbonHome + File.separator + "conf" + File.separator + "content-aware-mediation"
                                         + File.separator + "type-converters.yml");
@@ -72,7 +72,7 @@ public class BaseTypeConverterRegistry implements TypeConverterRegistry {
                     loader = URLClassLoader.newInstance(new URL[]{url}, getClass().getClassLoader());
                     clazz = loader.loadClass(converterEntry.get("converterClass"));
                     TypeMapper mapper = new TypeMapper(converterEntry.get("to"), converterEntry.get("from"));
-                    typeMapping.put(mapper, (TypeConverter)clazz.newInstance());
+                    typeMapping.put(mapper, (TypeConverter) clazz.newInstance());
                     log.info(typeMapping.toString());
                 } catch (MalformedURLException e) {
                     log.error("URL of the artifact not valid", e);
@@ -84,8 +84,7 @@ public class BaseTypeConverterRegistry implements TypeConverterRegistry {
                     log.error("Specified class cannot be accessed: " + converterEntry.get("converterClass"));
                 }
             });
-        }
-        catch(IOException e) {
+        } catch (IOException e) {
             log.error("File not found", e);
         }
     }
@@ -109,7 +108,8 @@ public class BaseTypeConverterRegistry implements TypeConverterRegistry {
         }
     }
 
-    @Override public void addTypeConverter(String targetType, String sourceType, TypeConverter typeConverter) {
+    @Override
+    public void addTypeConverter(String targetType, String sourceType, TypeConverter typeConverter) {
         log.trace("Adding type converter: {}", typeConverter);
         TypeMapper key = new TypeMapper(targetType, sourceType);
         TypeConverter converter = typeMapping.get(key);
@@ -118,8 +118,6 @@ public class BaseTypeConverterRegistry implements TypeConverterRegistry {
                 typeMapping.put(key, typeConverter);
             }
         }
-
-
     }
 
     @Override
@@ -131,7 +129,6 @@ public class BaseTypeConverterRegistry implements TypeConverterRegistry {
             typeMapping.remove(key);
         }
         return converter != null;
-
     }
 
     @Override public boolean removeTypeConverter(String targetType, String sourceType) {
