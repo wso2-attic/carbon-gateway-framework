@@ -60,6 +60,8 @@
     </dependencies>
 
     <properties>
+        <bundle.activator>org.wso2.carbon.gateway.converters.xmltojson.internal.Activator
+        </bundle.activator>
         <export.package>
             org.wso2.carbon.gateway.converters.xmltojson,
         </export.package>
@@ -69,7 +71,7 @@
             org.sample.dsl.*;version="1.0.0",
             org.wso2.carbon.gateway.core.config.dsl.internal.*,
             org.wso2.carbon.gateway.core.*,
-            org.slf4j.*;version="${slf4j.logging.package.import.version.range}"
+            org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
             org.wso2.carbon.messaging
         </import.package>
         <osgi.framework.import.version.range>[1.8.0, 2.0.0)</osgi.framework.import.version.range>

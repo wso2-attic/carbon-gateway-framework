@@ -60,6 +60,8 @@
     </dependencies>
 
     <properties>
+        <bundle.activator>org.wso2.carbon.gateway.converters.jsontoxml.internal.Activator
+        </bundle.activator>
         <export.package>
             org.wso2.carbon.gateway.converters.jsontoxml,
         </export.package>
@@ -74,5 +76,4 @@
         </import.package>
         <osgi.framework.import.version.range>[1.8.0, 2.0.0)</osgi.framework.import.version.range>
     </properties>
-
 </project>
