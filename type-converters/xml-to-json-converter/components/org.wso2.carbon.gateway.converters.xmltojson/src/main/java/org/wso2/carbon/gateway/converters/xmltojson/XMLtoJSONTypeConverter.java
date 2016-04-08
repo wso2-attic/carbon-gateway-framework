@@ -98,4 +98,9 @@ public class XMLtoJSONTypeConverter implements TypeConverter {
     @Override public String getTargetType() {
         return MIMEType.JSON;
     }
+
+    public String toString() {
+        return getClass().getCanonicalName() + ": " + "converts XML data to JSON data";
+    }
+
 }
