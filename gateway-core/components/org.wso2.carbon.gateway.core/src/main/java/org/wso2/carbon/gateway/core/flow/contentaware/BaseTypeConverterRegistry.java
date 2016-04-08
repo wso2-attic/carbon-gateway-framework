@@ -133,8 +133,7 @@ public class BaseTypeConverterRegistry implements TypeConverterRegistry {
         return converter != null;
     }
 
-    @Override
-    public boolean removeTypeConverter(String targetType, String sourceType) {
+    @Override public boolean removeTypeConverter(String targetType, String sourceType) {
         log.trace("Removing type converter from: {} to: {}", sourceType, targetType);
         TypeMapper key = new TypeMapper(targetType, sourceType);
         TypeConverter converter = typeMapping.remove(key);

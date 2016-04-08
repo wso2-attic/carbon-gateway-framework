@@ -23,7 +23,9 @@ import de.odysseus.staxon.json.JsonXMLConfigBuilder;
 import de.odysseus.staxon.json.JsonXMLOutputFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.gateway.core.flow.contentaware.MIMEType;
 import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.AbstractTypeConverter;
+import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConverter;
 import org.wso2.carbon.gateway.core.flow.contentaware.exceptions.TypeConversionException;
 
 import java.io.ByteArrayInputStream;
@@ -45,7 +47,7 @@ import javax.xml.transform.stax.StAXSource;
 /**
  * This converts XML to JSON input stream
  */
-public class XMLtoJSONTypeConverter extends AbstractTypeConverter {
+public class XMLtoJSONTypeConverter implements TypeConverter {
 
     @Override
     public InputStream convert(InputStream inputStream) throws TypeConversionException, IOException {
@@ -83,5 +85,17 @@ public class XMLtoJSONTypeConverter extends AbstractTypeConverter {
         }
 
         return results;
+    }
+
+    @Override public <T> T convert(Object anyValue) throws TypeConversionException {
+        return null;
+    }
+
+    @Override public String getSourceType() {
+        return MIMEType.XML;
+    }
+
+    @Override public String getTargetType() {
+        return MIMEType.JSON;
     }
 }

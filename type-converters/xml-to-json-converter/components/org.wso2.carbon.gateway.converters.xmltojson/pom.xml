@@ -65,7 +65,7 @@
         <private.package>org.wso2.carbon.gateway.converters.xmltojson.internal</private.package>
         <export.package>
             !org.wso2.carbon.gateway.converters.xmltojson.internal,
-            org.wso2.carbon.gateway.converters.xmltojson,
+            org.wso2.carbon.gateway.converters.xmltojson
         </export.package>
         <import.package>
             org.wso2.carbon.kernel.startupresolver.*;version="${carbon.kernel.package.import.version.range}",
@@ -74,7 +74,8 @@
             org.wso2.carbon.gateway.core.config.dsl.internal.*,
             org.wso2.carbon.gateway.core.*,
             org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
-            org.wso2.carbon.messaging
+            org.wso2.carbon.messaging.*,
+            javax.xml.*
         </import.package>
         <osgi.framework.import.version.range>[1.8.0, 2.0.0)</osgi.framework.import.version.range>
     </properties>

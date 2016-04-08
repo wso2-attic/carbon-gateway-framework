@@ -23,7 +23,10 @@ import de.odysseus.staxon.json.JsonXMLInputFactory;
 import de.odysseus.staxon.xml.util.PrettyXMLEventWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.gateway.core.flow.contentaware.MIMEType;
 import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.AbstractTypeConverter;
+import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConverter;
+import org.wso2.carbon.gateway.core.flow.contentaware.exceptions.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -68,12 +71,17 @@ public class JSONtoXMLConverter extends AbstractTypeConverter {
         return new ByteArrayInputStream(xml);
     }
 
-    public String getSourceType() {
-        return "application/json";
+    @Override public <T> T convert(Object anyValue)
+            throws org.wso2.carbon.gateway.core.flow.contentaware.exceptions.TypeConversionException {
+        return null;
     }
 
-    public String getTargetType() {
-        return "application/xml";
+    @Override public String getSourceType() {
+        return MIMEType.JSON;
+    }
+
+    @Override public String getTargetType() {
+        return MIMEType.XML;
     }
 
     public String toString() {
