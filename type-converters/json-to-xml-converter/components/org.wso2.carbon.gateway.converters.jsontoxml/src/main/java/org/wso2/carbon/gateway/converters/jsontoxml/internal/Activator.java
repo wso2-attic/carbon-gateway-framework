@@ -20,6 +20,8 @@ package org.wso2.carbon.gateway.converters.jsontoxml.internal;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.converters.jsontoxml.JSONtoXMLConverter;
 import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConverter;
 
@@ -27,7 +29,10 @@ import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConver
  * OSGi BundleActivator of the type converter.
  */
 public class Activator implements BundleActivator {
+    private static final Logger log = LoggerFactory.getLogger(Activator.class);
+
     @Override public void start(BundleContext bundleContext) throws Exception {
+        log.info("Add JSONtoXMLConverter");
         bundleContext.registerService(TypeConverter.class, new JSONtoXMLConverter(), null);
     }
 

@@ -46,7 +46,7 @@ public class BaseTypeConverterRegistry implements TypeConverterRegistry {
     protected final Map<TypeMapper, TypeConverter> typeMapping = new HashMap<>();
 
     private BaseTypeConverterRegistry() {
-        File convertersFile;
+        /*File convertersFile;
         try {
             String carbonHome = System.getProperty("carbon.home");
             convertersFile = new File(carbonHome + File.separator + "conf" + File.separator + "content-aware-mediation"
@@ -88,7 +88,7 @@ public class BaseTypeConverterRegistry implements TypeConverterRegistry {
             inputStream.close();
         } catch (IOException e) {
             log.error("File not found", e);
-        }
+        }*/
     }
 
     public static synchronized BaseTypeConverterRegistry getInstance() {
