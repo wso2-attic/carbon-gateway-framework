@@ -46,49 +46,49 @@ public class BaseTypeConverterRegistry implements TypeConverterRegistry {
     protected final Map<TypeMapper, TypeConverter> typeMapping = new HashMap<>();
 
     private BaseTypeConverterRegistry() {
-        File convertersFile;
-        try {
-            String carbonHome = System.getProperty("carbon.home");
-            convertersFile = new File(carbonHome + File.separator + "conf" + File.separator + "content-aware-mediation"
-                                        + File.separator + "type-converters.yml");
-
-            InputStream inputStream = new FileInputStream(convertersFile);
-            Yaml yaml = new Yaml();
-
-            Map<String, Object> rootMap = (Map<String, Object>) yaml.load(inputStream);
-            List<Map<String, String>> convertersList = (List<Map<String, String>>)
-                                                            rootMap.get("converterConfigurations");
-
-            convertersList.forEach(converterEntry -> {
-                File file = new File(System.getProperty("carbon.home") + File.separator + "deployment"
-                            + File.separator + "type-converters" + File.separator + converterEntry.get("artifactId"));
-                URL url;
-
-                ClassLoader loader;
-                Class clazz;
-
-                try {
-                    url = file.toURI().toURL();
-                    loader = URLClassLoader.newInstance(new URL[]{url}, getClass().getClassLoader());
-                    clazz = loader.loadClass(converterEntry.get("converterClass"));
-                    TypeMapper mapper = new TypeMapper(converterEntry.get("to"), converterEntry.get("from"));
-                    typeMapping.put(mapper, (TypeConverter) clazz.newInstance());
-                    log.info(typeMapping.toString());
-                } catch (MalformedURLException e) {
-                    log.error("URL of the artifact not valid", e);
-                } catch (ClassNotFoundException e) {
-                    log.error("Specified converter not found: " + converterEntry.get("converterClass"));
-                } catch (InstantiationException e) {
-                    log.error("Specified class cannot be instantiated: " + converterEntry.get("converterClass"));
-                } catch (IllegalAccessException e) {
-                    log.error("Specified class cannot be accessed: " + converterEntry.get("converterClass"));
-                }
-            });
-
-            inputStream.close();
-        } catch (IOException e) {
-            log.error("File not found", e);
-        }
+//        File convertersFile;
+//        try {
+//            String carbonHome = System.getProperty("carbon.home");
+//            convertersFile = new File(carbonHome + File.separator + "conf" + File.separator + "content-aware-mediation"
+//                                        + File.separator + "type-converters.yml");
+//
+//            InputStream inputStream = new FileInputStream(convertersFile);
+//            Yaml yaml = new Yaml();
+//
+//            Map<String, Object> rootMap = (Map<String, Object>) yaml.load(inputStream);
+//            List<Map<String, String>> convertersList = (List<Map<String, String>>)
+//                                                            rootMap.get("converterConfigurations");
+//
+//            convertersList.forEach(converterEntry -> {
+//                File file = new File(System.getProperty("carbon.home") + File.separator + "deployment"
+//                            + File.separator + "type-converters" + File.separator + converterEntry.get("artifactId"));
+//                URL url;
+//
+//                ClassLoader loader;
+//                Class clazz;
+//
+//                try {
+//                    url = file.toURI().toURL();
+//                    loader = URLClassLoader.newInstance(new URL[]{url}, getClass().getClassLoader());
+//                    clazz = loader.loadClass(converterEntry.get("converterClass"));
+//                    TypeMapper mapper = new TypeMapper(converterEntry.get("to"), converterEntry.get("from"));
+//                    typeMapping.put(mapper, (TypeConverter) clazz.newInstance());
+//                    log.info(typeMapping.toString());
+//                } catch (MalformedURLException e) {
+//                    log.error("URL of the artifact not valid", e);
+//                } catch (ClassNotFoundException e) {
+//                    log.error("Specified converter not found: " + converterEntry.get("converterClass"));
+//                } catch (InstantiationException e) {
+//                    log.error("Specified class cannot be instantiated: " + converterEntry.get("converterClass"));
+//                } catch (IllegalAccessException e) {
+//                    log.error("Specified class cannot be accessed: " + converterEntry.get("converterClass"));
+//                }
+//            });
+//
+//            inputStream.close();
+//        } catch (IOException e) {
+//            log.error("File not found", e);
+//        }
     }
 
     public static synchronized BaseTypeConverterRegistry getInstance() {
@@ -112,7 +112,7 @@ public class BaseTypeConverterRegistry implements TypeConverterRegistry {
 
     @Override
     public void addTypeConverter(String targetType, String sourceType, TypeConverter typeConverter) {
-        log.trace("Adding type converter: {}", typeConverter);
+        log.info("Adding type converter: {}", typeConverter);
         TypeMapper key = new TypeMapper(targetType, sourceType);
         TypeConverter converter = typeMapping.get(key);
         if (typeConverter != converter) {
@@ -133,7 +133,8 @@ public class BaseTypeConverterRegistry implements TypeConverterRegistry {
         return converter != null;
     }
 
-    @Override public boolean removeTypeConverter(String targetType, String sourceType) {
+    @Override
+    public boolean removeTypeConverter(String targetType, String sourceType) {
         log.trace("Removing type converter from: {} to: {}", sourceType, targetType);
         TypeMapper key = new TypeMapper(targetType, sourceType);
         TypeConverter converter = typeMapping.remove(key);

@@ -27,11 +27,13 @@ import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConver
  * OSGi BundleActivator of the type converter.
  */
 public class Activator implements BundleActivator {
-    @Override public void start(BundleContext bundleContext) throws Exception {
+    @Override
+    public void start(BundleContext bundleContext) throws Exception {
         bundleContext.registerService(TypeConverter.class, new XMLtoJSONTypeConverter(), null);
     }
 
-    @Override public void stop(BundleContext bundleContext) throws Exception {
+    @Override
+    public void stop(BundleContext bundleContext) throws Exception {
 
     }
 }

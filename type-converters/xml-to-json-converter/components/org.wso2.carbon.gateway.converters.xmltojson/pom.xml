@@ -62,7 +62,9 @@
     <properties>
         <bundle.activator>org.wso2.carbon.gateway.converters.xmltojson.internal.Activator
         </bundle.activator>
+        <private.package>org.wso2.carbon.gateway.converters.xmltojson.internal</private.package>
         <export.package>
+            !org.wso2.carbon.gateway.converters.xmltojson.internal,
             org.wso2.carbon.gateway.converters.xmltojson,
         </export.package>
         <import.package>

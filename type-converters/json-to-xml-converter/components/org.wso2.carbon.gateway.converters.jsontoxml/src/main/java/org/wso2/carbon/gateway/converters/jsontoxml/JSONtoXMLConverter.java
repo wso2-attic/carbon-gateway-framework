@@ -68,6 +68,14 @@ public class JSONtoXMLConverter extends AbstractTypeConverter {
         return new ByteArrayInputStream(xml);
     }
 
+    public String getSourceType() {
+        return "application/json";
+    }
+
+    public String getTargetType() {
+        return "application/xml";
+    }
+
     public String toString() {
         return getClass().getCanonicalName() + ": " + "converts JSON data to XML data";
     }

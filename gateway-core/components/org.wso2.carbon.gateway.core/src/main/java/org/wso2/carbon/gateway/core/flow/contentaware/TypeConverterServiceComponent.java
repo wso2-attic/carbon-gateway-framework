@@ -22,6 +22,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConverter;
 
 /**
@@ -32,6 +34,7 @@ import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConver
         immediate = true)
 
 public class TypeConverterServiceComponent {
+    private final static Logger log = LoggerFactory.getLogger(TypeConverterServiceComponent.class);
 
     @Reference(
             name = "TypeConverter-Service",
@@ -41,6 +44,7 @@ public class TypeConverterServiceComponent {
             unbind = "removeTypeConverter")
 
     protected void addTypeConverter(TypeConverter typeConverter) {
+        log.info(typeConverter.toString());
         BaseTypeConverterRegistry.getInstance()
                 .addTypeConverter(typeConverter.getTargetType(), typeConverter.getSourceType(), typeConverter);
     }
