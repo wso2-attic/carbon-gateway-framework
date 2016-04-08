@@ -17,7 +17,6 @@
  */
 package org.wso2.carbon.gateway.core.config.dsl.external.wuml;
 
-
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.wso2.carbon.gateway.core.config.Parameter;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
@@ -36,6 +35,8 @@ import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
 import org.wso2.carbon.gateway.core.outbound.OutboundEPProviderRegistry;
 import org.wso2.carbon.gateway.core.outbound.OutboundEndpoint;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
@@ -44,11 +45,15 @@ import java.util.regex.Pattern;
  */
 public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
+    public static final String INBOUND = "INBOUND";
+    public static final String OUTBOUND = "OUTBOUND";
+    private static final String DOUBLECOLON = "::";
     WUMLConfigurationBuilder.IntegrationFlow integrationFlow;
     Stack<String> pipelineStack = new Stack<String>();
     Stack<FilterMediator> filterMediatorStack = new Stack<FilterMediator>();
     boolean ifMultiThenBlockStarted = false;
     boolean ifElseBlockStarted = false;
+    Map<String, String> identifierTypeMap = new HashMap<>();
 
     public WUMLBaseListenerImpl() {
         this.integrationFlow = new WUMLConfigurationBuilder.IntegrationFlow("default");
@@ -103,6 +108,7 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
     @Override
     public void exitInboundEndpointDefStatement(WUMLParser.InboundEndpointDefStatementContext ctx) {
+        identifierTypeMap.put(ctx.IDENTIFIER().getText(), INBOUND);
         String protocolName = StringParserUtil.getValueWithinDoubleQuotes(ctx.inboundEndpointDef().
                 PROTOCOLDEF().getText());
 
@@ -132,8 +138,8 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     }
 
     @Override
-    public void exitOutboundEndpointDefStatement(
-            WUMLParser.OutboundEndpointDefStatementContext ctx) {
+    public void exitOutboundEndpointDefStatement(WUMLParser.OutboundEndpointDefStatementContext ctx) {
+        identifierTypeMap.put(ctx.IDENTIFIER().getText(), OUTBOUND);
         String protocolName = StringParserUtil.getValueWithinDoubleQuotes(ctx.outboundEndpointDef().
                 PROTOCOLDEF().getText());
 
@@ -147,8 +153,8 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
             parameterHolder.addParameter(new Parameter(key, value));
         }
 
-        OutboundEndpoint outboundEndpoint =
-                OutboundEPProviderRegistry.getInstance().getProvider(protocolName).getEndpoint();
+        OutboundEndpoint outboundEndpoint = OutboundEPProviderRegistry.getInstance().getProvider(protocolName)
+                .getEndpoint();
         outboundEndpoint.setName(ctx.IDENTIFIER().getText());
         outboundEndpoint.setParameters(parameterHolder);
 
@@ -182,9 +188,10 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     }
 
     @Override
-    public void exitMediatorDef(WUMLParser.MediatorDefContext ctx) {
-        //String mediatorName = ctx.MEDIATORNAME().getText();
-        String mediatorName = ctx.IDENTIFIER().getText();
+    public void exitMediatorStatementDef(WUMLParser.MediatorStatementDefContext ctx) {
+        String mediatorDefinition = ctx.MEDIATORDEFINITIONX().getText();
+        String mediatorName = mediatorDefinition.split(DOUBLECOLON)[1];
+
         String configurations = StringParserUtil.getValueWithinDoubleQuotes(ctx.ARGUMENTLISTDEF().getText());
         Mediator mediator = MediatorProviderRegistry.getInstance().getMediator(mediatorName);
 
@@ -202,7 +209,7 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         } else {
             integrationFlow.getGWConfigHolder().getPipeline(pipelineStack.peek()).addMediator(mediator);
         }
-        super.exitMediatorDef(ctx);
+        super.exitMediatorStatementDef(ctx);
     }
 
     @Override
@@ -213,66 +220,6 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     @Override
     public void exitRoutingStatement(WUMLParser.RoutingStatementContext ctx) {
         super.exitRoutingStatement(ctx);
-    }
-
-    @Override
-    public void exitInvokeFromSource(WUMLParser.InvokeFromSourceContext ctx) {
-        //String inbountEndpointName = ctx.INBOUNDENDPOINTNAME().getText();
-        String pipelineName = ctx.IDENTIFIER(1).getText();
-        integrationFlow.getGWConfigHolder().getInboundEndpoint().setPipeline(pipelineName);
-        pipelineStack.push(pipelineName);
-        //activePipeline = pipelineName;
-        super.exitInvokeFromSource(ctx);
-    }
-
-    @Override
-    public void exitInvokeToTarget(WUMLParser.InvokeToTargetContext ctx) {
-        Mediator mediator = MediatorProviderRegistry.getInstance().getMediator("call");
-
-        ParameterHolder parameterHolder = new ParameterHolder();
-        parameterHolder.addParameter(new Parameter("endpointKey", ctx.IDENTIFIER(1).getText()));
-
-        mediator.setParameters(parameterHolder);
-        if (ifMultiThenBlockStarted) {
-            filterMediatorStack.peek().addThenMediator(mediator);
-
-        } else if (ifElseBlockStarted) {
-            filterMediatorStack.peek().addOtherwiseMediator(mediator);
-
-        } else {
-//            String mediatorName = StringParserUtil.getValueWithinDoubleQuotes(ctx.MEDIATORNAMESTRINGX().getText());
-//            String configurations = StringParserUtil.getValueWithinDoubleQuotes(ctx.CONFIGSDEF().getText());
-//            Mediator mediator = MediatorFactory.getMediator(MediatorType.valueOf(mediatorName), configurations);
-            integrationFlow.getGWConfigHolder().getPipeline(pipelineStack.peek()).addMediator(mediator);
-        }
-        pipelineStack.pop();
-        super.exitInvokeToTarget(ctx);
-    }
-
-    @Override
-    public void exitInvokeFromTarget(WUMLParser.InvokeFromTargetContext ctx) {
-        String pipelineName = ctx.IDENTIFIER(1).getText();
-        pipelineStack.push(pipelineName);
-        super.exitInvokeFromTarget(ctx);
-    }
-
-    @Override
-    public void exitInvokeToSource(WUMLParser.InvokeToSourceContext ctx) {
-        Mediator mediator = MediatorProviderRegistry.getInstance().getMediator("respond");
-        if (ifMultiThenBlockStarted) {
-            filterMediatorStack.peek().addThenMediator(mediator);
-
-        } else if (ifElseBlockStarted) {
-            filterMediatorStack.peek().addOtherwiseMediator(mediator);
-
-        } else {
-//            String mediatorName = StringParserUtil.getValueWithinDoubleQuotes(ctx.MEDIATORNAMESTRINGX().getText());
-//            String configurations = StringParserUtil.getValueWithinDoubleQuotes(ctx.CONFIGSDEF().getText());
-//            Mediator mediator = MediatorFactory.getMediator(MediatorType.valueOf(mediatorName), configurations);
-            integrationFlow.getGWConfigHolder().getPipeline(pipelineStack.peek()).addMediator(mediator);
-        }
-        pipelineStack.pop();
-        super.exitInvokeToSource(ctx);
     }
 
     @Override
@@ -317,8 +264,7 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
             }
         }
 
-        Condition condition =
-                new Condition(source, Pattern.compile(conditionValue));
+        Condition condition = new Condition(source, Pattern.compile(conditionValue));
 
         FilterMediator filterMediator = new FilterMediator(condition);
         integrationFlow.getGWConfigHolder().getPipeline(pipelineStack.peek()).addMediator(filterMediator);
@@ -372,4 +318,74 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         super.exitExpression(ctx);
     }
 
+    @Override
+    public void exitRoutingStatementDef(WUMLParser.RoutingStatementDefContext ctx) {
+        String firstIdentifier = ctx.IDENTIFIER(0).getText();
+        String secondIdentifier = ctx.IDENTIFIER(1).getText();
+        String identifierType;
+
+        String firstType = identifierTypeMap.get(firstIdentifier);
+        if (firstType != null) {
+            if (INBOUND.equals(firstType)) {
+                identifierType = "invokeFromSource";
+            } else {
+                identifierType = "invokeFromTarget";
+            }
+
+        } else {
+            String secondType = identifierTypeMap.get(secondIdentifier);
+            if (INBOUND.equals(secondType)) {
+                identifierType = "invokeToSource";
+            } else {
+                identifierType = "invokeToTarget";
+            }
+        }
+
+        String pipelineName = ctx.IDENTIFIER(1).getText();
+        switch (identifierType) {
+        case "invokeFromSource":
+            integrationFlow.getGWConfigHolder().getInboundEndpoint().setPipeline(pipelineName);
+            pipelineStack.push(pipelineName);
+            break;
+        case "invokeFromTarget":
+            pipelineStack.push(pipelineName);
+            break;
+        case "invokeToSource":
+            Mediator respondMediator = MediatorProviderRegistry.getInstance().getMediator("respond");
+            if (ifMultiThenBlockStarted) {
+                filterMediatorStack.peek().addThenMediator(respondMediator);
+
+            } else if (ifElseBlockStarted) {
+                filterMediatorStack.peek().addOtherwiseMediator(respondMediator);
+
+            } else {
+                integrationFlow.getGWConfigHolder().getPipeline(pipelineStack.peek()).addMediator(respondMediator);
+            }
+            pipelineStack.pop();
+            break;
+        case "invokeToTarget":
+            Mediator callMediator = MediatorProviderRegistry.getInstance().getMediator("call");
+
+            ParameterHolder parameterHolder = new ParameterHolder();
+            parameterHolder.addParameter(new Parameter("endpointKey", ctx.IDENTIFIER(1).getText()));
+
+            callMediator.setParameters(parameterHolder);
+            if (ifMultiThenBlockStarted) {
+                filterMediatorStack.peek().addThenMediator(callMediator);
+
+            } else if (ifElseBlockStarted) {
+                filterMediatorStack.peek().addOtherwiseMediator(callMediator);
+
+            } else {
+                integrationFlow.getGWConfigHolder().getPipeline(pipelineStack.peek()).addMediator(callMediator);
+            }
+            pipelineStack.pop();
+            break;
+
+        default:
+            break;
+        }
+
+        super.exitRoutingStatementDef(ctx);
+    }
 }
