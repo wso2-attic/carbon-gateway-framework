@@ -25,8 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.flow.contentaware.MIMEType;
 import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.AbstractTypeConverter;
-import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConverter;
-import org.wso2.carbon.gateway.core.flow.contentaware.exceptions.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

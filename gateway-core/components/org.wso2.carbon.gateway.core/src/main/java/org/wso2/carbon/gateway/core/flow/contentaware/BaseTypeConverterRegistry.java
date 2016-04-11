@@ -22,17 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConverter;
 import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConverterRegistry;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.HashMap;
-import java.util.List;
+
 import java.util.Map;
 
 /**
@@ -46,49 +38,6 @@ public class BaseTypeConverterRegistry implements TypeConverterRegistry {
     protected final Map<TypeMapper, TypeConverter> typeMapping = new HashMap<>();
 
     private BaseTypeConverterRegistry() {
-//        File convertersFile;
-//        try {
-//            String carbonHome = System.getProperty("carbon.home");
-//            convertersFile = new File(carbonHome + File.separator + "conf" + File.separator + "content-aware-mediation"
-//                                        + File.separator + "type-converters.yml");
-//
-//            InputStream inputStream = new FileInputStream(convertersFile);
-//            Yaml yaml = new Yaml();
-//
-//            Map<String, Object> rootMap = (Map<String, Object>) yaml.load(inputStream);
-//            List<Map<String, String>> convertersList = (List<Map<String, String>>)
-//                                                            rootMap.get("converterConfigurations");
-//
-//            convertersList.forEach(converterEntry -> {
-//                File file = new File(System.getProperty("carbon.home") + File.separator + "deployment"
-//                            + File.separator + "type-converters" + File.separator + converterEntry.get("artifactId"));
-//                URL url;
-//
-//                ClassLoader loader;
-//                Class clazz;
-//
-//                try {
-//                    url = file.toURI().toURL();
-//                    loader = URLClassLoader.newInstance(new URL[]{url}, getClass().getClassLoader());
-//                    clazz = loader.loadClass(converterEntry.get("converterClass"));
-//                    TypeMapper mapper = new TypeMapper(converterEntry.get("to"), converterEntry.get("from"));
-//                    typeMapping.put(mapper, (TypeConverter) clazz.newInstance());
-//                    log.info(typeMapping.toString());
-//                } catch (MalformedURLException e) {
-//                    log.error("URL of the artifact not valid", e);
-//                } catch (ClassNotFoundException e) {
-//                    log.error("Specified converter not found: " + converterEntry.get("converterClass"));
-//                } catch (InstantiationException e) {
-//                    log.error("Specified class cannot be instantiated: " + converterEntry.get("converterClass"));
-//                } catch (IllegalAccessException e) {
-//                    log.error("Specified class cannot be accessed: " + converterEntry.get("converterClass"));
-//                }
-//            });
-//
-//            inputStream.close();
-//        } catch (IOException e) {
-//            log.error("File not found", e);
-//        }
     }
 
     public static synchronized BaseTypeConverterRegistry getInstance() {
@@ -98,8 +47,7 @@ public class BaseTypeConverterRegistry implements TypeConverterRegistry {
         return baseTypeConverterRegistry;
     }
 
-    @Override
-    public void addTypeConverter(Class<?> toType, Class<?> fromType, TypeConverter typeConverter) {
+    @Override public void addTypeConverter(Class<?> toType, Class<?> fromType, TypeConverter typeConverter) {
         log.trace("Adding type converter: {}", typeConverter);
         TypeMapper key = new TypeMapper(toType.getName(), fromType.getName());
         TypeConverter converter = typeMapping.get(key);
@@ -110,8 +58,7 @@ public class BaseTypeConverterRegistry implements TypeConverterRegistry {
         }
     }
 
-    @Override
-    public void addTypeConverter(String targetType, String sourceType, TypeConverter typeConverter) {
+    @Override public void addTypeConverter(String targetType, String sourceType, TypeConverter typeConverter) {
         log.info("Adding type converter: {}", typeConverter);
         TypeMapper key = new TypeMapper(targetType, sourceType);
         TypeConverter converter = typeMapping.get(key);
@@ -122,8 +69,7 @@ public class BaseTypeConverterRegistry implements TypeConverterRegistry {
         }
     }
 
-    @Override
-    public boolean removeTypeConverter(Class<?> toType, Class<?> fromType) {
+    @Override public boolean removeTypeConverter(Class<?> toType, Class<?> fromType) {
         log.trace("Removing type converter from: {} to: {}", fromType, toType);
         TypeMapper key = new TypeMapper(toType.getName(), fromType.getName());
         TypeConverter converter = typeMapping.remove(key);
@@ -153,8 +99,7 @@ public class BaseTypeConverterRegistry implements TypeConverterRegistry {
         return typeMapping.get(key);
     }
 
-    @Override
-    public TypeConverter lookup(String targetType, String sourceType) {
+    @Override public TypeConverter lookup(String targetType, String sourceType) {
         return typeMapping.get(new TypeMapper(targetType, sourceType));
     }
 
