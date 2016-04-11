@@ -20,6 +20,8 @@ package org.wso2.carbon.gateway.core.config;
 
 
 import org.wso2.carbon.gateway.core.flow.Pipeline;
+import org.wso2.carbon.gateway.core.flow.contentaware.BaseTypeConverterRegistry;
+import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConverterRegistry;
 import org.wso2.carbon.gateway.core.inbound.InboundEPDeployer;
 import org.wso2.carbon.gateway.core.inbound.InboundEPProviderRegistry;
 import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
@@ -182,6 +184,10 @@ public class ConfigRegistry {
 
     public void unregisterOutboundEndpoint(OutboundEndpoint outboundEndpoint) {
         outBoundEndpointMap.remove(outboundEndpoint.getName());
+    }
+
+    public TypeConverterRegistry getTypeConverterRegistry() {
+        return BaseTypeConverterRegistry.getInstance();
     }
 
 }
