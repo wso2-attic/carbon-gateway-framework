@@ -20,8 +20,6 @@ package org.wso2.carbon.gateway.core.flow.contentaware.exceptions;
 
 /**
  * Exception when failing during type conversion.
- *
- * @version
  */
 public class TypeConversionException extends Exception {
 
@@ -65,9 +63,10 @@ public class TypeConversionException extends Exception {
      * Returns an error message for type conversion failed.
      */
     public static String createMessage(Object value, Class<?> type, Throwable cause) {
-        return "Error during type conversion from type: " + (value != null ? value.getClass().getCanonicalName() : null)
-                + " to the required type: " + type.getCanonicalName() + " with value " + value + " due " + cause
-                .getMessage();
+        return "Error during type conversion from type: " +
+               (value != null ? value.getClass().getCanonicalName() : null) +
+               " to the required type: " + type.getCanonicalName() +
+               " with value " + value + " due " + cause.getMessage();
     }
 
 }

@@ -31,30 +31,33 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * A class to decouple the mediators from the TypeConverterRegsitry and to handle
+ * A class to decouple the mediators from the TypeConverterRegistry and to handle
  * the conversions.
  */
 public class ConversionManager {
     private static final Logger log = LoggerFactory.getLogger(ConversionManager.class);
-    private static ConversionManager manager;
 
-    public static synchronized ConversionManager getInstance() {
-        if (manager == null) {
-            manager = new ConversionManager();
-        }
+    private static ConversionManager instance = new ConversionManager();
 
-        return manager;
+    public static ConversionManager getInstance() {
+        return instance;
     }
 
+    private ConversionManager() {};
+
     public InputStream convertTo(CarbonMessage cMsg, String sourceType, String targetType) {
+
         TypeConverter converter = ConfigRegistry.getInstance()
                 .getTypeConverterRegistry().lookup(targetType, sourceType);
 
         if (converter == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("No type converted found for Source: " + sourceType + " Target : " + targetType);
+            }
             return null;
         }
 
-        //aggregation and creating inputStream
+        //Aggregation and creating inputStream
         BlockingQueue<ByteBuffer> contentBuf = aggregateContent(cMsg);
         InputStream inputStream = new ByteBufferBackedInputStream(contentBuf);
         InputStream processedStream = null;
@@ -65,6 +68,8 @@ public class ConversionManager {
             log.error("Error in converting from: " + sourceType + " to: " + targetType);
         } catch (IOException e) {
             log.error("Error " + e);
+        } finally {
+            //TODO: do we need to close the input stream here ?
         }
         return processedStream;
     }
@@ -74,7 +79,7 @@ public class ConversionManager {
         try {
             //Check whether the message is fully read
             while (!msg.isEndOfMsgAdded()) {
-                Thread.sleep(10);
+                Thread.sleep(10);               // TODO: why thread sleeps ?
             }
             //Get a clone of content chunk queue from the pipe
             BlockingQueue<ByteBuffer> clonedContent = new LinkedBlockingQueue<>(msg.getFullMessageBody());

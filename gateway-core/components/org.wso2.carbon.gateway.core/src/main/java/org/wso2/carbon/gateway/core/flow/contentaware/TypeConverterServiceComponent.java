@@ -44,7 +44,9 @@ public class TypeConverterServiceComponent {
             unbind = "removeTypeConverter")
 
     protected void addTypeConverter(TypeConverter typeConverter) {
-        log.info(typeConverter.toString());
+        if (log.isDebugEnabled()) {
+            log.debug(typeConverter.toString());
+        }
         BaseTypeConverterRegistry.getInstance()
                 .addTypeConverter(typeConverter.getTargetType(), typeConverter.getSourceType(), typeConverter);
     }

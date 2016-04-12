@@ -21,13 +21,12 @@ package org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext;
 
 /**
  * Registry for type converters.
- *
  */
 public interface TypeConverterRegistry {
 
     /**
      * Registers a new type converter.
-     * <p/>
+     * <p>
      *
      * @param toType        the type to convert to
      * @param fromType      the type to convert from
@@ -37,10 +36,10 @@ public interface TypeConverterRegistry {
 
     /**
      * Registers a new type converter.
-     * <p/>
+     * <p>
      *
-     * @param targetType        the type to convert to
-     * @param sourceType      the type to convert from
+     * @param targetType    the type to convert to
+     * @param sourceType    the type to convert from
      * @param typeConverter the type converter to use
      */
     void addTypeConverter(String targetType, String sourceType, TypeConverter typeConverter);
@@ -48,8 +47,8 @@ public interface TypeConverterRegistry {
     /**
      * Removes the type converter
      *
-     * @param toType        the type to convert to
-     * @param fromType      the type to convert from
+     * @param toType   the type to convert to
+     * @param fromType the type to convert from
      * @return <tt>true</tt> if removed, <tt>false</tt> if the type converter didn't exist
      */
     boolean removeTypeConverter(Class<?> toType, Class<?> fromType);
@@ -57,8 +56,8 @@ public interface TypeConverterRegistry {
     /**
      * Removes the type converter
      *
-     * @param targetType        the type to convert to
-     * @param sourceType      the type to convert from
+     * @param targetType the type to convert to
+     * @param sourceType the type to convert from
      * @return <tt>true</tt> if removed, <tt>false</tt> if the type converter didn't exist
      */
     boolean removeTypeConverter(String targetType, String sourceType);
@@ -66,8 +65,8 @@ public interface TypeConverterRegistry {
     /**
      * Performs a lookup for a given type converter.
      *
-     * @param toType        the type to convert to
-     * @param fromType      the type to convert from
+     * @param toType   the type to convert to
+     * @param fromType the type to convert from
      * @return the type converter or <tt>null</tt> if not found.
      */
     TypeConverter lookup(String toType, String fromType);

@@ -20,8 +20,6 @@ package org.wso2.carbon.gateway.core.flow.contentaware.exceptions;
 
 /**
  * An exception thrown if a value could not be converted to the required type
- *
- * @version
  */
 public class NoTypeConversionAvailableException extends Exception {
 
@@ -71,19 +69,19 @@ public class NoTypeConversionAvailableException extends Exception {
      * Returns an error message for no type converter available.
      */
     public static String createMessage(Object value, Class<?> type) {
-        return "No type converter available to convert from type: " + (value != null ?
-                value.getClass().getCanonicalName() :
-                null) + " to the required type: " + type.getCanonicalName() + " with value " + value;
+        return "No type converter available to convert from type: " +
+               (value != null ? value.getClass().getCanonicalName() : null) +
+               " to the required type: " + type.getCanonicalName() + " with value " + value;
     }
 
     /**
      * Returns an error message for no type converter available with the cause.
      */
     public static String createMessage(Object value, Class<?> type, Throwable cause) {
-        return "Converting Exception when converting from type: " + (value != null ?
-                value.getClass().getCanonicalName() :
-                null) + " to the required type: " + type.getCanonicalName() + " with value " + value
-                + ", which is caused by " + cause;
+        return "Converting Exception when converting from type: " +
+               (value != null ? value.getClass().getCanonicalName() : null) +
+               " to the required type: " + type.getCanonicalName() + " with value " + value +
+               ", which is caused by " + cause;
     }
 }
 
