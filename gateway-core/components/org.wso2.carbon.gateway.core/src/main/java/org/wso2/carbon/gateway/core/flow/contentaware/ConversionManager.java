@@ -77,10 +77,6 @@ public class ConversionManager {
     private BlockingQueue<ByteBuffer> aggregateContent(CarbonMessage msg) {
 
         try {
-            //Check whether the message is fully read
-            while (!msg.isEndOfMsgAdded()) {
-                Thread.sleep(10);               // TODO: why thread sleeps ?
-            }
             //Get a clone of content chunk queue from the pipe
             BlockingQueue<ByteBuffer> clonedContent = new LinkedBlockingQueue<>(msg.getFullMessageBody());
             return clonedContent;
