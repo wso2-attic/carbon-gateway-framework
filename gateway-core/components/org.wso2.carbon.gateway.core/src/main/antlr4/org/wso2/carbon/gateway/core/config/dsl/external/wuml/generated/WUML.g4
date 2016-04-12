@@ -40,9 +40,9 @@ statementList
 
 // Definition of different types of statements
 statement
-    : titleStatement
+    : mediatorStatement
+    | titleStatement
     | participantStatement
-    | mediatorStatement
     | routingStatement
     | parallelStatement
     | ifStatement
@@ -82,7 +82,9 @@ outboundEndpointDefStatement
     : PARTICIPANT WS+ IDENTIFIER WS+ COLON WS+ outboundEndpointDef;
 
 // Definition of a mediator statement
-mediatorStatement : mediatorDef;
+mediatorStatement : mediatorStatementDef;
+
+mediatorStatementDef: MEDIATORDEFINITIONX ARGUMENTLISTDEF;
 
 // Integration Flow constructor statement
 integrationFlowDef: INTEGRATIONFLOWX LPAREN STRINGX RPAREN;
@@ -98,26 +100,10 @@ pipelineDef: PIPELINEX LPAREN COMMENTSTRINGX RPAREN;
 // Outbound Endpoint constructor statement
 outboundEndpointDef: OUTBOUNDENDPOINTX LPAREN PROTOCOLDEF PARAMX* RPAREN;
 
-// Mediator constructor statement
-mediatorDef: IDENTIFIER ARGUMENTLISTDEF WS+ COLON WS+ MEDIATORX;
+routingStatement: routingStatementDef;
 
-
-routingStatement
-    : invokeFromSource
-    | invokeFromTarget
-    | invokeToSource
-    | invokeToTarget
-    ;
-
-invokeFromSource: IDENTIFIER WS+ ARROW1X WS+ IDENTIFIER WS+
+routingStatementDef: IDENTIFIER WS+ ARROWX WS+ IDENTIFIER WS+
                   COMMENTX WS+ COMMENTSTRINGX;
-invokeToTarget: IDENTIFIER WS+ ARROW2X WS+ IDENTIFIER WS+
-                COMMENTX WS+ COMMENTSTRINGX;
-invokeFromTarget: IDENTIFIER WS+ ARROW3X WS+ IDENTIFIER WS+
-                  COMMENTX WS+ COMMENTSTRINGX;
-invokeToSource: IDENTIFIER WS+ ARROW4X WS+ IDENTIFIER WS+
-                COMMENTX WS+ COMMENTSTRINGX;
-
 
 // Message routing statement
 /*
@@ -237,7 +223,7 @@ INBOUNDENDPOINTX: INBOUNDENDPOINT;
 
 PIPELINEX: PIPELINE;
 
-MEDIATORX: MEDIATOR;
+MEDIATORDEFINITIONX: MEDIATORDEFINITION;
 
 OUTBOUNDENDPOINTX: OUTBOUNDENDPOINT;
 
@@ -253,11 +239,7 @@ STRINGX: STRING;
 
 URLSTRINGX: URLSTRING;
 
-ARROW1X: ARROW1;
-ARROW2X: ARROW2;
-ARROW3X: ARROW3;
-ARROW4X: ARROW4;
-
+ARROWX: ARROW;
 
 
 // LEXER: Keywords
@@ -295,11 +277,8 @@ STAR_SYMBOL : '*' ;
 SLASH_SYMBOL : '/' ;
 UNDERSCORE : '-';
 COLON: ':';
-ARROW: '->';
-fragment ARROW1: '=>+';
-fragment ARROW2: '=>>+';
-fragment ARROW3: '=>>-';
-fragment ARROW4: '=>-';
+fragment ARROW: '->';
+fragment MEDIATORDEFINITION: IDENTIFIER COLON COLON IDENTIFIER;
 SINGLEQUOTES: '\'';
 
 // LEXER: miscellaneaous
@@ -363,7 +342,6 @@ fragment HTTP: H T T P;
 fragment PIPELINE: P I P E L I N E;
 fragment PROCESSMESSAGE: P R O C E S S M E S S A G E;
 fragment OUTBOUNDENDPOINT: O U T B O U N D E N D P O I N T ;
-fragment MEDIATOR: M E D I A T O R;
 fragment PROTOCOL: P R O T O C O L;
 fragment PORT: P O R T;
 fragment ENDPOINT: E N D P O I N T;

@@ -25,8 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.flow.contentaware.MIMEType;
 import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.AbstractTypeConverter;
-import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConverter;
-import org.wso2.carbon.gateway.core.flow.contentaware.exceptions.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -48,23 +46,31 @@ public class JSONtoXMLConverter extends AbstractTypeConverter {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         JsonXMLConfig config = new JsonXMLConfigBuilder().multiplePI(false).build();
 
+        XMLEventReader reader = null;
+        XMLEventWriter writer = null;
         try {
-            XMLEventReader reader = new JsonXMLInputFactory(config).createXMLEventReader(input);
-
-            XMLEventWriter writer = XMLOutputFactory.newInstance().createXMLEventWriter(output);
+            reader = new JsonXMLInputFactory(config).createXMLEventReader(input);
+            writer = XMLOutputFactory.newInstance().createXMLEventWriter(output);
             writer = new PrettyXMLEventWriter(writer);
-
             writer.add(reader);
-
-            reader.close();
-            writer.close();
-
-            output.close();
-            input.close();
         } catch (XMLStreamException e) {
             log.error("Error in parsing the XML Stream", e);
-        } catch (IOException e) {
-            log.error("Error in I/O", e);
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (XMLStreamException ignore) {
+            }
+            try {
+                output.close();
+                input.close();
+            } catch (IOException ignore) {
+            }
         }
 
         byte[] xml = output.toByteArray();

@@ -33,7 +33,9 @@ public class Activator implements BundleActivator {
 
     @Override
     public void start(BundleContext bundleContext) throws Exception {
-        log.info("Add JSONtoXMLConverter");
+        if (log.isDebugEnabled()) {
+            log.debug("Activating JSONtoXMLConverter TypeConverter");
+        }
         bundleContext.registerService(TypeConverter.class, new JSONtoXMLConverter(), null);
     }
 

@@ -34,7 +34,7 @@ import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConver
         immediate = true)
 
 public class TypeConverterServiceComponent {
-    private static final Logger log = LoggerFactory.getLogger(TypeConverterServiceComponent.class);
+    private final Logger log = LoggerFactory.getLogger(TypeConverterServiceComponent.class);
 
     @Reference(
             name = "TypeConverter-Service",
@@ -44,7 +44,9 @@ public class TypeConverterServiceComponent {
             unbind = "removeTypeConverter")
 
     protected void addTypeConverter(TypeConverter typeConverter) {
-        log.info(typeConverter.toString());
+        if (log.isDebugEnabled()) {
+            log.debug(typeConverter.toString());
+        }
         BaseTypeConverterRegistry.getInstance()
                 .addTypeConverter(typeConverter.getTargetType(), typeConverter.getSourceType(), typeConverter);
     }

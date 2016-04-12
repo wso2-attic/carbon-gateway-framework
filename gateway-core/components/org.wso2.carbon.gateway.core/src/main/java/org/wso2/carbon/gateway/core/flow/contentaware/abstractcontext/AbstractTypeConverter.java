@@ -27,7 +27,9 @@ import java.io.InputStream;
  * implements the type converter.
  */
 public abstract class AbstractTypeConverter implements TypeConverter {
-    @Override public InputStream convert(InputStream inputStream) throws TypeConversionException, IOException {
+
+    @Override
+    public InputStream convert(InputStream inputStream) throws TypeConversionException, IOException {
         return null;
     }
 

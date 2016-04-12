@@ -26,7 +26,7 @@ public class TypeMapper {
     private final String toType;
     private final String fromType;
 
-    public TypeMapper(String toType , String fromType) {
+    public TypeMapper(String toType, String fromType) {
         this.toType = toType;
         this.fromType = fromType;
     }
@@ -35,7 +35,7 @@ public class TypeMapper {
         if (object instanceof TypeMapper) {
             TypeMapper typeMapper = (TypeMapper) object;
             return this.fromType.equals(typeMapper.fromType)
-                    && this.toType.equals(typeMapper.toType);
+                   && this.toType.equals(typeMapper.toType);
         }
         return false;
     }

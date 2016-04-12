@@ -24,10 +24,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * This implements different type converters
+ * Interface for the Type Converters
  */
 public interface TypeConverter {
-
 
     /**
      * Converts the value to the specified type
