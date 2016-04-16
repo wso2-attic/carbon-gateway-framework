@@ -132,7 +132,8 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
     @Override
     public void exitPipelineDefStatement(WUMLParser.PipelineDefStatementContext ctx) {
-        Pipeline pipeline = new Pipeline(ctx.IDENTIFIER().getText());
+        Pipeline pipeline = new Pipeline(ctx.IDENTIFIER().getText(),
+                integrationFlow.getGWConfigHolder().getGlobalVariables());
         integrationFlow.getGWConfigHolder().addPipeline(pipeline);
         super.exitPipelineDefStatement(ctx);
     }

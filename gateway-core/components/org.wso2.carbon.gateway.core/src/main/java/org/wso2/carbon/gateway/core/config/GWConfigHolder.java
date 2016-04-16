@@ -38,9 +38,11 @@ public class GWConfigHolder {
 
     private Map<String, OutboundEndpoint> outboundEndpoints = new HashMap<>();
 
+    private Map<String, Object> globalVariables = new HashMap<>();
 
     public GWConfigHolder(String name) {
         this.name = name;
+        globalVariables.put("iflowName", name);
     }
 
     public String getName() {
@@ -78,6 +80,10 @@ public class GWConfigHolder {
 
     public OutboundEndpoint getOutboundEndpoint(String name) {
         return outboundEndpoints.get(name);
+    }
+
+    public Map<String, Object> getGlobalVariables() {
+        return globalVariables;
     }
 
     public void addOutboundEndpoint(OutboundEndpoint outboundEndpoint) {

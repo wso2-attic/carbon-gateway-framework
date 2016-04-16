@@ -77,4 +77,6 @@ public interface Mediator {
      * @param parameters Parameters
      */
     void setParameters(ParameterHolder parameters);
+
+    Object getValue(CarbonMessage carbonMessage, String name);
 }

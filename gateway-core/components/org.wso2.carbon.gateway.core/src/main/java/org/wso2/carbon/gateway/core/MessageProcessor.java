@@ -28,6 +28,9 @@ import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.CarbonMessageProcessor;
 import org.wso2.carbon.messaging.TransportSender;
 
+import java.util.Map;
+import java.util.Stack;
+
 /**
  *  Message Processor Implementation for Gateway
  *
@@ -42,6 +45,8 @@ public class MessageProcessor implements CarbonMessageProcessor {
         if (log.isDebugEnabled()) {
             log.debug("Gateway received a message");
         }
+
+        cMsg.setProperty(Constants.VARIABLE_STACK, new Stack<Map<String, Object>>());
 
         String protocol = "http";  //TODO: Take from cMsg
 
