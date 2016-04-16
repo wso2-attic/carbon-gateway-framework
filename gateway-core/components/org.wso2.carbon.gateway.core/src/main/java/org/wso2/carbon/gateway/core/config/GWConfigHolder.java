@@ -42,7 +42,7 @@ public class GWConfigHolder {
 
     public GWConfigHolder(String name) {
         this.name = name;
-        globalVariables.put("iflowName", name); //TODO: demo code, remove
+        globalVariables.put("iflowName", name); //TODO: demo code only, remove
     }
 
     public String getName() {
@@ -53,12 +53,17 @@ public class GWConfigHolder {
         this.name = name;
     }
 
+    public void setGlobalVariables(Map<String, Object> globalVariables) {
+        this.globalVariables = globalVariables;
+    }
+
     public InboundEndpoint getInboundEndpoint() {
         return inboundEndpoint;
     }
 
     public void setInboundEndpoint(
             InboundEndpoint inboundEndpoint) {
+        inboundEndpoint.setGWConfigName(name);
         this.inboundEndpoint = inboundEndpoint;
     }
 

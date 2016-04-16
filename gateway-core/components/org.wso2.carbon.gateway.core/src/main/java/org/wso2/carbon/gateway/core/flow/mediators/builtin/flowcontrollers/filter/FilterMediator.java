@@ -25,6 +25,7 @@ import org.wso2.carbon.gateway.core.flow.FlowControllerCallback;
 import org.wso2.carbon.gateway.core.flow.Mediator;
 import org.wso2.carbon.gateway.core.flow.MediatorCollection;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.evaluator.Evaluator;
+import org.wso2.carbon.gateway.core.util.VariableUtil;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 
@@ -93,10 +94,12 @@ public class FilterMediator extends AbstractFlowController {
 
             if (Evaluator.isHeaderMatched(carbonMessage, source, pattern)) {
                 childThenMediatorList.getFirstMediator().
-                           receive(carbonMessage, new FlowControllerCallback(carbonCallback, this));
+                           receive(carbonMessage, new FlowControllerCallback(carbonCallback, this,
+                                   VariableUtil.getVariableStack(carbonMessage)));
             } else {
                 childOtherwiseMediatorList.getFirstMediator().
-                           receive(carbonMessage, new FlowControllerCallback(carbonCallback, this));
+                           receive(carbonMessage, new FlowControllerCallback(carbonCallback, this,
+                                   VariableUtil.getVariableStack(carbonMessage)));
             }
         }
 

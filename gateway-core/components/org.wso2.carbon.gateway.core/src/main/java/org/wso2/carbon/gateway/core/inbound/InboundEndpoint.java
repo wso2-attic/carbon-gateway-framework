@@ -20,6 +20,7 @@ package org.wso2.carbon.gateway.core.inbound;
 
 import org.wso2.carbon.gateway.core.config.ConfigRegistry;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
+import org.wso2.carbon.gateway.core.util.VariableUtil;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 
@@ -32,8 +33,14 @@ public abstract class InboundEndpoint {
 
     private String pipeline;
 
+    private String gwConfigName;
+
     public String getName() {
         return name;
+    }
+
+    public String getGWConfigName() {
+        return gwConfigName;
     }
 
     public String getPipeline() {
@@ -46,6 +53,10 @@ public abstract class InboundEndpoint {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setGWConfigName(String gwConfigName) {
+        this.gwConfigName = gwConfigName;
     }
 
     /**
@@ -64,12 +75,13 @@ public abstract class InboundEndpoint {
      * @return whether forward processing is successful
      */
     public boolean receive(CarbonMessage cMsg, CarbonCallback callback) {
+        VariableUtil.pushGlobalVariableStack(cMsg,
+                ConfigRegistry.getInstance().getGWConfig(getGWConfigName()).getGlobalVariables());
         return ConfigRegistry.getInstance().getPipeline(getPipeline()).receive(cMsg, callback);
     }
 
     public abstract String getProtocol();
 
     public abstract void setParameters(ParameterHolder parameters);
-
 
 }

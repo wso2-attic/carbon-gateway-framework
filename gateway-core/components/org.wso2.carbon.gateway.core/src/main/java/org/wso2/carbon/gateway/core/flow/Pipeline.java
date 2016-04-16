@@ -27,10 +27,6 @@ import org.wso2.carbon.gateway.core.exception.ErrorHandler;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
-
 /**
  * A Class representing collection of Mediators
  */
@@ -48,34 +44,17 @@ public class Pipeline {
 
     private static final Logger log = LoggerFactory.getLogger(Pipeline.class);
 
-    private Map<String, Object> pipelineVariables;
-
     public Pipeline(String name) {
         this.name = name;
         this.mediators = new MediatorCollection();
-        this.pipelineVariables = new HashMap<>();
     }
 
     public Pipeline(String name, MediatorCollection mediators) {
         this.mediators = mediators;
         this.name = name;
-        this.pipelineVariables = new HashMap<>();
-    }
-
-    public Pipeline(String name, Map<String, Object> pipelineVariables) {
-        this.name = name;
-        this.pipelineVariables = pipelineVariables;
-        this.mediators = new MediatorCollection();
-    }
-
-    public Pipeline(String name, MediatorCollection mediators, Map<String, Object> pipelineVariables) {
-        this.pipelineVariables = pipelineVariables;
-        this.name = name;
-        this.mediators = mediators;
     }
 
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) {
-        prepareVariableStack(carbonMessage);
         try {
             // For Error handling
             if (errorPipeline != null) {
@@ -97,25 +76,6 @@ public class Pipeline {
         } catch (Exception e) {
             log.error("Error while mediating", e);
             return false;
-        }
-    }
-
-    private void prepareVariableStack(CarbonMessage cMsg) {
-        // check if stack exists in cMsg, create empty otherwise
-        Stack<Map<String, Object>> variableStack;
-        if (cMsg.getProperty(Constants.VARIABLE_STACK) != null) {
-            variableStack = (Stack<Map<String, Object>>) cMsg.getProperty(Constants.VARIABLE_STACK);
-        } else {
-            variableStack = new Stack<Map<String, Object>>();
-            cMsg.setProperty(Constants.VARIABLE_STACK, variableStack);
-        }
-
-        if (variableStack.size() == 0) {
-            variableStack.push(pipelineVariables);
-        } else {
-            Map<String, Object> gtScope = variableStack.peek();
-            pipelineVariables.put(Constants.GW_GT_SCOPE, gtScope);
-            variableStack.push(pipelineVariables);
         }
     }
 

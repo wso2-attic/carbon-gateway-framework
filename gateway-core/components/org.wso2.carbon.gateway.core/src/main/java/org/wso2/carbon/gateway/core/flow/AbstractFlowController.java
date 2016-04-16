@@ -19,39 +19,17 @@
 package org.wso2.carbon.gateway.core.flow;
 
 
-import org.wso2.carbon.gateway.core.Constants;
+import org.wso2.carbon.gateway.core.util.VariableUtil;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
 
 /**
  * An interface for identify FlowControllable artifacts
  */
 public abstract class AbstractFlowController extends AbstractMediator {
 
-    public boolean receive(CarbonMessage cMsg, CarbonCallback carbonCallback) throws
-            Exception {
-
-        // check if stack exists in cMsg, create empty otherwise
-        Stack<Map<String, Object>> variableStack;
-        if (cMsg.getProperty(Constants.VARIABLE_STACK) != null) {
-            variableStack = (Stack<Map<String, Object>>) cMsg.getProperty(Constants.VARIABLE_STACK);
-        } else {
-            variableStack = new Stack<Map<String, Object>>();
-            cMsg.setProperty(Constants.VARIABLE_STACK, variableStack);
-        }
-
-        if (variableStack.size() == 0) {
-            variableStack.push(new HashMap<String, Object>());
-        } else {
-            Map<String, Object> newMap = new HashMap<>();
-            newMap.put(Constants.GW_GT_SCOPE, variableStack.peek());
-            variableStack.push(newMap);
-        }
-
+    public boolean receive(CarbonMessage cMsg, CarbonCallback carbonCallback) throws Exception {
+        VariableUtil.pushNewVariableStack(cMsg);
         return true;
     }
 }

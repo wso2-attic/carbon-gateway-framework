@@ -36,7 +36,7 @@ public class PipelineBuilder extends MediatorCollectionBuilder {
 
     private PipelineBuilder(String name, GWConfigHolder parentConfig) {
         super();
-        pipeline = new Pipeline(name, super.getMediatorCollection(), parentConfig.getGlobalVariables());
+        pipeline = new Pipeline(name, super.getMediatorCollection());
         parentConfig.addPipeline(pipeline);
     }
 
