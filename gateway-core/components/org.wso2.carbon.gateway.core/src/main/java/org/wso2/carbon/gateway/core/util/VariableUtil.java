@@ -27,8 +27,8 @@ import java.util.Map;
 import java.util.Stack;
 
 /**
- * This class is a Utility class that provies commons variable related functions like creating a new
- * variable stack and pushing this onto CarbonMessage variables stack.
+ * Utility class that provides commons variable related functions like creating a new variable map and pushing
+ * it onto CarbonMessage variables stack.
  */
 public class VariableUtil {
 
