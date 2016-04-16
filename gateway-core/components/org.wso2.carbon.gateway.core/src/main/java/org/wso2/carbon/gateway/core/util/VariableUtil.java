@@ -102,11 +102,8 @@ public class VariableUtil {
         if (cMsg.getProperty(Constants.VARIABLE_STACK) != null) {
             return ((Stack<Map<String, Object>>) cMsg.getProperty(Constants.VARIABLE_STACK));
         } else {
-            Stack<Map<String, Object>> stack = new Stack<>();
-            Map<String, Object> map = new HashMap<>();
-            stack.push(map);
-            cMsg.setProperty(Constants.VARIABLE_STACK, stack);
-            return stack;
+            pushNewVariableStack(cMsg);
+            return (Stack<Map<String, Object>>) cMsg.getProperty(Constants.VARIABLE_STACK);
         }
     }
 }
