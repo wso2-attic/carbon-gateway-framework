@@ -166,7 +166,7 @@
                         <xmlOutput>true</xmlOutput>
                         <findbugsXmlOutputDirectory>${project.build.directory}/findbugs
                         </findbugsXmlOutputDirectory>
-                        <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
+                        <excludeFilterFile>${maven.findbugsplugin.version.exclude}</excludeFilterFile>
                         <!--Exclude generated sources-->
                     </configuration>
                     <version>${maven.findbugsplugin.version}</version>
@@ -204,6 +204,23 @@
                             <goals>
                                 <goal>check</goal>
                             </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <!-- ANTLR Plugin -->
+                <plugin>
+                    <groupId>org.antlr</groupId>
+                    <artifactId>antlr4-maven-plugin</artifactId>
+                    <version>4.5.1</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>antlr4</goal>
+                            </goals>
+                            <configuration>
+                                <listener>true</listener>
+                                <visitor>false</visitor>
+                            </configuration>
                         </execution>
                     </executions>
                 </plugin>
