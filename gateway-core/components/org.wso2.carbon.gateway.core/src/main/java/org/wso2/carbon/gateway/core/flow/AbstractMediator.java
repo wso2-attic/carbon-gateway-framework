@@ -19,17 +19,24 @@
 package org.wso2.carbon.gateway.core.flow;
 
 import org.wso2.carbon.gateway.core.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
+import org.wso2.carbon.gateway.core.flow.contentaware.ConversionManager;
+import org.wso2.carbon.gateway.core.flow.contentaware.MIMEType;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
-
 import java.util.Map;
 import java.util.Stack;
+import java.io.InputStream;
 
 /**
  * Base class for all the mediators. All the mediators must be extended from this base class
  */
 public abstract class AbstractMediator implements Mediator {
+
+    private static final Logger log = LoggerFactory.getLogger(AbstractMediator.class);
+
 
     /* Pointer for the next sibling in the pipeline*/
     Mediator nextMediator = null;
@@ -93,6 +100,40 @@ public abstract class AbstractMediator implements Mediator {
             } else {
                 return null;
             }
+        }
+    }
+
+    /**
+     * Convert message into a specified format
+     *
+     * @param cMsg       Carbon Message
+     * @param targetType Type to be converted
+     * @return Converted Input Stream
+     * @throws Exception
+     */
+    public InputStream convertTo(CarbonMessage cMsg, String targetType) throws Exception {
+
+        String sourceType = cMsg.getHeader("Content-Type");
+        if (sourceType == null) {
+            handleException("Content-Type header could not be found in the request");
+            return null; // to make findbugs happy
+        }
+        sourceType = sourceType.split(";")[0];  // remove charset from Content-Type header
+
+        return ConversionManager.getInstance().convertTo(cMsg, sourceType, MIMEType.JSON);
+    }
+
+    public void handleException(String msg) throws Exception {
+        handleException(msg, null);
+    }
+
+    public void handleException(String msg, Exception ex) throws Exception {
+        if (ex != null) {
+            log.error(msg, ex);
+            throw new Exception(msg, ex);
+        } else {
+            log.error(msg);
+            throw new Exception(msg);
         }
     }
 }
