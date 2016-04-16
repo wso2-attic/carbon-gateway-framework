@@ -20,11 +20,15 @@ package org.wso2.carbon.gateway.core.flow;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.gateway.core.util.VariableUtil;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 
+import java.util.Map;
+import java.util.Stack;
+
 /**
- * Callback related to FlowController Mediators
+ * Callback related to AbstractFlowController Mediators
  */
 public class FlowControllerCallback implements CarbonCallback {
 
@@ -34,16 +38,19 @@ public class FlowControllerCallback implements CarbonCallback {
     /* Flow Controller Mediator */
     Mediator mediator;
 
+    Stack<Map<String, Object>> variableStack;
+
     private static final Logger log = LoggerFactory.getLogger(FlowControllerCallback.class);
 
-    public FlowControllerCallback(CarbonCallback parentCallback, Mediator mediator) {
+    public FlowControllerCallback(CarbonCallback parentCallback, Mediator mediator, Stack variableStack) {
         this.parentCallback = parentCallback;
         this.mediator = mediator;
+        this.variableStack = variableStack;
     }
 
     @Override
     public void done(CarbonMessage carbonMessage) {
-
+        VariableUtil.setVariableStack(carbonMessage, variableStack);
         if (mediator.hasNext()) { // If Mediator has a sibling after this
             try {
                 mediator.next(carbonMessage, parentCallback);

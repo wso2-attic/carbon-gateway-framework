@@ -77,4 +77,12 @@ public interface Mediator {
      * @param parameters Parameters
      */
     void setParameters(ParameterHolder parameters);
+
+    /**
+     * Returns object stored as variabe with name passed as argument.
+     * @param carbonMessage
+     * @param name
+     * @return Object stored as variable
+     */
+    Object getValue(CarbonMessage carbonMessage, String name);
 }

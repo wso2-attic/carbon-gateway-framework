@@ -20,6 +20,8 @@ package org.wso2.carbon.gateway.core.flow;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.flow.contentaware.ConversionManager;
 import org.wso2.carbon.gateway.core.flow.contentaware.MIMEType;
@@ -27,6 +29,8 @@ import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 
 import java.io.InputStream;
+import java.util.Map;
+import java.util.Stack;
 
 /**
  * Base class for all the mediators. All the mediators must be extended from this base class
@@ -113,4 +117,25 @@ public abstract class AbstractMediator implements Mediator {
         }
     }
 
+    public Object getValue(CarbonMessage carbonMessage, String name) {
+        if (name.startsWith("$")) {
+            Stack<Map<String, Object>> variableStack =
+                    (Stack<Map<String, Object>>) carbonMessage.getProperty(Constants.VARIABLE_STACK);
+            return findVariableValue(variableStack.peek(), name.substring(1));
+        } else {
+            return name;
+        }
+    }
+
+    private Object findVariableValue(Map<String, Object> variables, String name) {
+        if (variables.containsKey(name)) {
+            return variables.get(name);
+        } else {
+            if (variables.containsKey(Constants.GW_GT_SCOPE)) {
+                return findVariableValue((Map<String, Object>) variables.get(Constants.GW_GT_SCOPE), name);
+            } else {
+                return null;
+            }
+        }
+    }
 }

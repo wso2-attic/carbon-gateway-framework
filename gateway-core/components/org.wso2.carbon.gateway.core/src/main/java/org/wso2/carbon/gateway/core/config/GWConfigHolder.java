@@ -38,9 +38,11 @@ public class GWConfigHolder {
 
     private Map<String, OutboundEndpoint> outboundEndpoints = new HashMap<>();
 
+    private Map<String, Object> globalVariables = new HashMap<>();
 
     public GWConfigHolder(String name) {
         this.name = name;
+        globalVariables.put("iflowName", name); //TODO: demo code only, remove
     }
 
     public String getName() {
@@ -51,12 +53,17 @@ public class GWConfigHolder {
         this.name = name;
     }
 
+    public void setGlobalVariables(Map<String, Object> globalVariables) {
+        this.globalVariables = globalVariables;
+    }
+
     public InboundEndpoint getInboundEndpoint() {
         return inboundEndpoint;
     }
 
     public void setInboundEndpoint(
             InboundEndpoint inboundEndpoint) {
+        inboundEndpoint.setGWConfigName(name);
         this.inboundEndpoint = inboundEndpoint;
     }
 
@@ -78,6 +85,10 @@ public class GWConfigHolder {
 
     public OutboundEndpoint getOutboundEndpoint(String name) {
         return outboundEndpoints.get(name);
+    }
+
+    public Map<String, Object> getGlobalVariables() {
+        return globalVariables;
     }
 
     public void addOutboundEndpoint(OutboundEndpoint outboundEndpoint) {

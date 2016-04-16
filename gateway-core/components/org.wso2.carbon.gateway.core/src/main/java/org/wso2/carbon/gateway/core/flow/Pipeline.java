@@ -55,7 +55,6 @@ public class Pipeline {
     }
 
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) {
-
         try {
             // For Error handling
             if (errorPipeline != null) {

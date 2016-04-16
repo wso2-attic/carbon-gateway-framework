@@ -1,13 +1,13 @@
 /*
  * Copyright (c) 2016, WSO2 Inc. (http://wso2.com) All Rights Reserved.
- * <p>
+ *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,40 +19,64 @@ package org.wso2.carbon.gateway.core.flow.mediators.builtin.manipulators;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.flow.AbstractMediator;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
+
 /**
- * Basic implementation of log mediator
- * TODO: Not implemented yet
+ * Basic implementation of property mediator to assign variables
  */
-public class LogMediator extends AbstractMediator {
+public class PropertyMediator extends AbstractMediator {
 
-    private static final Logger log = LoggerFactory.getLogger(LogMediator.class);
+    private static final Logger log = LoggerFactory.getLogger(PropertyMediator.class);
 
-    private String logMessage = "Message received at LogMediator";
+    private String key;
+    private Object value;
 
-    public LogMediator(String logMessage) {
-        this.logMessage = logMessage;
+    public PropertyMediator(String key, Object value) {
+        this.key = key;
+        this.value = value;
     }
 
-    public LogMediator() {}
+    public PropertyMediator() {}
 
     @Override
     public String getName() {
-        return "log";
+        return "property";
     }
 
     @Override
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
-        log.info(getValue(carbonMessage, logMessage).toString());
+        if (carbonMessage.getProperty(Constants.VARIABLE_STACK) != null) {
+            Stack<Map<String, Object>> variableStack =
+                    (Stack<Map<String, Object>>) carbonMessage.getProperty(Constants.VARIABLE_STACK);
+
+            Map<String, Object> map;
+            if (variableStack.size() > 0) {
+                map = variableStack.peek();
+            } else {
+                map = new HashMap<>();
+                variableStack.push(map);
+            }
+
+            map.put(key, value);
+        } else {
+            log.error("Variable stack has not been initialized!");
+            return false;
+        }
+
         return next(carbonMessage, carbonCallback);
     }
 
     public void setParameters(ParameterHolder parameterHolder) {
-        logMessage = parameterHolder.getParameter("parameters").getValue();
+        key = parameterHolder.getParameter("key").getValue();
+        value = parameterHolder.getParameter("value").getValue();
     }
 
 }

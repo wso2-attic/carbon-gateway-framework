@@ -26,6 +26,7 @@ import org.wso2.carbon.gateway.core.flow.AbstractMediator;
 import org.wso2.carbon.gateway.core.flow.FlowControllerCallback;
 import org.wso2.carbon.gateway.core.flow.Invoker;
 import org.wso2.carbon.gateway.core.outbound.OutboundEndpoint;
+import org.wso2.carbon.gateway.core.util.VariableUtil;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 
@@ -75,7 +76,8 @@ public class CallMediator extends AbstractMediator implements Invoker {
             }
         }
 
-        CarbonCallback callback = new FlowControllerCallback(carbonCallback, this);
+        CarbonCallback callback = new FlowControllerCallback(carbonCallback, this,
+                VariableUtil.getVariableStack(carbonMessage));
 
         endpoint.receive(carbonMessage, callback);
         return false;

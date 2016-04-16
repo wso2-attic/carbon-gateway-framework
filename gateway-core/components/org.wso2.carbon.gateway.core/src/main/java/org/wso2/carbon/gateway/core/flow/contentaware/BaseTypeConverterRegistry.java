@@ -24,7 +24,6 @@ import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConver
 import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConverterRegistry;
 
 import java.util.HashMap;
-
 import java.util.Map;
 
 /**

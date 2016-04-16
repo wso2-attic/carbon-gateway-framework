@@ -19,10 +19,17 @@
 package org.wso2.carbon.gateway.core.flow;
 
 
+import org.wso2.carbon.gateway.core.util.VariableUtil;
+import org.wso2.carbon.messaging.CarbonCallback;
+import org.wso2.carbon.messaging.CarbonMessage;
+
 /**
  * An interface for identify FlowControllable artifacts
  */
-public interface FlowController extends Mediator {
+public abstract class AbstractFlowController extends AbstractMediator {
 
-
+    public boolean receive(CarbonMessage cMsg, CarbonCallback carbonCallback) throws Exception {
+        VariableUtil.pushNewVariableStack(cMsg);
+        return true;
+    }
 }
