@@ -42,7 +42,7 @@ public class GWConfigHolder {
 
     public GWConfigHolder(String name) {
         this.name = name;
-        globalVariables.put("iflowName", name);
+        globalVariables.put("iflowName", name); //TODO: demo code, remove
     }
 
     public String getName() {
