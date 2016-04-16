@@ -50,6 +50,7 @@ statement
     | groupStatement
     | refStatement
     | commentStatement
+    | variableStatement
     ;
 
 // Definition of the high level name for this message flow
@@ -104,6 +105,9 @@ routingStatement: routingStatementDef;
 
 routingStatementDef: IDENTIFIER WS+ ARROWX WS+ IDENTIFIER WS+
                   COMMENTX WS+ COMMENTSTRINGX;
+
+// Variable definition statement
+variableStatement: VARX WS+ TYPEDEFINITIONX WS+ IDENTIFIER WS* EQ_SYMBOL WS*  COMMENTSTRINGX;
 
 // Message routing statement
 /*
@@ -192,6 +196,8 @@ DOUBLESLASHCOMMENTST
     : '//' COMMENTPARAMS
     ;
 
+TYPEDEFINITIONX: TYPEDEFINITION;
+
 //ROUTINGSTATEMENTX: ROUTINGSTATEMENT;
 
 SOURCEDEF: SOURCE LPAREN CONFIGPARAMS RPAREN;
@@ -233,7 +239,7 @@ ASX: AS;
 
 COMMENTX: COMMENT;
 
-COMMENTSTRINGX: COMMENTSTRING;
+COMMENTSTRINGX: COMMENTSTRING | NUMBER;
 
 STRINGX: STRING;
 
@@ -241,6 +247,17 @@ URLSTRINGX: URLSTRING;
 
 ARROWX: ARROW;
 
+STRINGTYPEX: STRINGTYPE;
+INTEGERTYPEX: INTEGERTYPE;
+BOOLEANTYPEX: BOOLEANTYPE;
+DOUBLETYPEX: DOUBLETYPE;
+FLOATTYPEX: FLOATTYPE;
+LONGTYPEX: LONGTYPE;
+SHORTTYPEX: SHORTTYPE;
+XMLTYPEX: XMLTYPE;
+JSONTYPEX: JSONTYPE;
+
+VARX: VAR;
 
 // LEXER: Keywords
 
@@ -308,6 +325,7 @@ CONTINUATION
 WHITESPACE
     : [ \t]+ -> skip ;
 
+
 // LEXER: fragments to evaluate only within statements
 
 //fragment ROUTINGSTATEMENT: IDENTIFIER WS+ ARROW WS+ IDENTIFIER WS+ COMMENTX
@@ -361,6 +379,29 @@ fragment RESPOND: R E S P O N D;
 fragment LOG: L O G;
 fragment ENRICH: E N R I C H;
 fragment TRANSFORM: T R A N S F O R M;
+fragment STRINGTYPE: S T R I N G;
+fragment INTEGERTYPE: I N T E G E R;
+fragment BOOLEANTYPE: B O O L E A N;
+fragment DOUBLETYPE: D O U B L E;
+fragment FLOATTYPE: F L O A T;
+fragment LONGTYPE: L O N G;
+fragment SHORTTYPE: S H O R T;
+fragment XMLTYPE: X M L;
+fragment JSONTYPE: J S O N;
+fragment VAR: V A R;
+
+fragment TYPEDEFINITION
+    : INTEGERTYPE
+    | STRINGTYPE
+    | BOOLEANTYPE
+    | LONGTYPE
+    | SHORTTYPE
+    | FLOATTYPE
+    | DOUBLETYPE
+    | XMLTYPE
+    | JSONTYPE
+    ;
+
 
 // case insensitive lexer matching
 fragment A:('a'|'A');
