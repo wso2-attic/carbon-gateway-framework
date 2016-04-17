@@ -83,6 +83,21 @@ public class VariableUtil {
     }
 
     /**
+     * Pop top item off variable stack.
+     * @param cMsg
+     * @param stack
+     */
+    public static void popVariableStack(CarbonMessage cMsg, Stack<Map<String, Object>> stack) {
+        if (cMsg.getProperty(Constants.VARIABLE_STACK) == null) {
+            cMsg.setProperty(Constants.VARIABLE_STACK, stack);
+        } else {
+            Stack<Map<String, Object>> existingStack =
+                    (Stack<Map<String, Object>>) cMsg.getProperty(Constants.VARIABLE_STACK);
+            existingStack.pop();
+        }
+    }
+
+    /**
      * Set variable stack to CarbonMessage if it does not already exist.
      * @param cMsg
      * @param stack
