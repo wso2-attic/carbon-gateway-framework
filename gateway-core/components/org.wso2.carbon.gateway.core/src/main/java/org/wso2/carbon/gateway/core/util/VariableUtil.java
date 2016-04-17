@@ -83,7 +83,7 @@ public class VariableUtil {
     }
 
     /**
-     * Pop top item off variable stack in.
+     * Pop top item off variable stack.
      * @param cMsg
      * @param stack
      */
