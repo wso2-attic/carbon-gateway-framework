@@ -50,7 +50,7 @@ public class FlowControllerCallback implements CarbonCallback {
 
     @Override
     public void done(CarbonMessage carbonMessage) {
-        VariableUtil.setVariableStack(carbonMessage, variableStack);
+        VariableUtil.popVariableStack(carbonMessage, variableStack);
         if (mediator.hasNext()) { // If Mediator has a sibling after this
             try {
                 mediator.next(carbonMessage, parentCallback);
