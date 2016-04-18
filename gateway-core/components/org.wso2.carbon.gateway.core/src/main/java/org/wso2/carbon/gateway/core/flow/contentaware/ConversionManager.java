@@ -27,6 +27,7 @@ import org.wso2.carbon.messaging.CarbonMessage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -43,12 +44,18 @@ public class ConversionManager {
         return instance;
     }
 
-    private ConversionManager() {};
+    private ConversionManager() {
+    }
 
-    public InputStream convertTo(CarbonMessage cMsg, String sourceType, String targetType) {
+    ;
 
-        TypeConverter converter = ConfigRegistry.getInstance()
-                .getTypeConverterRegistry().lookup(targetType, sourceType);
+    public CarbonMessage convertTo(CarbonMessage cMsg, String targetType) {
+
+        String sourceType = cMsg.getHeader("Content-Type");
+        StringBuffer buf = new StringBuffer();
+
+        TypeConverter converter = ConfigRegistry.getInstance().getTypeConverterRegistry()
+                .getTypeConverter(targetType, sourceType);
 
         if (converter == null) {
             if (log.isDebugEnabled()) {
@@ -71,16 +78,22 @@ public class ConversionManager {
         } finally {
             //TODO: do we need to close the input stream here ?
         }
-        return processedStream;
+        Scanner s = new java.util.Scanner(processedStream).useDelimiter("\\A");
+        while (s.hasNext()) {
+            buf.append(s.next());
+        }
+        String outputString = buf.toString();
+        log.info(sourceType + " to " + targetType + " type conversion\n" + outputString);
+        ByteBuffer outputByteBuffer = ByteBuffer.wrap(String.valueOf(buf).getBytes());
+        cMsg.setHeader("Content-Type", targetType);
+        cMsg.addMessageBody(outputByteBuffer);
+        return cMsg;
+
     }
 
     private BlockingQueue<ByteBuffer> aggregateContent(CarbonMessage msg) {
 
         try {
-            //Check whether the message is fully read
-            while (!msg.isEndOfMsgAdded()) {
-                Thread.sleep(10);               // TODO: why thread sleeps ?
-            }
             //Get a clone of content chunk queue from the pipe
             BlockingQueue<ByteBuffer> clonedContent = new LinkedBlockingQueue<>(msg.getFullMessageBody());
             return clonedContent;
