@@ -91,6 +91,12 @@ public class HTTPInboundEP extends InboundEndpoint {
         if (log.isDebugEnabled()) {
             log.debug("HTTP Endpoint : " + getName() + " received the message");
         }
+        cMsg.setProperty(org.wso2.carbon.gateway.core.Constants.SERVICE_CONTEXT, context);
+
+        String uri = (String) cMsg.getProperty(Constants.TO);
+        cMsg.setProperty(org.wso2.carbon.gateway.core.Constants.SERVICE_SUB_GROUP_PATH, uri.split(context)[1]);
+
+        cMsg.setProperty(org.wso2.carbon.gateway.core.Constants.SERVICE_METHOD, cMsg.getProperty("HTTP_METHOD"));
         super.receive(cMsg, callback);
         return true;
     }
