@@ -37,24 +37,14 @@ public class BaseTypeConverterRegistry implements TypeConverterRegistry {
 
     protected final Map<TypeMapper, TypeConverter> typeConverters = new HashMap<>();
 
-    private BaseTypeConverterRegistry() {
-    }
+    private BaseTypeConverterRegistry() {}
 
     public static BaseTypeConverterRegistry getInstance() {
         return instance;
     }
 
     @Override
-    public void addTypeConverter(Class<?> toType, Class<?> fromType, TypeConverter typeConverter) {
-        if (log.isDebugEnabled()) {
-            log.debug("Adding type converter: {}", typeConverter);
-        }
-        typeConverters.put(new TypeMapper(toType.getName(), fromType.getName()), typeConverter);
-    }
-
-    @Override
-    public void addTypeConverter(String targetType, String sourceType,
-                                 TypeConverter typeConverter) {
+    public void addTypeConverter(String sourceType, String targetType, TypeConverter typeConverter) {
         if (log.isDebugEnabled()) {
             log.debug("Adding type converter: {}", typeConverter);
         }
@@ -62,18 +52,7 @@ public class BaseTypeConverterRegistry implements TypeConverterRegistry {
     }
 
     @Override
-    public boolean removeTypeConverter(Class<?> toType, Class<?> fromType) {
-        if (log.isDebugEnabled()) {
-            log.debug("Removing type converter from: {} to: {}", fromType, toType);
-        }
-        TypeConverter converter =
-                typeConverters.remove(new TypeMapper(toType.getName(), fromType.getName()));
-
-        return converter != null;
-    }
-
-    @Override
-    public boolean removeTypeConverter(String targetType, String sourceType) {
+    public boolean removeTypeConverter(String sourceType, String targetType) {
 
         if (log.isDebugEnabled()) {
             log.debug("Removing type converter from: {} to: {}", sourceType, targetType);
@@ -83,20 +62,9 @@ public class BaseTypeConverterRegistry implements TypeConverterRegistry {
         return converter != null;
     }
 
-    public TypeConverter getTypeConverter(Class<?> targetType, Class<?> sourceType) {
-        TypeMapper key = new TypeMapper(targetType.getName(), sourceType.getName());
-        return typeConverters.get(key);
-    }
-
-    public TypeConverter getTypeConverter(String targetType, String sourceType) {
-        TypeMapper key = new TypeMapper(targetType, sourceType);
-        return typeConverters.get(key);
-    }
-
     @Override
-    public TypeConverter lookup(String targetType, String sourceType) {
+    public TypeConverter getTypeConverter(String sourceType, String targetType) {
         return typeConverters.get(new TypeMapper(targetType, sourceType));
     }
-
 }
 

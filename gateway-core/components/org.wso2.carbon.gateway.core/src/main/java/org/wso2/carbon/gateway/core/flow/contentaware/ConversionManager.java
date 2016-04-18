@@ -23,9 +23,12 @@ import org.wso2.carbon.gateway.core.config.ConfigRegistry;
 import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConverter;
 import org.wso2.carbon.gateway.core.flow.contentaware.exceptions.TypeConversionException;
 import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.DefaultCarbonMessage;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -36,53 +39,66 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class ConversionManager {
     private static final Logger log = LoggerFactory.getLogger(ConversionManager.class);
+    private static final int EOF = -1;
 
     private static ConversionManager instance = new ConversionManager();
+
+    private ConversionManager() {}
 
     public static ConversionManager getInstance() {
         return instance;
     }
 
-    private ConversionManager() {};
+    public CarbonMessage convertTo(CarbonMessage cMsg, String sourceType, String targetType) {
 
-    public InputStream convertTo(CarbonMessage cMsg, String sourceType, String targetType) {
-
-        TypeConverter converter = ConfigRegistry.getInstance()
-                .getTypeConverterRegistry().lookup(targetType, sourceType);
+        TypeConverter converter = ConfigRegistry.getInstance().getTypeConverterRegistry()
+                .getTypeConverter(sourceType, targetType);
+        DefaultCarbonMessage newCarbonMsg = new DefaultCarbonMessage();
 
         if (converter == null) {
             if (log.isDebugEnabled()) {
-                log.debug("No type converted found for Source: " + sourceType + " Target : " + targetType);
+                log.debug("No type converter found for Source: " + sourceType + " Target : " + targetType);
             }
-            return null;
+            return null; // TODO: Throw an exception instead of returning null
         }
 
-        //Aggregation and creating inputStream
-        BlockingQueue<ByteBuffer> contentBuf = aggregateContent(cMsg);
+        BlockingQueue<ByteBuffer> contentBuf = getMessageBody(cMsg);
         InputStream inputStream = new ByteBufferBackedInputStream(contentBuf);
         InputStream processedStream = null;
 
         try {
             processedStream = converter.convert(inputStream);
+            ByteBuffer outputByteBuffer = ByteBuffer.wrap(toByteArray(processedStream));
+            newCarbonMsg.setHeader("Content-Type", targetType);
+            newCarbonMsg.addMessageBody(outputByteBuffer);
+            newCarbonMsg.setEndOfMsgAdded(true);
         } catch (TypeConversionException e) {
-            log.error("Error in converting from: " + sourceType + " to: " + targetType);
+            log.error("Error in converting message body from: " + sourceType + " to: " + targetType);
         } catch (IOException e) {
             log.error("Error " + e);
         } finally {
             //TODO: do we need to close the input stream here ?
         }
-        return processedStream;
+
+        return newCarbonMsg;
     }
 
-    private BlockingQueue<ByteBuffer> aggregateContent(CarbonMessage msg) {
+    private byte[] toByteArray(final InputStream in) throws IOException {
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        copy(in, out);
+        return out.toByteArray();
+    }
 
-        try {
-            //Get a clone of content chunk queue from the pipe
-            BlockingQueue<ByteBuffer> clonedContent = new LinkedBlockingQueue<>(msg.getFullMessageBody());
-            return clonedContent;
-        } catch (Exception e) {
-            log.error("Error while cloning ", e);
+    private void copy(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[1024];
+        int n;
+        while (EOF != (n = in.read(buffer))) {
+            out.write(buffer, 0, n);
         }
-        return null;
+    }
+
+    private BlockingQueue<ByteBuffer> getMessageBody(CarbonMessage msg) {
+        BlockingQueue<ByteBuffer> msgBody = new LinkedBlockingQueue<>(msg.getFullMessageBody());
+        return msgBody;
     }
 }
