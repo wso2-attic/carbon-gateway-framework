@@ -24,6 +24,7 @@ import org.wso2.carbon.gateway.core.config.dsl.external.StringParserUtil;
 import org.wso2.carbon.gateway.core.config.dsl.external.WUMLConfigurationBuilder;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLBaseListener;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLParser;
+import org.wso2.carbon.gateway.core.flow.Group;
 import org.wso2.carbon.gateway.core.flow.Mediator;
 import org.wso2.carbon.gateway.core.flow.MediatorProviderRegistry;
 import org.wso2.carbon.gateway.core.flow.Pipeline;
@@ -55,6 +56,9 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     boolean ifMultiThenBlockStarted = false;
     boolean ifElseBlockStarted = false;
     Map<String, String> identifierTypeMap = new HashMap<>();
+
+    boolean insideGroup = false;
+    private String groupPath;
 
     public WUMLBaseListenerImpl() {
         this.integrationFlow = new WUMLConfigurationBuilder.IntegrationFlow("default");
@@ -322,11 +326,6 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     }
 
     @Override
-    public void exitGroupStatement(WUMLParser.GroupStatementContext ctx) {
-        super.exitGroupStatement(ctx);
-    }
-
-    @Override
     public void exitLoopStatement(WUMLParser.LoopStatementContext ctx) {
         super.exitLoopStatement(ctx);
     }
@@ -368,7 +367,12 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         String pipelineName = ctx.IDENTIFIER(1).getText();
         switch (identifierType) {
         case "invokeFromSource":
-            integrationFlow.getGWConfigHolder().getInboundEndpoint().setPipeline(pipelineName);
+            if (insideGroup) {
+                integrationFlow.getGWConfigHolder().getGroup(groupPath).setPipeline(pipelineName);
+            } else {
+                integrationFlow.getGWConfigHolder().getInboundEndpoint().setPipeline(pipelineName);
+            }
+
             pipelineStack.push(pipelineName);
             break;
         case "invokeFromTarget":
@@ -395,6 +399,30 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         }
 
         super.exitRoutingStatementDef(ctx);
+    }
+
+    @Override
+    public void enterGroupStatement(WUMLParser.GroupStatementContext ctx) {
+        insideGroup = true;
+        super.enterGroupStatement(ctx);
+    }
+
+    @Override
+    public void exitGroupDefStatement(WUMLParser.GroupDefStatementContext ctx) {
+        String path = StringParserUtil.getValueWithinDoubleQuotes(ctx.GROUP_PATH_DEF().getText().split("path=")[1]);
+        Group group = new Group(path);
+        groupPath = path;
+        group.setMethod(
+                StringParserUtil.getValueWithinDoubleQuotes(ctx.GROUP_METHOD_DEF().getText().split("method=")[1]));
+
+        integrationFlow.getGWConfigHolder().addGroup(group);
+        super.exitGroupDefStatement(ctx);
+    }
+
+    @Override
+    public void exitGroupStatement(WUMLParser.GroupStatementContext ctx) {
+        insideGroup = false;
+        super.exitGroupStatement(ctx);
     }
 
     /**

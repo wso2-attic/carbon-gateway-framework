@@ -17,7 +17,6 @@
  */
 package org.wso2.carbon.gateway.core.inbound;
 
-
 import org.wso2.carbon.gateway.core.config.ConfigRegistry;
 import org.wso2.carbon.gateway.core.config.GWConfigHolder;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
@@ -25,7 +24,8 @@ import org.wso2.carbon.gateway.core.flow.Group;
 import org.wso2.carbon.gateway.core.util.VariableUtil;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
-import java.util.List;
+
+import java.util.Collection;
 
 /**
  * Base for InboundEndpoints. All Inbound Endpoint types must extend this.
@@ -86,7 +86,7 @@ public abstract class InboundEndpoint {
 
         // For service groups, if any
         if (configHolder.hasGroups()) {
-            List<Group> groups = configHolder.getGroups();
+            Collection<Group> groups = configHolder.getGroups();
 
             for (Group group : groups) {
                 if (group.canProcess(cMsg)) {

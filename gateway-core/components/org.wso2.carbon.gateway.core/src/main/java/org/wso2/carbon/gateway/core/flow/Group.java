@@ -69,4 +69,8 @@ public class Group {
         return true;
     }
 
+    public Group(String path) {
+        this.path = path;
+    }
+
 }
