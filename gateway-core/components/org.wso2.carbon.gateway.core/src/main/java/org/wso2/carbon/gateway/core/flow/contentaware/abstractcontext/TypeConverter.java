@@ -37,15 +37,6 @@ public interface TypeConverter {
      */
     InputStream convert(InputStream inputStream) throws TypeConversionException, IOException;
 
-    /**
-     * Converts the value to the specified type
-     *
-     * @param anyValue any type of an object
-     * @return the converted value, or <tt>null</tt> if not possible to convert
-     * @throws TypeConversionException is thrown if error during type conversion
-     */
-    <T> T convert(Object anyValue) throws TypeConversionException;
-
     String getSourceType();
 
     String getTargetType();
