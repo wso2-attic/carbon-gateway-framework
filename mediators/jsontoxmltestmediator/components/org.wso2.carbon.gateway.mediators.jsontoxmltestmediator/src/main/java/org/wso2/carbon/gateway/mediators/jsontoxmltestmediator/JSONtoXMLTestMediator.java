@@ -30,16 +30,22 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 
 /**
- * Sample XML to JSON Conversion Mediator
+ * Sample JSON to XML Conversion Mediator
  */
 public class JSONtoXMLTestMediator extends AbstractMediator {
 
     private static final Logger log = LoggerFactory.getLogger(JSONtoXMLTestMediator.class);
-    private String logMessage = "Message received at XML to JSON Test Mediator";
+    private String logMessage = "Message received at JSON to XML Test Mediator";
 
     public JSONtoXMLTestMediator() {
     }
 
+    /**
+     * Set Parameters
+     *
+     * @param parameterHolder holder which contains key-value pairs of parameters
+     */
+    @Override
     public void setParameters(ParameterHolder parameterHolder) {
         logMessage = parameterHolder.getParameter("parameters").getValue();
     }
@@ -49,6 +55,15 @@ public class JSONtoXMLTestMediator extends AbstractMediator {
         return "JSONtoXMLTestMediator";
     }
 
+    /**
+     * Mediate the message.
+     * <p/>
+     * This is the execution point of the mediator.
+     *
+     * @param carbonMessage  MessageContext to be mediated
+     * @param carbonCallback Callback which can be use to call the previous step
+     * @return whether mediation is success or not
+     **/
     @Override
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
 
@@ -63,10 +78,9 @@ public class JSONtoXMLTestMediator extends AbstractMediator {
         return next(convertedMsg, carbonCallback);
     }
 
-    public String getLogMessage() {
-        return logMessage;
-    }
-
+    /**
+     * This is a sample mediator specific method
+     */
     public void setLogMessage(String logMessage) {
         this.logMessage = logMessage;
     }
