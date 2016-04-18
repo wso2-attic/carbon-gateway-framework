@@ -149,9 +149,9 @@ parMultiThenBlock
 parElseBlock
     : (ELSE NEWLINE messageflowStatementList)+ ;
 
-// Definition of 'alt' statement for if condition
+// Definition of 'if' statement for if condition
 ifStatement
-    : ALT WS WITH WS conditionStatement NEWLINE
+    : IF WS WITH WS conditionStatement NEWLINE
       NEWLINE? ifMultiThenBlock
       END
     ;
@@ -275,7 +275,7 @@ STARTUMLX: STARTUML;
 ENDUMLX: ENDUML;
 PARTICIPANT: P A R T I C I P A N T;
 PAR: P A R;
-ALT: A L T;
+IF: I F;
 REF: R E F;
 END: E N D;
 ELSE: E L S E;
