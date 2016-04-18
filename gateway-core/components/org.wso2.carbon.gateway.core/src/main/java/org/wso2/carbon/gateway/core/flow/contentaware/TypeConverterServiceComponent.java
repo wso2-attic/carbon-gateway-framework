@@ -48,12 +48,12 @@ public class TypeConverterServiceComponent {
             log.debug(typeConverter.toString());
         }
         BaseTypeConverterRegistry.getInstance()
-                .addTypeConverter(typeConverter.getTargetType(), typeConverter.getSourceType(), typeConverter);
+                .addTypeConverter(typeConverter.getSourceType(), typeConverter.getTargetType(), typeConverter);
     }
 
     protected void removeTypeConverter(TypeConverter typeConverter) {
         BaseTypeConverterRegistry.getInstance()
-                .removeTypeConverter(typeConverter.getTargetType(), typeConverter.getSourceType());
+                .removeTypeConverter(typeConverter.getSourceType(), typeConverter.getTargetType());
     }
 
 }

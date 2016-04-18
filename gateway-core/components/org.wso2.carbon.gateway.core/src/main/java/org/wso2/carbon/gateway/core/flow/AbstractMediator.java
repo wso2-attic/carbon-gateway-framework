@@ -20,14 +20,12 @@ package org.wso2.carbon.gateway.core.flow;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.flow.contentaware.ConversionManager;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 
-import java.io.InputStream;
 import java.util.Map;
 import java.util.Stack;
 
@@ -87,10 +85,10 @@ public abstract class AbstractMediator implements Mediator {
      *
      * @param cMsg       Carbon Message
      * @param targetType Type to be converted
-     * @return Converted Input Stream
+     * @return CarbonMessage with converted message body
      * @throws Exception
      */
-    public InputStream convertTo(CarbonMessage cMsg, String targetType) throws Exception {
+    public CarbonMessage convertTo(CarbonMessage cMsg, String targetType) throws Exception {
 
         String sourceType = cMsg.getHeader("Content-Type");
         if (sourceType == null) {

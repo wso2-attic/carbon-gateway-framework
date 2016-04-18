@@ -23,6 +23,7 @@ import org.wso2.carbon.gateway.core.config.ConfigRegistry;
 import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConverter;
 import org.wso2.carbon.gateway.core.flow.contentaware.exceptions.TypeConversionException;
 import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.DefaultCarbonMessage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -44,12 +45,15 @@ public class ConversionManager {
 
     private ConversionManager() {}
 
-    public static CarbonMessage convertTo(CarbonMessage cMsg, String targetType) {
+    public static ConversionManager getInstance() {
+        return instance;
+    }
 
-        String sourceType = cMsg.getHeader("Content-Type");
+    public CarbonMessage convertTo(CarbonMessage cMsg, String sourceType, String targetType) {
 
         TypeConverter converter = ConfigRegistry.getInstance().getTypeConverterRegistry()
-                .getTypeConverter(targetType, sourceType);
+                .getTypeConverter(sourceType, targetType);
+        DefaultCarbonMessage newCarbonMsg = new DefaultCarbonMessage();
 
         if (converter == null) {
             if (log.isDebugEnabled()) {
@@ -65,8 +69,9 @@ public class ConversionManager {
         try {
             processedStream = converter.convert(inputStream);
             ByteBuffer outputByteBuffer = ByteBuffer.wrap(toByteArray(processedStream));
-            cMsg.setHeader("Content-Type", targetType);
-            cMsg.addMessageBody(outputByteBuffer);
+            newCarbonMsg.setHeader("Content-Type", targetType);
+            newCarbonMsg.addMessageBody(outputByteBuffer);
+            newCarbonMsg.setEndOfMsgAdded(true);
         } catch (TypeConversionException e) {
             log.error("Error in converting message body from: " + sourceType + " to: " + targetType);
         } catch (IOException e) {
@@ -75,16 +80,16 @@ public class ConversionManager {
             //TODO: do we need to close the input stream here ?
         }
 
-        return cMsg;
+        return newCarbonMsg;
     }
 
-    private static byte[] toByteArray(final InputStream in) throws IOException {
+    private byte[] toByteArray(final InputStream in) throws IOException {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         copy(in, out);
         return out.toByteArray();
     }
 
-    private static void copy(InputStream in, OutputStream out) throws IOException {
+    private void copy(InputStream in, OutputStream out) throws IOException {
         byte[] buffer = new byte[1024];
         int n;
         while (EOF != (n = in.read(buffer))) {
@@ -92,7 +97,7 @@ public class ConversionManager {
         }
     }
 
-    private static BlockingQueue<ByteBuffer> getMessageBody(CarbonMessage msg) {
+    private BlockingQueue<ByteBuffer> getMessageBody(CarbonMessage msg) {
         BlockingQueue<ByteBuffer> msgBody = new LinkedBlockingQueue<>(msg.getFullMessageBody());
         return msgBody;
     }
