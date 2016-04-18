@@ -28,7 +28,7 @@ public class Group {
 
     private String path;
     private String method;
-    private Pipeline pipeline;
+    private String pipeline;
 
     public String getPath() {
         return path;
@@ -46,11 +46,11 @@ public class Group {
         this.method = method;
     }
 
-    public Pipeline getPipeline() {
+    public String getPipeline() {
         return pipeline;
     }
 
-    public void setPipeline(Pipeline pipeline) {
+    public void setPipeline(String pipeline) {
         this.pipeline = pipeline;
     }
 
