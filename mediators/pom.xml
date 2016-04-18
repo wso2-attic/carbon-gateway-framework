@@ -33,5 +33,7 @@
     <url>http://wso2.org</url>
     <modules>
         <module>sample-mediator</module>
+        <module>jsontoxmltestmediator</module>
+        <module>xmltojsontestmediator</module>
     </modules>
 </project>

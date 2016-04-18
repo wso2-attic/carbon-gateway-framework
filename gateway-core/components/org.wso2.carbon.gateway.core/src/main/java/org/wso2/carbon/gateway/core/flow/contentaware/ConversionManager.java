@@ -39,16 +39,12 @@ public class ConversionManager {
 
     private static ConversionManager instance = new ConversionManager();
 
-    public static ConversionManager getInstance() {
-        return instance;
-    }
+    private ConversionManager() {}
 
-    private ConversionManager() {};
+    public static InputStream convertTo(CarbonMessage cMsg, String sourceType, String targetType) {
 
-    public InputStream convertTo(CarbonMessage cMsg, String sourceType, String targetType) {
-
-        TypeConverter converter = ConfigRegistry.getInstance()
-                .getTypeConverterRegistry().lookup(targetType, sourceType);
+        TypeConverter converter = ConfigRegistry.getInstance().getTypeConverterRegistry()
+                .lookup(targetType, sourceType);
 
         if (converter == null) {
             if (log.isDebugEnabled()) {
@@ -57,15 +53,14 @@ public class ConversionManager {
             return null;
         }
 
-        //Aggregation and creating inputStream
-        BlockingQueue<ByteBuffer> contentBuf = aggregateContent(cMsg);
+        BlockingQueue<ByteBuffer> contentBuf = getMessageBody(cMsg);
         InputStream inputStream = new ByteBufferBackedInputStream(contentBuf);
         InputStream processedStream = null;
 
         try {
             processedStream = converter.convert(inputStream);
         } catch (TypeConversionException e) {
-            log.error("Error in converting from: " + sourceType + " to: " + targetType);
+            log.error("Error in converting message body from: " + sourceType + " to: " + targetType);
         } catch (IOException e) {
             log.error("Error " + e);
         } finally {
@@ -74,15 +69,8 @@ public class ConversionManager {
         return processedStream;
     }
 
-    private BlockingQueue<ByteBuffer> aggregateContent(CarbonMessage msg) {
-
-        try {
-            //Get a clone of content chunk queue from the pipe
-            BlockingQueue<ByteBuffer> clonedContent = new LinkedBlockingQueue<>(msg.getFullMessageBody());
-            return clonedContent;
-        } catch (Exception e) {
-            log.error("Error while cloning ", e);
-        }
-        return null;
+    private static BlockingQueue<ByteBuffer> getMessageBody(CarbonMessage msg) {
+        BlockingQueue<ByteBuffer> msgBody = new LinkedBlockingQueue<>(msg.getFullMessageBody());
+        return msgBody;
     }
 }

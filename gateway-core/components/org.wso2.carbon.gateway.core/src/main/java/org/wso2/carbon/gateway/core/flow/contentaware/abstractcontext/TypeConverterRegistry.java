@@ -28,30 +28,11 @@ public interface TypeConverterRegistry {
      * Registers a new type converter.
      * <p>
      *
-     * @param toType        the type to convert to
-     * @param fromType      the type to convert from
-     * @param typeConverter the type converter to use
-     */
-    void addTypeConverter(Class<?> toType, Class<?> fromType, TypeConverter typeConverter);
-
-    /**
-     * Registers a new type converter.
-     * <p>
-     *
      * @param targetType    the type to convert to
      * @param sourceType    the type to convert from
      * @param typeConverter the type converter to use
      */
     void addTypeConverter(String targetType, String sourceType, TypeConverter typeConverter);
-
-    /**
-     * Removes the type converter
-     *
-     * @param toType   the type to convert to
-     * @param fromType the type to convert from
-     * @return <tt>true</tt> if removed, <tt>false</tt> if the type converter didn't exist
-     */
-    boolean removeTypeConverter(Class<?> toType, Class<?> fromType);
 
     /**
      * Removes the type converter
@@ -70,5 +51,4 @@ public interface TypeConverterRegistry {
      * @return the type converter or <tt>null</tt> if not found.
      */
     TypeConverter lookup(String toType, String fromType);
-
 }
