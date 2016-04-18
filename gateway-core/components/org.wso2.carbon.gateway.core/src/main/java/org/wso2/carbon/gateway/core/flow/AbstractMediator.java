@@ -100,7 +100,7 @@ public abstract class AbstractMediator implements Mediator {
         }
         sourceType = sourceType.split(";")[0];  // remove charset from Content-Type header
 
-        return ConversionManager.getInstance().convertTo(cMsg, sourceType, MIMEType.JSON);
+        return ConversionManager.getInstance().convertTo(cMsg, sourceType, targetType);
     }
 
     public void handleException(String msg) throws Exception {
