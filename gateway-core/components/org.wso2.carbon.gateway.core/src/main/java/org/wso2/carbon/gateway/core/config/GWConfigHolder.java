@@ -22,6 +22,7 @@ import org.wso2.carbon.gateway.core.flow.Group;
 import org.wso2.carbon.gateway.core.flow.Pipeline;
 import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
 import org.wso2.carbon.gateway.core.outbound.OutboundEndpoint;
+import org.wso2.carbon.gateway.core.util.VariableUtil;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,7 +47,6 @@ public class GWConfigHolder {
 
     public GWConfigHolder(String name) {
         this.name = name;
-        globalVariables.put("iflowName", name); //TODO: demo code only, remove
     }
 
     public String getName() {
@@ -57,8 +57,17 @@ public class GWConfigHolder {
         this.name = name;
     }
 
-    public void setGlobalVariables(Map<String, Object> globalVariables) {
-        this.globalVariables = globalVariables;
+    public void addGlobalVariable(String type, String key, String value) {
+        Object variable = VariableUtil.getVariable(type, value);
+        globalVariables.put(key, variable);
+    }
+
+    public Object getGlobalVariable(String key) {
+        return globalVariables.get(key);
+    }
+
+    public void removeGlobalVariable(String key) {
+        globalVariables.remove(key);
     }
 
     public InboundEndpoint getInboundEndpoint() {
