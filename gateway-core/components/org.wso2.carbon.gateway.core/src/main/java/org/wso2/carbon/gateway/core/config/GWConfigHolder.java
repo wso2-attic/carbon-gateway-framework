@@ -23,9 +23,8 @@ import org.wso2.carbon.gateway.core.flow.Pipeline;
 import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
 import org.wso2.carbon.gateway.core.outbound.OutboundEndpoint;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,7 +38,7 @@ public class GWConfigHolder {
 
     private Map<String, Pipeline> pipelines = new HashMap<>();
 
-    private List<Group> groups = new ArrayList<>();
+    private Map<String, Group> groups = new HashMap<>();
 
     private Map<String, OutboundEndpoint> outboundEndpoints = new HashMap<>();
 
@@ -66,8 +65,7 @@ public class GWConfigHolder {
         return inboundEndpoint;
     }
 
-    public void setInboundEndpoint(
-            InboundEndpoint inboundEndpoint) {
+    public void setInboundEndpoint(InboundEndpoint inboundEndpoint) {
         inboundEndpoint.setGWConfigName(name);
         this.inboundEndpoint = inboundEndpoint;
     }
@@ -101,11 +99,15 @@ public class GWConfigHolder {
     }
 
     public void addGroup(Group group) {
-        groups.add(group);
+        groups.put(group.getPath(), group);
     }
 
-    public List getGroups() {
-        return groups;
+    public Collection<Group> getGroups() {
+        return groups.values();
+    }
+
+    public Group getGroup(String path) {
+        return groups.get(path);
     }
 
     public boolean hasGroups() {
