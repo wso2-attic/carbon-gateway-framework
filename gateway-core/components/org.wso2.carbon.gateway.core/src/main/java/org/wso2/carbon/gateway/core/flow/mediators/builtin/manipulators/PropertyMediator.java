@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.flow.AbstractMediator;
+import org.wso2.carbon.gateway.core.util.VariableUtil;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 
@@ -37,14 +38,18 @@ public class PropertyMediator extends AbstractMediator {
     private static final Logger log = LoggerFactory.getLogger(PropertyMediator.class);
 
     private String key;
-    private Object value;
-
-    public PropertyMediator(String key, Object value) {
-        this.key = key;
-        this.value = value;
-    }
+    private String value;
+    private String type;
+    private Object variable;
 
     public PropertyMediator() {}
+
+    public PropertyMediator(String key, String value, String type) {
+        this.key = key;
+        this.value = value;
+        this.type = type;
+        this.variable = VariableUtil.getVariable(type, value);
+    }
 
     @Override
     public String getName() {
@@ -65,7 +70,7 @@ public class PropertyMediator extends AbstractMediator {
                 variableStack.push(map);
             }
 
-            map.put(key, value);
+            map.put(key, variable);
         } else {
             log.error("Variable stack has not been initialized!");
             return false;
@@ -77,6 +82,8 @@ public class PropertyMediator extends AbstractMediator {
     public void setParameters(ParameterHolder parameterHolder) {
         key = parameterHolder.getParameter("key").getValue();
         value = parameterHolder.getParameter("value").getValue();
+        type = parameterHolder.getParameter("type").getValue();
+        variable = VariableUtil.getVariable(type, value);
     }
 
 }

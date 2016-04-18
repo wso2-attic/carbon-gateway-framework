@@ -23,6 +23,7 @@ import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.messaging.CarbonMessage;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
 
@@ -121,4 +122,39 @@ public class VariableUtil {
             return (Stack<Map<String, Object>>) cMsg.getProperty(Constants.VARIABLE_STACK);
         }
     }
+
+    /**
+     * Provides instantiated object of give variable type.
+     * @param type
+     * @param value
+     * @return Object of variable type
+     */
+    public static Object getVariable(String type, String value) {
+        type = type.toLowerCase(Locale.ROOT);
+        if (type.equals("string")) {
+            return String.valueOf(value);
+        } else if (type.equals("integer")) {
+            return Integer.valueOf(value);
+        } else if (type.equals("boolean")) {
+            return Boolean.valueOf(value);
+        } else if (type.equals("double")) {
+            return Double.valueOf(value);
+        } else if (type.equals("float")) {
+            return Float.valueOf(value);
+        } else if (type.equals("long")) {
+            return Long.valueOf(value);
+        } else if (type.equals("short")) {
+            return Short.valueOf(value);
+        } else if (type.equals("xml")) {
+            log.info("XML Variable type not yet implemented! Using string instead.");
+            return String.valueOf(value);
+        } else if (type.equals("json")) {
+            log.info("JSON Variable type not yet implemented! Using string instead.");
+            return String.valueOf(value);
+        } else {
+            log.error("Unrecognized variable type " + type);
+            return null;
+        }
+    }
+
 }
