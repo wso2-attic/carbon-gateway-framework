@@ -51,12 +51,4 @@ public class TypeMapper {
     public String toString() {
         return "[" + fromType + "=>" + toType + "]";
     }
-
-    public String getToType() {
-        return toType;
-    }
-
-    public String getFromType() {
-        return fromType;
-    }
 }

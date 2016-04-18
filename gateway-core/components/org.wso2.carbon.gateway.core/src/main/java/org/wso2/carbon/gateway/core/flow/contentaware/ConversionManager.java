@@ -24,8 +24,10 @@ import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConver
 import org.wso2.carbon.gateway.core.flow.contentaware.exceptions.TypeConversionException;
 import org.wso2.carbon.messaging.CarbonMessage;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -36,21 +38,24 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class ConversionManager {
     private static final Logger log = LoggerFactory.getLogger(ConversionManager.class);
+    private static final int EOF = -1;
 
     private static ConversionManager instance = new ConversionManager();
 
     private ConversionManager() {}
 
-    public static InputStream convertTo(CarbonMessage cMsg, String sourceType, String targetType) {
+    public static CarbonMessage convertTo(CarbonMessage cMsg, String targetType) {
+
+        String sourceType = cMsg.getHeader("Content-Type");
 
         TypeConverter converter = ConfigRegistry.getInstance().getTypeConverterRegistry()
-                .lookup(targetType, sourceType);
+                .getTypeConverter(targetType, sourceType);
 
         if (converter == null) {
             if (log.isDebugEnabled()) {
-                log.debug("No type converted found for Source: " + sourceType + " Target : " + targetType);
+                log.debug("No type converter found for Source: " + sourceType + " Target : " + targetType);
             }
-            return null;
+            return null; // TODO: Throw an exception instead of returning null
         }
 
         BlockingQueue<ByteBuffer> contentBuf = getMessageBody(cMsg);
@@ -59,6 +64,9 @@ public class ConversionManager {
 
         try {
             processedStream = converter.convert(inputStream);
+            ByteBuffer outputByteBuffer = ByteBuffer.wrap(toByteArray(processedStream));
+            cMsg.setHeader("Content-Type", targetType);
+            cMsg.addMessageBody(outputByteBuffer);
         } catch (TypeConversionException e) {
             log.error("Error in converting message body from: " + sourceType + " to: " + targetType);
         } catch (IOException e) {
@@ -66,7 +74,22 @@ public class ConversionManager {
         } finally {
             //TODO: do we need to close the input stream here ?
         }
-        return processedStream;
+
+        return cMsg;
+    }
+
+    private static byte[] toByteArray(final InputStream in) throws IOException {
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        copy(in, out);
+        return out.toByteArray();
+    }
+
+    private static void copy(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[1024];
+        int n;
+        while (EOF != (n = in.read(buffer))) {
+            out.write(buffer, 0, n);
+        }
     }
 
     private static BlockingQueue<ByteBuffer> getMessageBody(CarbonMessage msg) {

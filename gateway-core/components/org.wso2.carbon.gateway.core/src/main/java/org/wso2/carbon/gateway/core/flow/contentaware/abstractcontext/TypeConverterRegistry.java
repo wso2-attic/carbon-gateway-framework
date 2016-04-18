@@ -50,5 +50,5 @@ public interface TypeConverterRegistry {
      * @param fromType the type to convert from
      * @return the type converter or <tt>null</tt> if not found.
      */
-    TypeConverter lookup(String toType, String fromType);
+    TypeConverter getTypeConverter(String toType, String fromType);
 }

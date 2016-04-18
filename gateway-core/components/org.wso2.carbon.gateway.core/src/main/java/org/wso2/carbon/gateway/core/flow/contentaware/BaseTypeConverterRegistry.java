@@ -44,7 +44,8 @@ public class BaseTypeConverterRegistry implements TypeConverterRegistry {
     }
 
     @Override
-    public void addTypeConverter(String targetType, String sourceType, TypeConverter typeConverter) {
+    public void addTypeConverter(String targetType, String sourceType,
+                                 TypeConverter typeConverter) {
         if (log.isDebugEnabled()) {
             log.debug("Adding type converter: {}", typeConverter);
         }
@@ -62,14 +63,9 @@ public class BaseTypeConverterRegistry implements TypeConverterRegistry {
         return converter != null;
     }
 
-    public TypeConverter getTypeConverter(String targetType, String sourceType) {
-        TypeMapper key = new TypeMapper(targetType, sourceType);
-
-        return typeConverters.get(key);
-    }
-
     @Override
-    public TypeConverter lookup(String targetType, String sourceType) {
+    public TypeConverter getTypeConverter(String targetType, String sourceType) {
         return typeConverters.get(new TypeMapper(targetType, sourceType));
     }
 }
+
