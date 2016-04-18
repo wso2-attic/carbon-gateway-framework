@@ -25,10 +25,6 @@ import org.wso2.carbon.gateway.core.flow.contentaware.MIMEType;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-
 /**
  * Sample XML to JSON Conversion Mediator
  */
@@ -39,7 +35,7 @@ public class XMLtoJSONTestMediator extends AbstractMediator {
 
     @Override
     public String getName() {
-        return "XMLtoJSONTestMediator";
+        return "XMLtoJSONMediator";
     }
 
     /**
@@ -56,11 +52,11 @@ public class XMLtoJSONTestMediator extends AbstractMediator {
 
         CarbonMessage convertedMsg = convertTo(carbonMessage, MIMEType.JSON);
 
-        CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
-        CharBuffer charBuf = decoder.decode(convertedMsg.getMessageBody());
-        String msgBody = new String(charBuf.array());
+        //CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
+        //CharBuffer charBuf = decoder.decode(convertedMsg.getMessageBody());
+        //String msgBody = new String(charBuf.array());
 
-        log.info("\n" + msgBody);
+        //log.info("\n" + msgBody);
 
         return next(convertedMsg, carbonCallback);
     }

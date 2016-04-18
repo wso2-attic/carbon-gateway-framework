@@ -39,7 +39,7 @@ public class XMLtoJSONTestMediatorProvider implements MediatorProvider {
 
     @Override
     public String getName() {
-        return "XMLtoJSONTestMediator";
+        return "XMLtoJSONMediator";
     }
 
     @Override
