@@ -40,18 +40,12 @@ statementList
 
 // Definition of different types of statements
 statement
-    : mediatorStatement
-    | titleStatement
+    : titleStatement
     | participantStatement
-    | routingStatement
-    | parallelStatement
-    | ifStatement
-    | loopStatement
     | groupStatement
-    | refStatement
-    | commentStatement
+    | messageflowStatementList
     | variableStatement
-    ;
+    | commentStatement;
 
 // Definition of the high level name for this message flow
 titleStatement
@@ -82,6 +76,29 @@ pipelineDefStatement
 outboundEndpointDefStatement
     : PARTICIPANT WS+ IDENTIFIER WS+ COLON WS+ outboundEndpointDef;
 
+groupStatement: groupDefStatement
+                messageflowStatementList
+                END;
+
+groupDefStatement: GROUP WS+  GROUP_NAME_DEF WS*
+                                 COMMA_SYMBOL WS* GROUP_PATH_DEF
+                                 COMMA_SYMBOL WS* GROUP_METHOD_DEF NEWLINE+;
+
+GROUP_NAME_DEF: NAME WS* EQ_SYMBOL STRINGX;
+GROUP_PATH_DEF: PATH WS* EQ_SYMBOL WS* URLSTRINGX;
+GROUP_METHOD_DEF: METHOD WS* EQ_SYMBOL WS* STRINGX;
+
+messageflowStatementList: (messageflowStatement NEWLINE+)*;
+
+messageflowStatement: routingStatement
+                          | mediatorStatement
+                          | parallelStatement
+                          | ifStatement
+                          | loopStatement
+                          | refStatement
+                          | variableStatement
+                          | commentStatement;
+
 // Definition of a mediator statement
 mediatorStatement : mediatorStatementDef;
 
@@ -104,7 +121,7 @@ outboundEndpointDef: OUTBOUNDENDPOINTX LPAREN PROTOCOLDEF PARAMX* RPAREN;
 routingStatement: routingStatementDef;
 
 routingStatementDef: IDENTIFIER WS+ ARROWX WS+ IDENTIFIER WS+
-                  COMMENTX WS+ COMMENTSTRINGX;
+                  COLON WS+ COMMENTSTRINGX;
 
 // Variable definition statement
 variableStatement: VARX WS+ TYPEDEFINITIONX WS+ IDENTIFIER WS* EQ_SYMBOL WS*  COMMENTSTRINGX;
@@ -126,11 +143,11 @@ parallelStatement
     ;
 
 parMultiThenBlock
-    : statementList NEWLINE (parElseBlock)? ;
+    : messageflowStatementList NEWLINE (parElseBlock)? ;
 
 
 parElseBlock
-    : (ELSE NEWLINE statementList)+ ;
+    : (ELSE NEWLINE messageflowStatementList)+ ;
 
 // Definition of 'alt' statement for if condition
 ifStatement
@@ -145,23 +162,16 @@ conditionStatement
 conditionDef: CONDITIONX LPAREN SOURCEDEF PARAMX* RPAREN;
 
 ifMultiThenBlock
-    : statementList NEWLINE (ifElseBlock)? ;
+    : messageflowStatementList NEWLINE (ifElseBlock)? ;
 
 
 ifElseBlock
-    : (ELSE NEWLINE statementList)+ ;
-
-// Definition of group statement
-groupStatement
-    : GROUP WS IDENTIFIER NEWLINE
-      NEWLINE? statementList
-      END
-    ;
+    : (ELSE NEWLINE messageflowStatementList)+ ;
 
 // Definition of loop statement
 loopStatement
     : LOOP WS expression NEWLINE
-      NEWLINE? statementList
+      NEWLINE? messageflowStatementList
       END
     ;
 // Definition of reference statement
@@ -272,6 +282,9 @@ ELSE: E L S E;
 LOOP: L O O P;
 GROUP: G R O U P;
 WITH : W I T H ;
+NAME: N A M E;
+PATH: P A T H;
+METHOD: M E T H O D;
 
 
 // LEXER: symbol rules
