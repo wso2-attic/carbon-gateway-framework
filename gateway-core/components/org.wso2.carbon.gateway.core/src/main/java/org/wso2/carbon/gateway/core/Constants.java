@@ -24,4 +24,14 @@ package org.wso2.carbon.gateway.core;
 public class Constants {
 
     public static final String ERROR_HANDLER = "ERROR_HANDLER";
+
+    public static final String VARIABLE_STACK = "VARIABLE_STACK";
+
+    public static final String GW_GT_SCOPE = "GW_GT_SCOPE";
+
+    public static final String SERVICE_METHOD = "SERVICE_METHOD";
+    public static final String SERVICE_CONTEXT = "SERVICE_CONTEXT";
+    public static final String SERVICE_SUB_GROUP_PATH = "SERVICE_SUB_GROUP_PATH";
+
+
 }

@@ -2,58 +2,24 @@
 
 This is a temporary repo for WSO2 Gateway work.
 
+Gateway is a message-mediation-engine implementation that can receive/send Carbon-Messages 
+from/to Carbon Transport and mediate messages. 
 
-Building the Product
---------------------
+- Gateway Core runtime is configured via Gateway mediation language 
+which can be visually represented in a sequence diagram-like design.   
+- Lightweight, fully non-blocking mediation runtime. 
+- Control Structures, Logging, Header and Content-based Routing, Type-aware messaging
+- This runtime if fully extensible to built other advanced solutions such as Integration server (next-gen ESB), Data Integration Server, etc. 
+
+Gateway Core cannot be used as a stand alone product/runtime. 
+
+
+Building Gateway Framework
+--------------------------
 
 Build the master branch of this repository.
 Can be built only from JDK 1.8.
 
-
-Running Samples
----------------
-
-Sample Integration Flow configurations are available at samples/SequenceDiagramDSLSamples directory.
-
-Configuration can be deployed to server by dropping the file to <CARBON_HOME>/deployment/integration-flows/ directory.
-
-
-####Sample Configuration
-
-```sh
-@startuml
-
-IntegrationFlow : Message_Router
-
-participant inboundendpointListener : InboundEndpoint(protocol("http"),port(8080),context("/router"))
-
-participant pipeline1 : Pipeline("router_flow")
-
-participant outboundendpoint1 : OutboundEndpoint(protocol("http"),host("http://localhost:8280/backend1"))
-
-participant outboundendpoint2 : OutboundEndpoint(protocol("http"),host("http://localhost:8280/backend2"))
-
-inboundendpointListener -> pipeline1 : "request"
-
-log("Before Filter")
-
-alt condition(source("$header.routeId"),pattern("r1"))
-    log("Filter True")
-    pipeline1 -> outboundendpoint1 : "Request_to_Backend1"
-    outboundendpoint1 -> pipeline1 : "Response_from_Backend1"
-
-else
-    log("Filter False")
-    pipeline1 -> outboundendpoint2 : "Request_to_Backend2"
-    outboundendpoint2 -> pipeline1 : "Response_from_Backend2"
-end
-
-log("After Filter")
-
-pipeline1 -> inboundendpointListener : "Final_Response"
-
-@enduml
-```
 
 
 Architecture

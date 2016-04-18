@@ -18,10 +18,13 @@
 
 package org.wso2.carbon.gateway.core.config;
 
+import org.wso2.carbon.gateway.core.flow.Group;
 import org.wso2.carbon.gateway.core.flow.Pipeline;
 import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
 import org.wso2.carbon.gateway.core.outbound.OutboundEndpoint;
+import org.wso2.carbon.gateway.core.util.VariableUtil;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,8 +39,11 @@ public class GWConfigHolder {
 
     private Map<String, Pipeline> pipelines = new HashMap<>();
 
+    private Map<String, Group> groups = new HashMap<>();
+
     private Map<String, OutboundEndpoint> outboundEndpoints = new HashMap<>();
 
+    private Map<String, Object> globalVariables = new HashMap<>();
 
     public GWConfigHolder(String name) {
         this.name = name;
@@ -51,12 +57,25 @@ public class GWConfigHolder {
         this.name = name;
     }
 
+    public void addGlobalVariable(String type, String key, String value) {
+        Object variable = VariableUtil.getVariable(type, value);
+        globalVariables.put(key, variable);
+    }
+
+    public Object getGlobalVariable(String key) {
+        return globalVariables.get(key);
+    }
+
+    public void removeGlobalVariable(String key) {
+        globalVariables.remove(key);
+    }
+
     public InboundEndpoint getInboundEndpoint() {
         return inboundEndpoint;
     }
 
-    public void setInboundEndpoint(
-            InboundEndpoint inboundEndpoint) {
+    public void setInboundEndpoint(InboundEndpoint inboundEndpoint) {
+        inboundEndpoint.setGWConfigName(name);
         this.inboundEndpoint = inboundEndpoint;
     }
 
@@ -80,7 +99,28 @@ public class GWConfigHolder {
         return outboundEndpoints.get(name);
     }
 
+    public Map<String, Object> getGlobalVariables() {
+        return globalVariables;
+    }
+
     public void addOutboundEndpoint(OutboundEndpoint outboundEndpoint) {
         outboundEndpoints.put(outboundEndpoint.getName(), outboundEndpoint);
     }
+
+    public void addGroup(Group group) {
+        groups.put(group.getPath(), group);
+    }
+
+    public Collection<Group> getGroups() {
+        return groups.values();
+    }
+
+    public Group getGroup(String path) {
+        return groups.get(path);
+    }
+
+    public boolean hasGroups() {
+        return !groups.isEmpty();
+    }
+
 }

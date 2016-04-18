@@ -25,7 +25,6 @@ import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.Constants;
 
-
 /**
  * HTTP Inbound Endpoint
  */
@@ -91,6 +90,17 @@ public class HTTPInboundEP extends InboundEndpoint {
         if (log.isDebugEnabled()) {
             log.debug("HTTP Endpoint : " + getName() + " received the message");
         }
+        cMsg.setProperty(org.wso2.carbon.gateway.core.Constants.SERVICE_CONTEXT, context);
+
+        String uri = (String) cMsg.getProperty(Constants.TO);
+        String[] uriSplit = uri.split(context);
+        String subPath = "";
+        if (uriSplit.length > 1) {
+            subPath = uriSplit[1];
+        }
+        cMsg.setProperty(org.wso2.carbon.gateway.core.Constants.SERVICE_SUB_GROUP_PATH, subPath);
+
+        cMsg.setProperty(org.wso2.carbon.gateway.core.Constants.SERVICE_METHOD, cMsg.getProperty("HTTP_METHOD"));
         super.receive(cMsg, callback);
         return true;
     }
