@@ -1,4 +1,4 @@
-#WSO2 Gateway 
+#WSO2 Gateway
 
 This is a temporary repo for WSO2 Gateway work.
 
