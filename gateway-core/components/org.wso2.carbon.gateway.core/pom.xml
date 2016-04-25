@@ -71,12 +71,20 @@
             <artifactId>org.wso2.carbon.core</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.wso2.orbit.org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.carbon.messaging</groupId>
             <artifactId>org.wso2.carbon.messaging</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.orbit.org.antlr</groupId>
             <artifactId>antlr4-runtime</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
         </dependency>
     </dependencies>
 
@@ -103,7 +111,9 @@
             org.wso2.carbon.kernel.startupresolver.*;version="${carbon.kernel.package.import.version.range}",
             org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
             org.antlr.v4.runtime.*,
-            org.wso2.carbon.messaging.*;version="${carbon.messaging.package.import.version.range}"
+            org.wso2.carbon.messaging.*;version="${carbon.messaging.package.import.version.range}",
+            org.yaml.snakeyaml.*;version="${org.snakeyaml.package.import.version.range}",
+            com.lmax.disruptor.*;version="${disruptor.package.import.version.range}",
         </import.package>
     </properties>
 

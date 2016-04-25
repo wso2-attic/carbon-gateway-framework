@@ -132,6 +132,11 @@
                 <version>${antlr4.runtime.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.wso2.orbit.org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${org.snakeyaml.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
@@ -150,6 +155,11 @@
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.core</artifactId>
                 <version>${carbon.kernel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.com.lmax</groupId>
+                <artifactId>disruptor</artifactId>
+                <version>${disruptor.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -241,6 +251,9 @@
         <carbon.gw.version>1.0.0-SNAPSHOT</carbon.gw.version>
         <carbon.gw.package.export.version>1.0.0</carbon.gw.package.export.version>
 
+        <disruptor.version>3.3.2.wso2v2</disruptor.version>
+        <disruptor.package.import.version.range>[3.3.2, 3.5.0)</disruptor.package.import.version.range>
+
         <osgi.api.version>6.0.0</osgi.api.version>
         <equinox.osgi.version>3.10.2.v20150203-1939</equinox.osgi.version>
         <equinox.osgi.services.version>3.4.0.v20140312-2051</equinox.osgi.services.version>
@@ -254,11 +267,11 @@
         <slf4j.logging.package.import.version.range>[1.7.1, 2.0.0)
         </slf4j.logging.package.import.version.range>
 
-        <carbon.transport.version>2.0.2</carbon.transport.version>
+        <carbon.transport.version>2.0.2-SNAPSHOT</carbon.transport.version>
         <carbon.transport.package.import.version.range>[2.0.0, 2.1.0)
         </carbon.transport.package.import.version.range>
 
-        <carbon.messaging.version>1.0.2</carbon.messaging.version>
+        <carbon.messaging.version>1.0.3-SNAPSHOT</carbon.messaging.version>
 
         <carbon.messaging.package.import.version.range>[0.0.0, 2.0.0)
         </carbon.messaging.package.import.version.range>
@@ -269,6 +282,8 @@
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
         <carbon.feature.plugin.version>2.0.0</carbon.feature.plugin.version>
 
+        <org.snakeyaml.version>1.16.0.wso2v1</org.snakeyaml.version>
+        <org.snakeyaml.package.import.version.range>[1.16.0, 2.0.0)</org.snakeyaml.package.import.version.range>
         <antlr4.runtime.version>4.5.1.wso2v1</antlr4.runtime.version>
         <plugin.version.antlr>4.5.1</plugin.version.antlr>
     </properties>
