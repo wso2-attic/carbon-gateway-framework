@@ -80,7 +80,7 @@ public abstract class InboundEndpoint {
     public boolean receive(CarbonMessage cMsg, CarbonCallback callback) {
 
         GWConfigHolder configHolder = ConfigRegistry.getInstance().getGWConfig(getGWConfigName());
-        VariableUtil.pushGlobalVariableStack(cMsg, configHolder.getGlobalVariables());
+        VariableUtil.pushGlobalVariableStack(cMsg, configHolder.getGlobalConstants());
 
         String pipelineName = pipeline;
 

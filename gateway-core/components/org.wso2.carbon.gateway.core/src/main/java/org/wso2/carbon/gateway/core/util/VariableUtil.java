@@ -35,7 +35,6 @@ public class VariableUtil {
 
     private static final Logger log = LoggerFactory.getLogger(VariableUtil.class);
 
-
     /**
      * Creates a new variable stack containing global variables and attaches this to CarbonMessage.
      * @param cMsg
@@ -129,7 +128,7 @@ public class VariableUtil {
      * @param value
      * @return Object of variable type
      */
-    public static Object getVariable(String type, String value) {
+    public static Object createVariable(String type, String value) {
         type = type.toLowerCase(Locale.ROOT);
         if (type.equals("string")) {
             return String.valueOf(value);
@@ -154,6 +153,79 @@ public class VariableUtil {
         } else {
             log.error("Unrecognized variable type " + type);
             return null;
+        }
+    }
+
+    /**
+     * Returns the type of a variable object.
+     * @param variable
+     * @return object type as a string.
+     */
+    public static String getType(Object variable) {
+        if (variable instanceof String) {
+            return "String";
+        } else if (variable instanceof Integer) {
+            return "Integer";
+        } else if (variable instanceof Boolean) {
+            return "Boolean";
+        } else if (variable instanceof Double) {
+            return "Double";
+        } else if (variable instanceof Float) {
+            return "Float";
+        } else if (variable instanceof Long) {
+            return "Long";
+        } else if (variable instanceof Short) {
+            return "Short";
+        } else {
+            return "Unknown";
+        }
+    }
+
+    /**
+     * Find the map that contains a variable by traversing variable stack.
+     * @param carbonMessage
+     * @param name
+     * @return Variable value object.
+     */
+    public static Object getMap(CarbonMessage carbonMessage, String name) {
+        Stack<Map<String, Object>> variableStack =
+                (Stack<Map<String, Object>>) carbonMessage.getProperty(Constants.VARIABLE_STACK);
+        return findVariable(variableStack.peek(), name, true);
+    }
+
+    /**
+     * Find the value of a given key traversing the variable stack.
+     * @param carbonMessage
+     * @param name
+     * @return Variable value object.
+     */
+    public static Object getVariable(CarbonMessage carbonMessage, String name) {
+        Stack<Map<String, Object>> variableStack =
+                (Stack<Map<String, Object>>) carbonMessage.getProperty(Constants.VARIABLE_STACK);
+        return findVariable(variableStack.peek(), name, false);
+    }
+
+    /**
+     * Recursively search variable stack for given key and return either the map containing the variable or
+     * the variable value itself.
+     * @param variables
+     * @param name
+     * @param map toggle whether variable value or map containing variable should be returned.
+     * @return Variable value or map object.
+     */
+    private static Object findVariable(Map<String, Object> variables, String name, boolean map) {
+        if (variables.containsKey(name)) {
+            if (!map) {
+                return variables.get(name);
+            } else {
+                return variables;
+            }
+        } else {
+            if (variables.containsKey(Constants.GW_GT_SCOPE)) {
+                return findVariable((Map<String, Object>) variables.get(Constants.GW_GT_SCOPE), name, map);
+            } else {
+                return null;
+            }
         }
     }
 
