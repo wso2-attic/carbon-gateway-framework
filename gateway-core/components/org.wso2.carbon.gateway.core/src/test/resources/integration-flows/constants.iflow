@@ -1,0 +1,37 @@
+@startuml
+
+const String scheme = "http"
+const Integer port = 8290
+const String context = "/stocks"
+const String ep1 = "http://localhost:8080/stockquote/all"
+const String ep2 = "http://localhost:8081/stockquote/all"
+
+participant StocksInbound : InboundEndpoint(protocol("$scheme"),port("$port"),context("$context"))
+
+participant StocksPipeline : Pipeline("Stocks_Flow")
+
+participant NYSEOutbound : OutboundEndpoint(protocol("http"),host("$ep1"))
+
+participant NASDAQOutbound : OutboundEndpoint(protocol("http"),host("$ep2"))
+
+StocksInbound -> StocksPipeline : "client request"
+
+StocksPipeline::log("before filter statement")
+
+if with condition(source("$header.exchange"),pattern("nyse"))
+    StocksPipeline::log("Filter condition is true")
+    StocksPipeline -> NYSEOutbound : "Request to New York Stock Exchange"
+    NYSEOutbound -> StocksPipeline : "StockQuotes from New York Stock Exchange"
+
+else
+    StocksPipeline::log("Filter condition is false")
+    StocksPipeline -> NASDAQOutbound : "Request to NASDAQ"
+    NASDAQOutbound -> StocksPipeline : "StockQuotes from NASDAQ"
+end
+
+StocksPipeline::log("after filter statement")
+
+StocksPipeline -> StocksInbound : "Final Response"
+
+
+@enduml

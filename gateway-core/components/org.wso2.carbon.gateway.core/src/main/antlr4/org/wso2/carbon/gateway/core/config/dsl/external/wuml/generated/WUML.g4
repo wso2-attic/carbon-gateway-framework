@@ -42,6 +42,7 @@ statementList
 statement
     : titleStatement
     | participantStatement
+    | constStatement
     | groupStatement
     | messageflowStatementList
     | variableStatement
@@ -123,8 +124,19 @@ routingStatement: routingStatementDef;
 routingStatementDef: IDENTIFIER WS+ ARROWX WS+ IDENTIFIER WS+
                   COLON WS+ COMMENTSTRINGX;
 
+// A variable statement
+variableStatement: variableDeclarationStatement
+                    | variableAssignmentStatement
+                    ;
+
 // Variable definition statement
-variableStatement: VARX WS+ TYPEDEFINITIONX WS+ IDENTIFIER WS* EQ_SYMBOL WS*  COMMENTSTRINGX;
+variableDeclarationStatement: VARX WS+ TYPEDEFINITIONX WS+ IDENTIFIER WS* EQ_SYMBOL WS*  COMMENTSTRINGX;
+
+// Variable assignment statement
+variableAssignmentStatement: VAR_IDENTIFIER WS* COMMENTSTRINGX;
+
+// Constant definition statement
+constStatement: CONSTX WS+ TYPEDEFINITIONX WS+ IDENTIFIER WS* EQ_SYMBOL WS*  COMMENTSTRINGX;
 
 // Message routing statement
 /*
@@ -268,6 +280,7 @@ XMLTYPEX: XMLTYPE;
 JSONTYPEX: JSONTYPE;
 
 VARX: VAR;
+CONSTX: CONST;
 
 // LEXER: Keywords
 
@@ -324,6 +337,9 @@ WS
 
 IDENTIFIER
     : ('$')? ('a'..'z' | 'A'..'Z' ) ( 'a'..'z' | 'A'..'Z' | DIGIT | '_')+ ;
+
+VAR_IDENTIFIER
+    : ('$') ('a'..'z' | 'A'..'Z' ) ( 'a'..'z' | 'A'..'Z' | DIGIT | '_')+ WS* ('=');
 
 ANY_STRING: ('$')? ('a'..'z' | 'A'..'Z' | DIGIT | '_' | '\\' | '/' | ':')+ ;
 
@@ -402,6 +418,7 @@ fragment SHORTTYPE: S H O R T;
 fragment XMLTYPE: X M L;
 fragment JSONTYPE: J S O N;
 fragment VAR: V A R;
+fragment CONST: C O N S T;
 
 fragment TYPEDEFINITION
     : INTEGERTYPE
