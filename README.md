@@ -1,7 +1,5 @@
 #WSO2 Gateway
 
-This is a temporary repo for WSO2 Gateway work.
-
 Gateway is a message-mediation-engine implementation that can receive/send Carbon-Messages 
 from/to Carbon Transport and mediate messages. 
 
