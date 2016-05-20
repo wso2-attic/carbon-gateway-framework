@@ -18,17 +18,36 @@
 
 package org.wso2.carbon.gateway.core.flow;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.Constants;
+import org.wso2.carbon.gateway.core.flow.templates.uri.URITemplate;
+import org.wso2.carbon.gateway.core.flow.templates.uri.URITemplateException;
+import org.wso2.carbon.gateway.core.util.VariableUtil;
 import org.wso2.carbon.messaging.CarbonMessage;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Representation for a Service Group
  */
 public class Group {
+    private static final Logger log = LoggerFactory.getLogger(Group.class);
 
     private String path;
     private String method;
     private String pipeline;
+    private URITemplate template;
+
+    public Group(String path) {
+        this.path = path;
+        try {
+            template = new URITemplate(getPath());
+        } catch (URITemplateException e) {
+            log.error("Error creating URI Template from path " + path);
+        }
+    }
 
     public String getPath() {
         return path;
@@ -56,21 +75,33 @@ public class Group {
 
     public boolean canProcess(CarbonMessage cMsg) {
         String method = (String) cMsg.getProperty(Constants.SERVICE_METHOD);
-        String subGroupPAth = (String) cMsg.getProperty(Constants.SERVICE_SUB_GROUP_PATH);
 
         if (this.method != null && !method.matches(this.method)) { //method is optional
             return false;
         }
 
-        if (!subGroupPAth.startsWith(path)) {
+        if (!isTemplateMatching(cMsg)) {
             return false;
         }
 
         return true;
     }
 
-    public Group(String path) {
-        this.path = path;
+    private boolean isTemplateMatching(CarbonMessage cMsg) {
+        String subGroupPath = (String) cMsg.getProperty(Constants.SERVICE_SUB_GROUP_PATH);
+        Map<String, String> uriVars = new HashMap<>();
+        boolean r = template.matches(subGroupPath, uriVars);
+
+        if (r) {
+            addVariables(cMsg, uriVars);
+        }
+
+        return r;
+    }
+
+    private void addVariables(CarbonMessage cMsg, Map<String, String> uriVars) {
+        uriVars.forEach((k, v) ->
+                VariableUtil.addGlobalVariable(cMsg, k, VariableUtil.createVariable(Constants.TYPES.STRING, v)));
     }
 
 }

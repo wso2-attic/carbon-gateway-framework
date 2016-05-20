@@ -1,4 +1,4 @@
-package org.wso2.carbon.gateway.core;
+package org.wso2.carbon.gateway.core.config;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BaseErrorListener;

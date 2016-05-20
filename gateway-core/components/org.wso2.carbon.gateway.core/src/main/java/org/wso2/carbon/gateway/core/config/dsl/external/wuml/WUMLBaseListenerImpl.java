@@ -35,6 +35,7 @@ import org.wso2.carbon.gateway.core.inbound.InboundEPProviderRegistry;
 import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
 import org.wso2.carbon.gateway.core.outbound.OutboundEPProviderRegistry;
 import org.wso2.carbon.gateway.core.outbound.OutboundEndpoint;
+import org.wso2.carbon.gateway.core.util.VariableUtil;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -137,7 +138,8 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         }
 
         if (pipelineStack.size() == 0) {
-            integrationFlow.getGWConfigHolder().addGlobalConstant(constType, constIdentifier, constValue);
+            integrationFlow.getGWConfigHolder().addGlobalConstant(
+                    VariableUtil.getType(constType), constIdentifier, constValue);
         } // constants only allowed at the highest level
 
         super.exitConstStatement(ctx);
