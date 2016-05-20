@@ -109,6 +109,35 @@ public class VariableUtil {
     }
 
     /**
+     * Adds a variable onto the top most variable stack.
+     * @param cMsg
+     * @param key
+     * @param variable
+     */
+    public static void addVariable(CarbonMessage cMsg, String key, Object variable) {
+        Stack<Map<String, Object>> stack = getVariableStack(cMsg);
+        stack.peek().put(key, variable);
+    }
+
+    /**
+     * Add a variable onto the global constants stack.
+     * @param cMsg
+     * @param key
+     * @param variable
+     */
+    public static void addGlobalVariable(CarbonMessage cMsg, String key, Object variable) {
+        Stack<Map<String, Object>> stack = getVariableStack(cMsg);
+        Map<String, Object> global;
+        if (stack.peek().containsKey(Constants.GW_GT_SCOPE)) {
+            global = (Map<String, Object>) stack.peek().get(Constants.GW_GT_SCOPE);
+        } else {
+            global = stack.peek();
+        }
+
+        global.put(key, variable);
+    }
+
+    /**
      * Get variable stack from CarbonMessage. This method will create an empty variable stack if it does not exist.
      * @param cMsg
      * @return variable stack
@@ -128,26 +157,25 @@ public class VariableUtil {
      * @param value
      * @return Object of variable type
      */
-    public static Object createVariable(String type, String value) {
-        type = type.toLowerCase(Locale.ROOT);
-        if (type.equals("string")) {
+    public static Object createVariable(Constants.TYPES type, String value) {
+        if (type.equals(Constants.TYPES.STRING)) {
             return String.valueOf(value);
-        } else if (type.equals("integer")) {
+        } else if (type.equals(Constants.TYPES.INTEGER)) {
             return Integer.valueOf(value);
-        } else if (type.equals("boolean")) {
+        } else if (type.equals(Constants.TYPES.BOOLEAN)) {
             return Boolean.valueOf(value);
-        } else if (type.equals("double")) {
+        } else if (type.equals(Constants.TYPES.DOUBLE)) {
             return Double.valueOf(value);
-        } else if (type.equals("float")) {
+        } else if (type.equals(Constants.TYPES.FLOAT)) {
             return Float.valueOf(value);
-        } else if (type.equals("long")) {
+        } else if (type.equals(Constants.TYPES.LONG)) {
             return Long.valueOf(value);
-        } else if (type.equals("short")) {
+        } else if (type.equals(Constants.TYPES.SHORT)) {
             return Short.valueOf(value);
-        } else if (type.equals("xml")) {
+        } else if (type.equals(Constants.TYPES.XML)) {
             log.info("XML Variable type not yet implemented! Using string instead.");
             return String.valueOf(value);
-        } else if (type.equals("json")) {
+        } else if (type.equals(Constants.TYPES.JSON)) {
             log.info("JSON Variable type not yet implemented! Using string instead.");
             return String.valueOf(value);
         } else {
@@ -159,25 +187,55 @@ public class VariableUtil {
     /**
      * Returns the type of a variable object.
      * @param variable
-     * @return object type as a string.
+     * @return object type as Constants.TYPES
      */
-    public static String getType(Object variable) {
+    public static Constants.TYPES getType(Object variable) {
         if (variable instanceof String) {
-            return "String";
+            return Constants.TYPES.STRING;
         } else if (variable instanceof Integer) {
-            return "Integer";
+            return Constants.TYPES.INTEGER;
         } else if (variable instanceof Boolean) {
-            return "Boolean";
+            return Constants.TYPES.BOOLEAN;
         } else if (variable instanceof Double) {
-            return "Double";
+            return Constants.TYPES.DOUBLE;
         } else if (variable instanceof Float) {
-            return "Float";
+            return Constants.TYPES.FLOAT;
         } else if (variable instanceof Long) {
-            return "Long";
+            return Constants.TYPES.LONG;
         } else if (variable instanceof Short) {
-            return "Short";
+            return Constants.TYPES.SHORT;
         } else {
-            return "Unknown";
+            return Constants.TYPES.UNKNOWN;
+        }
+    }
+
+    /**
+     * Returns the type of a variable given type name.
+     * @param typeName
+     * @return object type as Constants.TYPES
+     */
+    public static Constants.TYPES getType(String typeName) {
+        if (typeName == null) {
+            return null;
+        }
+
+        typeName = typeName.toLowerCase(Locale.ROOT);
+        if (typeName.equals("string")) {
+            return Constants.TYPES.STRING;
+        } else if (typeName.equals("integer")) {
+            return Constants.TYPES.INTEGER;
+        } else if (typeName.equals("boolean")) {
+            return Constants.TYPES.BOOLEAN;
+        } else if (typeName.equals("double")) {
+            return Constants.TYPES.DOUBLE;
+        } else if (typeName.equals("float")) {
+            return Constants.TYPES.FLOAT;
+        } else if (typeName.equals("long")) {
+            return Constants.TYPES.LONG;
+        } else if (typeName.equals("short")) {
+            return Constants.TYPES.SHORT;
+        } else {
+            return Constants.TYPES.UNKNOWN;
         }
     }
 

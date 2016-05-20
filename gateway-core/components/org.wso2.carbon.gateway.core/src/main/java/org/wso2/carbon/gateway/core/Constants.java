@@ -27,6 +27,11 @@ public class Constants {
 
     public static final String VARIABLE_STACK = "VARIABLE_STACK";
 
+    /**
+     * Enumeration of supported types.
+     */
+    public enum TYPES { STRING, INTEGER, BOOLEAN, DOUBLE, FLOAT, LONG, SHORT, XML, JSON, UNKNOWN }
+
     public static final String GW_GT_SCOPE = "GW_GT_SCOPE";
 
     public static final String SERVICE_METHOD = "SERVICE_METHOD";

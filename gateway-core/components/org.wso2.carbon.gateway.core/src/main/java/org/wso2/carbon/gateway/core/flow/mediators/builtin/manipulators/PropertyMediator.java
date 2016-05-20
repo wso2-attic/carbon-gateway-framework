@@ -39,13 +39,13 @@ public class PropertyMediator extends AbstractMediator {
 
     private String key;
     private String value;
-    private String type;
+    private Constants.TYPES type;
     private boolean assignment;
     private Object variable;
 
     public PropertyMediator() {}
 
-    public PropertyMediator(String key, String value, String type, boolean assignment) {
+    public PropertyMediator(String key, String value, Constants.TYPES type, boolean assignment) {
         this.key = key;
         this.value = value;
         this.type = type;
@@ -103,7 +103,7 @@ public class PropertyMediator extends AbstractMediator {
     public void setParameters(ParameterHolder parameterHolder) {
         key = parameterHolder.getParameter("key").getValue();
         value = parameterHolder.getParameter("value").getValue();
-        type = parameterHolder.getParameter("type").getValue();
+        type = VariableUtil.getType(parameterHolder.getParameter("type").getValue());
         assignment = Boolean.valueOf(parameterHolder.getParameter("assignment").getValue());
         if (assignment == false) {
             variable = VariableUtil.createVariable(type, value);

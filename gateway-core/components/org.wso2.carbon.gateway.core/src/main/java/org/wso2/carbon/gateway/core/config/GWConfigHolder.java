@@ -20,6 +20,7 @@ package org.wso2.carbon.gateway.core.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.gateway.core.flow.Group;
 import org.wso2.carbon.gateway.core.flow.Pipeline;
 import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
@@ -60,7 +61,7 @@ public class GWConfigHolder {
         this.name = name;
     }
 
-    public void addGlobalConstant(String type, String key, String value) {
+    public void addGlobalConstant(Constants.TYPES type, String key, String value) {
         Object variable = VariableUtil.createVariable(type, value);
         globalConstants.put(key, variable);
     }
