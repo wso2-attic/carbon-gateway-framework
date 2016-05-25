@@ -220,6 +220,7 @@
                             <configuration>
                                 <listener>true</listener>
                                 <visitor>false</visitor>
+                                <encoding>${file.encoding}</encoding>
                             </configuration>
                         </execution>
                     </executions>
@@ -258,7 +259,7 @@
         <carbon.transport.package.import.version.range>[2.0.0, 2.1.0)
         </carbon.transport.package.import.version.range>
 
-        <carbon.messaging.version>1.0.2</carbon.messaging.version>
+        <carbon.messaging.version>1.0.3</carbon.messaging.version>
 
         <carbon.messaging.package.import.version.range>[0.0.0, 2.0.0)
         </carbon.messaging.package.import.version.range>
