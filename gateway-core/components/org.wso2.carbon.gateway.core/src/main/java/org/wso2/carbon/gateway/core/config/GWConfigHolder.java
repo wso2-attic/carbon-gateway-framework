@@ -18,6 +18,9 @@
 
 package org.wso2.carbon.gateway.core.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.gateway.core.flow.Group;
 import org.wso2.carbon.gateway.core.flow.Pipeline;
 import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
@@ -32,6 +35,7 @@ import java.util.Map;
  * Object Model which holds configurations related to a one GW process
  */
 public class GWConfigHolder {
+    private static final Logger log = LoggerFactory.getLogger(GWConfigHolder.class);
 
     private String name;
 
@@ -43,7 +47,7 @@ public class GWConfigHolder {
 
     private Map<String, OutboundEndpoint> outboundEndpoints = new HashMap<>();
 
-    private Map<String, Object> globalVariables = new HashMap<>();
+    private Map<String, Object> globalConstants = new HashMap<>();
 
     public GWConfigHolder(String name) {
         this.name = name;
@@ -57,17 +61,17 @@ public class GWConfigHolder {
         this.name = name;
     }
 
-    public void addGlobalVariable(String type, String key, String value) {
-        Object variable = VariableUtil.getVariable(type, value);
-        globalVariables.put(key, variable);
+    public void addGlobalConstant(Constants.TYPES type, String key, String value) {
+        Object variable = VariableUtil.createVariable(type, value);
+        globalConstants.put(key, variable);
     }
 
-    public Object getGlobalVariable(String key) {
-        return globalVariables.get(key);
+    public Object getGlobalConstant(String key) {
+        return globalConstants.get(key);
     }
 
-    public void removeGlobalVariable(String key) {
-        globalVariables.remove(key);
+    public void removeGlobalConstant(String key) {
+        globalConstants.remove(key);
     }
 
     public InboundEndpoint getInboundEndpoint() {
@@ -99,8 +103,8 @@ public class GWConfigHolder {
         return outboundEndpoints.get(name);
     }
 
-    public Map<String, Object> getGlobalVariables() {
-        return globalVariables;
+    public Map<String, Object> getGlobalConstants() {
+        return globalConstants;
     }
 
     public void addOutboundEndpoint(OutboundEndpoint outboundEndpoint) {

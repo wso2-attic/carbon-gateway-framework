@@ -39,16 +39,18 @@ public class PropertyMediator extends AbstractMediator {
 
     private String key;
     private String value;
-    private String type;
+    private Constants.TYPES type;
+    private boolean assignment;
     private Object variable;
 
     public PropertyMediator() {}
 
-    public PropertyMediator(String key, String value, String type) {
+    public PropertyMediator(String key, String value, Constants.TYPES type, boolean assignment) {
         this.key = key;
         this.value = value;
         this.type = type;
-        this.variable = VariableUtil.getVariable(type, value);
+        this.assignment = assignment;
+        this.variable = VariableUtil.createVariable(type, value);
     }
 
     @Override
@@ -58,19 +60,26 @@ public class PropertyMediator extends AbstractMediator {
 
     @Override
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
+
         if (carbonMessage.getProperty(Constants.VARIABLE_STACK) != null) {
             Stack<Map<String, Object>> variableStack =
                     (Stack<Map<String, Object>>) carbonMessage.getProperty(Constants.VARIABLE_STACK);
 
             Map<String, Object> map;
-            if (variableStack.size() > 0) {
-                map = variableStack.peek();
+
+            if (assignment) {
+                map = (Map) VariableUtil.getMap(carbonMessage, key);
+                if (map == null) {
+                    map = createAndPushMapIfNotExist(variableStack);
+                }
+                type = VariableUtil.getType(VariableUtil.getVariable(carbonMessage, key));
+                variable = VariableUtil.createVariable(type, value);
             } else {
-                map = new HashMap<>();
-                variableStack.push(map);
+                map = createAndPushMapIfNotExist(variableStack);
             }
 
             map.put(key, variable);
+
         } else {
             log.error("Variable stack has not been initialized!");
             return false;
@@ -79,11 +88,26 @@ public class PropertyMediator extends AbstractMediator {
         return next(carbonMessage, carbonCallback);
     }
 
+    private Map<String, Object> createAndPushMapIfNotExist(Stack<Map<String, Object>> variableStack) {
+        Map<String, Object> map;
+        if (variableStack.size() > 0) {
+            map = variableStack.peek();
+        } else {
+            map = new HashMap<>();
+            variableStack.push(map);
+        }
+
+        return map;
+    }
+
     public void setParameters(ParameterHolder parameterHolder) {
         key = parameterHolder.getParameter("key").getValue();
         value = parameterHolder.getParameter("value").getValue();
-        type = parameterHolder.getParameter("type").getValue();
-        variable = VariableUtil.getVariable(type, value);
+        type = VariableUtil.getType(parameterHolder.getParameter("type").getValue());
+        assignment = Boolean.valueOf(parameterHolder.getParameter("assignment").getValue());
+        if (assignment == false) {
+            variable = VariableUtil.createVariable(type, value);
+        }
     }
 
 }
