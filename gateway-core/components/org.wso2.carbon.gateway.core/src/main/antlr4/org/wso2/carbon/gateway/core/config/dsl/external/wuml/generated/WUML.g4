@@ -163,15 +163,14 @@ parElseBlock
 
 // Definition of 'if' statement for if condition
 ifStatement
-    : IF WS WITH WS conditionStatement NEWLINE
+    : IFDEF conditionStatement RPAREN NEWLINE
       NEWLINE? ifMultiThenBlock
       END
     ;
 
 conditionStatement
-    : conditionDef;
+    : IDENTIFIER WS* CHECK_EQUALX WS* IDENTIFIER;
 
-conditionDef: CONDITIONX LPAREN SOURCEDEF PARAMX* RPAREN;
 
 ifMultiThenBlock
     : messageflowStatementList NEWLINE (ifElseBlock)? ;
@@ -264,6 +263,7 @@ COMMENTX: COMMENT;
 COMMENTSTRINGX: COMMENTSTRING | NUMBER;
 
 STRINGX: STRING;
+CHECK_EQUALX: CHECK_EQUAL;
 
 URLSTRINGX: URLSTRING;
 
@@ -290,7 +290,7 @@ STARTUMLX: STARTUML;
 ENDUMLX: ENDUML;
 PARTICIPANT: P A R T I C I P A N T;
 PAR: P A R;
-IF: I F;
+IFDEF: I F WS LPAREN;
 REF: R E F;
 END: E N D;
 ELSE: E L S E;
@@ -338,7 +338,7 @@ WS
     : ' ';
 
 IDENTIFIER
-    : ('$')? ('a'..'z' | 'A'..'Z' ) ( 'a'..'z' | 'A'..'Z' | DIGIT | '_')+ ;
+    : ('$')? ('a'..'z' | 'A'..'Z' ) ( 'a'..'z' | 'A'..'Z' | DIGIT | '_' | '.')+ ;
 
 VAR_IDENTIFIER
     : ('$') ('a'..'z' | 'A'..'Z' ) ( 'a'..'z' | 'A'..'Z' | DIGIT | '_')+ WS* ('=');
@@ -371,6 +371,7 @@ fragment EXPRESSION: LPAREN CONFIGPARAMS RPAREN;
 fragment STARTUML: '@startuml';
 fragment ENDUML: '@enduml';
 fragment DOUBLEQUOTES: '"';
+fragment CHECK_EQUAL: EQ_SYMBOL EQ_SYMBOL ;
 fragment POSTSCIPRT
     : ( 'a'..'z' | 'A'..'Z' | DIGIT | '_')*;
 fragment CONFIGPARAMS: (WS | [a-zA-Z\?] | COLON | [0-9] | '$' | '.' | '@' |
