@@ -38,6 +38,7 @@ public class HTTPOutboundEndpoint extends AbstractOutboundEndpoint {
     @Override
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback)
             throws Exception {
+        super.receive(carbonMessage, carbonCallback);
         processRequest(carbonMessage);
         ServiceContextHolder.getInstance().getSender().send(carbonMessage, carbonCallback);
         return false;

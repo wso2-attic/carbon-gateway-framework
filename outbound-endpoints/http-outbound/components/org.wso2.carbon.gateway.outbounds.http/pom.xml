@@ -85,7 +85,9 @@
             org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
             org.wso2.carbon.messaging
         </import.package>
-
+        <carbon.component>
+            osgi.service; objectClass="org.wso2.carbon.gateway.core.outbound.OutboundEPProvider"
+        </carbon.component>
         <osgi.framework.import.version.range>[1.8.0, 2.0.0)</osgi.framework.import.version.range>
     </properties>
 

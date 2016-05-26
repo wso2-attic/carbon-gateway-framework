@@ -66,6 +66,10 @@
             <artifactId>org.wso2.carbon.core</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.wso2.carbon.deployment</groupId>
+            <artifactId>org.wso2.carbon.deployment.engine</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.carbon.messaging</groupId>
             <artifactId>org.wso2.carbon.messaging</artifactId>
         </dependency>
@@ -85,6 +89,10 @@
             org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
             org.wso2.carbon.messaging
         </import.package>
+        <carbon.component>
+            osgi.service; objectClass="org.wso2.carbon.gateway.core.inbound.Provider
+        </carbon.component>
+
         <osgi.framework.import.version.range>[1.8.0, 2.0.0)</osgi.framework.import.version.range>
     </properties>
 

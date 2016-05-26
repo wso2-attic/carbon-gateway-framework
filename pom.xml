@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.wso2</groupId>
         <artifactId>wso2</artifactId>
-        <version>3</version>
+        <version>5</version>
     </parent>
 
     <groupId>org.wso2.carbon.gateway</groupId>
@@ -62,11 +62,21 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
-                <artifactId>wso2carbon-kernel</artifactId>
+                <artifactId>org.wso2.carbon.kernel.feature</artifactId>
                 <version>${carbon.kernel.version}</version>
                 <type>zip</type>
             </dependency>
-
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.runtime.feature</artifactId>
+                <version>${carbon.kernel.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.deployment</groupId>
+                <artifactId>org.wso2.carbon.deployment.engine</artifactId>
+                <version>${carbon.deployment.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.gateway</groupId>
                 <artifactId>org.wso2.carbon.gateway.core</artifactId>
@@ -157,6 +167,36 @@
                 <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.apache.ws.commons.axiom</groupId>
+                <artifactId>axiom-api</artifactId>
+                <version>${axiom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.ws.commons.axiom</groupId>
+                <artifactId>axiom-impl</artifactId>
+                <version>${axiom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.ws.commons.axiom</groupId>
+                <artifactId>axiom-dom</artifactId>
+                <version>${axiom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-javamail_1.4_spec</artifactId>
+                <version>${geronimo.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+                <version>${geronimo.stax.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jaxen</groupId>
+                <artifactId>jaxen</artifactId>
+                <version>${jaxen.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -240,7 +280,7 @@
         <maven.bundle.plugin.version>2.5.4</maven.bundle.plugin.version>
 
         <!-- Dependencies -->
-        <carbon.kernel.version>5.0.0</carbon.kernel.version>
+        <carbon.kernel.version>5.1.0-beta</carbon.kernel.version>
         <carbon.kernel.package.import.version.range>[5.0.0, 6.0.0)
         </carbon.kernel.package.import.version.range>
 
@@ -260,11 +300,13 @@
         <slf4j.logging.package.import.version.range>[1.7.1, 2.0.0)
         </slf4j.logging.package.import.version.range>
 
-        <carbon.transport.version>2.0.2</carbon.transport.version>
-        <carbon.transport.package.import.version.range>[2.0.0, 2.1.0)
+        <carbon.transport.version>2.1.1-SNAPSHOT</carbon.transport.version>
+        <carbon.transport.package.import.version.range>[2.0.0, 2.2.0)
         </carbon.transport.package.import.version.range>
 
-        <carbon.messaging.version>1.0.2</carbon.messaging.version>
+        <carbon.messaging.version>1.0.4-SNAPSHOT</carbon.messaging.version>
+        <axiom.version>1.2.11-wso2v10</axiom.version>
+        <axiom.import.version.range>[1.2.10-wso2v10,1.2.12-wso2v10)</axiom.import.version.range>
 
         <carbon.messaging.package.import.version.range>[0.0.0, 2.0.0)
         </carbon.messaging.package.import.version.range>
@@ -278,6 +320,12 @@
         <antlr4.runtime.version>4.5.1.wso2v1</antlr4.runtime.version>
         <plugin.version.antlr>4.5.1</plugin.version.antlr>
         <junit.version>4.8.2</junit.version>
+        <geronimo.version>1.6</geronimo.version>
+        <geronimo.stax.version>1.0.1</geronimo.stax.version>
+        <javax.version>1.8.0_45</javax.version>
+        <jaxen.version>1.1.6</jaxen.version>
+        <carbon.deployment.version>5.0.0-SNAPSHOT</carbon.deployment.version>
+        <carbon.deployment.export.version>5.0.0</carbon.deployment.export.version>
     </properties>
 
     <modules>

@@ -36,7 +36,7 @@ import org.wso2.carbon.messaging.TransportSender;
  * Service component for Gateway.
  */
 @Component(
-        name = "GatewayServiceComponent",
+        name = "org.wso2.carbon.gateway.core.service.GatewayServiceComponent",
         immediate = true
 )
 public class GatewayServiceComponent {
