@@ -27,4 +27,7 @@ public class MIMEType {
     public static final String INPUT_STREAM = "INPUT STREAM";
     public static final String JSON = "application/json";
     public static final String XML = "application/xml";
+    public static final String TEXT_XML = "text/xml";
+    public static final String APPLICATION_SOAP_XML = "application/soap+xml";
+
 }

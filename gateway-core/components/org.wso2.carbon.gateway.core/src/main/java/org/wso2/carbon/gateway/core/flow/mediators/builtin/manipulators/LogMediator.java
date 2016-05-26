@@ -21,8 +21,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.flow.AbstractMediator;
+import org.wso2.carbon.gateway.core.flow.contentaware.messagebuilders.Builder;
+import org.wso2.carbon.gateway.core.flow.contentaware.messagebuilders.BuilderManager;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.MessageDataSource;
 
 /**
  * Basic implementation of log mediator
@@ -38,7 +41,8 @@ public class LogMediator extends AbstractMediator {
         this.logMessage = logMessage;
     }
 
-    public LogMediator() {}
+    public LogMediator() {
+    }
 
     @Override
     public String getName() {
@@ -48,6 +52,17 @@ public class LogMediator extends AbstractMediator {
     @Override
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
         log.info(getValue(carbonMessage, logMessage).toString());
+        MessageDataSource messageDataSource = null;
+        if (!carbonMessage.isAlreadyBuild()) {
+            Builder builder = BuilderManager.getInstance().getBuilder(carbonMessage);
+            messageDataSource = builder.processDocument(carbonMessage);
+
+        } else {
+            messageDataSource = carbonMessage.getMessageDataSource();
+        }
+
+        String s = messageDataSource.getStringValue("//*[local-name()='Test']");
+        log.info(s);
         return next(carbonMessage, carbonCallback);
     }
 
