@@ -45,3 +45,12 @@ Architecture
 
 ![alt tag](docs/config-model.png)
 
+Report Bugs and Improvements
+----------------------------
+
+Please report bugs and improvements of Gateway Framework to following JIRA project.
+
+https://wso2.org/jira/browse/CGF
+
+
+
