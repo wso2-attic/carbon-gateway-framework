@@ -37,13 +37,20 @@ import org.wso2.carbon.messaging.MessageDataSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
+import java.util.Locale;
 
 /**
  * A class which builds SOAPMessage
  */
-public class SOAPBuilder implements Builder {
+public class SOAPBuilder extends AbstractBuilder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SOAPBuilder.class);
+
+    private static final String CHARSET = "charset";
+
+    public SOAPBuilder(String contentType) {
+        super(contentType);
+    }
 
     public MessageDataSource processDocument(CarbonMessage carbonMessage) throws IOException {
         SOAPFactory soapFactory = null;
@@ -56,7 +63,8 @@ public class SOAPBuilder implements Builder {
             contentType = MIMEType.TEXT_XML;
         }
         try {
-            if (contentType.contains("charset")) {
+
+            if (contentType.toLowerCase(Locale.getDefault()).contains(CHARSET)) {
                 String[] splitted = contentType.split(";");
                 if (splitted.length > 0) {
                     contentType = splitted[0];
@@ -103,11 +111,14 @@ public class SOAPBuilder implements Builder {
             throw new IOException(msg, e);
         }
         CarbonSOAPMessageImpl carbonSOAPMessage = new CarbonSOAPMessageImpl(envelope, contentType);
-        carbonMessage.setMessageDataSource(carbonSOAPMessage);
         carbonSOAPMessage.setCharsetEncoding(charset);
-        carbonSOAPMessage.setContentType(contentType);
-        carbonMessage.setAlreadyBuild(true);
+        attachMessageDataSource(carbonSOAPMessage, carbonMessage);
         return carbonSOAPMessage;
+    }
+
+    @Override
+    public String getContentType() {
+        return null;
     }
 
     private boolean isRESTRequest(String contentType) {

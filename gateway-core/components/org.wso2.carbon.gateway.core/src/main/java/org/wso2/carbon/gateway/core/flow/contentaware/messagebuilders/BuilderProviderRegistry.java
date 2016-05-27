@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.gateway.core.flow.contentaware.messagebuilders;
 
+import org.wso2.carbon.gateway.core.flow.contentaware.MIMEType;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.Constants;
 
@@ -27,15 +28,15 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * A manager class for select builder and manage builders
  */
-public class BuilderManager {
+public class BuilderProviderRegistry implements BuilderProvider {
 
-    private static final BuilderManager builder = new BuilderManager();
+    private static final BuilderProviderRegistry builder = new BuilderProviderRegistry();
 
     private Map<String, Builder> builderMap = new ConcurrentHashMap<>();
 
-    private BuilderManager() {
-        builderMap.put("application/soap+xml", new SOAPBuilder());
-        builderMap.put("text/xml", new SOAPBuilder());
+    private BuilderProviderRegistry() {
+        builderMap.put(MIMEType.APPLICATION_SOAP_XML, new SOAPBuilder(MIMEType.APPLICATION_SOAP_XML));
+        builderMap.put(MIMEType.TEXT_XML, new SOAPBuilder(MIMEType.TEXT_XML));
     }
 
     public Builder getBuilder(CarbonMessage carbonMessage) {
@@ -43,16 +44,21 @@ public class BuilderManager {
         if (builderMap.containsKey(contentType)) {
             return builderMap.get(contentType);
         } else {
-            return builderMap.get("text/xml");
+            return builderMap.get(MIMEType.TEXT_XML);
         }
     }
 
-    public void addBuilder(String contentType, Builder builder) {
+    public void registerBuilder(String contentType, Builder builder) {
         builderMap.put(contentType, builder);
 
     }
 
-    public static BuilderManager getInstance() {
+    public void unregisterBuilder(String contentType, Builder builder) {
+        builderMap.remove(contentType, builder);
+
+    }
+
+    public static BuilderProviderRegistry getInstance() {
         return builder;
     }
 }

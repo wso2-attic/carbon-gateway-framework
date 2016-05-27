@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.flow.AbstractMediator;
 import org.wso2.carbon.gateway.core.flow.contentaware.messagebuilders.Builder;
-import org.wso2.carbon.gateway.core.flow.contentaware.messagebuilders.BuilderManager;
+import org.wso2.carbon.gateway.core.flow.contentaware.messagebuilders.BuilderProviderRegistry;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.MessageDataSource;
@@ -36,6 +36,8 @@ public class LogMediator extends AbstractMediator {
     private static final Logger log = LoggerFactory.getLogger(LogMediator.class);
 
     private String logMessage = "Message received at LogMediator";
+
+    private String expression;
 
     public LogMediator(String logMessage) {
         this.logMessage = logMessage;
@@ -53,21 +55,26 @@ public class LogMediator extends AbstractMediator {
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
         log.info(getValue(carbonMessage, logMessage).toString());
         MessageDataSource messageDataSource = null;
+        String msg = null;
         if (!carbonMessage.isAlreadyBuild()) {
-            Builder builder = BuilderManager.getInstance().getBuilder(carbonMessage);
+            Builder builder = BuilderProviderRegistry.getInstance().getBuilder(carbonMessage);
             messageDataSource = builder.processDocument(carbonMessage);
-
         } else {
             messageDataSource = carbonMessage.getMessageDataSource();
         }
-
-        String s = messageDataSource.getStringValue("//*[local-name()='Test']");
-        log.info(s);
+        if (expression != null) {
+            msg = messageDataSource.getStringValue(expression);
+        }
+        log.info(msg);
         return next(carbonMessage, carbonCallback);
     }
 
     public void setParameters(ParameterHolder parameterHolder) {
-        logMessage = parameterHolder.getParameter("parameters").getValue();
+        String value = parameterHolder.getParameter("parameters").getValue();
+        if (value.contains("$xpath")) {
+            expression = value.substring(value.indexOf(":") + 1);
+        }
+
     }
 
 }

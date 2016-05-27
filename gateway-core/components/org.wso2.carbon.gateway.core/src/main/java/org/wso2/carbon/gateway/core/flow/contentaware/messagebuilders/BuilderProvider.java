@@ -19,17 +19,16 @@
 package org.wso2.carbon.gateway.core.flow.contentaware.messagebuilders;
 
 import org.wso2.carbon.messaging.CarbonMessage;
-import org.wso2.carbon.messaging.MessageDataSource;
-
-import java.io.IOException;
 
 /**
- * An common interface for builders
+ * An interface for BuilderProviders
  */
-public interface Builder {
+public interface BuilderProvider {
 
-    public MessageDataSource processDocument(CarbonMessage carbonMessage) throws IOException;
-
-    public String getContentType();
-
+    /**
+     * Return the Builder which matches with carbon message
+     * @param carbonMessage
+     * @return
+     */
+    public Builder getBuilder(CarbonMessage carbonMessage);
 }

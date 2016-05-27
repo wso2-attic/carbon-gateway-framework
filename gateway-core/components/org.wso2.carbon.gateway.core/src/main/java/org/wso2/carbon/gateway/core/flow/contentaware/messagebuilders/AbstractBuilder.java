@@ -21,15 +21,25 @@ package org.wso2.carbon.gateway.core.flow.contentaware.messagebuilders;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.MessageDataSource;
 
-import java.io.IOException;
-
 /**
- * An common interface for builders
+ * An abstract class for Builders
  */
-public interface Builder {
+public abstract class AbstractBuilder implements Builder {
 
-    public MessageDataSource processDocument(CarbonMessage carbonMessage) throws IOException;
+    protected String contentType;
 
-    public String getContentType();
+    public AbstractBuilder(String contentType) {
+        this.contentType = contentType;
+    }
 
+    public void attachMessageDataSource(MessageDataSource messageDataSource, CarbonMessage carbonMessage) {
+        carbonMessage.setMessageDataSource(messageDataSource);
+        carbonMessage.setAlreadyBuild(true);
+
+    }
+
+    @Override
+    public String getContentType() {
+        return contentType;
+    }
 }
