@@ -29,5 +29,6 @@ public class MIMEType {
     public static final String XML = "application/xml";
     public static final String TEXT_XML = "text/xml";
     public static final String APPLICATION_SOAP_XML = "application/soap+xml";
+    public static final String APPLICATION_XML = "application/xml";
 
 }

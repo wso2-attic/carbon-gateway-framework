@@ -20,6 +20,7 @@ package org.wso2.carbon.gateway.core.outbound;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.MessageDataSource;
@@ -50,6 +51,8 @@ public abstract class AbstractOutboundEndpoint implements OutboundEndpoint {
             MessageDataSource messageDataSource = carbonMessage.getMessageDataSource();
             if (messageDataSource != null) {
                 ByteBuffer byteBuffer = messageDataSource.getDataAsByteBuffer();
+                carbonMessage.getHeaders().remove(Constants.HTTP_CONTENT_LENGTH);
+                carbonMessage.getHeaders().put(Constants.HTTP_CONTENT_LENGTH, String.valueOf(byteBuffer.limit()));
                 carbonMessage.addMessageBody(byteBuffer);
                 carbonMessage.setEndOfMsgAdded(true);
             } else {

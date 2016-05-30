@@ -52,7 +52,8 @@ public class Constants {
      */
     public static final String DETACHABLE_INPUT_STREAM = "org.apache.axiom.om.util.DetachableInputStream";
 
-    public static final String HTTP_CONTENT_TYPE = "HTTP_CONTENT_TYPE";
+    public static final String HTTP_CONTENT_TYPE = "Content-Type";
+    public static final String HTTP_CONTENT_LENGTH = "Content-Length";
     public static final String PROTOCOL_VERSION = "PROTOCOL";
     public static final String MEDIA_TYPE_X_WWW_FORM = "application/x-www-form-urlencoded";
     public static final String MEDIA_TYPE_TEXT_XML = "text/xml";
@@ -63,5 +64,7 @@ public class Constants {
     public static final String MEDIA_TYPE_APPLICATION_ECHO_XML = "application/echo+xml";
     public static final String MEDIA_TYPE_APPLICATION_JSON = "application/json";
     public static final String MEDIA_TYPE_APPLICATION_JWT = "application/jwt";
+
+    public static final String APPLICATION_XML_BUILDER_ALLOW_DTD = "application.xml.builder.allow.DTD";
 
 }

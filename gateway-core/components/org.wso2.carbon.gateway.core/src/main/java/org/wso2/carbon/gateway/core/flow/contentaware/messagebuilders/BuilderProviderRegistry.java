@@ -37,6 +37,7 @@ public class BuilderProviderRegistry implements BuilderProvider {
     private BuilderProviderRegistry() {
         builderMap.put(MIMEType.APPLICATION_SOAP_XML, new SOAPBuilder(MIMEType.APPLICATION_SOAP_XML));
         builderMap.put(MIMEType.TEXT_XML, new SOAPBuilder(MIMEType.TEXT_XML));
+        builderMap.put(MIMEType.APPLICATION_XML, new ApplicationXMLBuilder(MIMEType.APPLICATION_XML));
     }
 
     public Builder getBuilder(CarbonMessage carbonMessage) {
