@@ -64,16 +64,16 @@ public class BuilderServiceComponent implements RequiredCapabilityListener {
         }
 
         isAllProviderAvailable = true;
-
-        if (bundleContext != null) {
-            bundleContext.registerService(BuilderProvider.class, BuilderProviderRegistry.getInstance(), null);
-        }
+//TODO remove comments if there is atleast one Builder Service Registered.
+//        if (bundleContext != null) {
+//            bundleContext.registerService(BuilderProvider.class, BuilderProviderRegistry.getInstance(), null);
+//        }
     }
 
     @Reference(
             name = "Builder-Service",
             service = Builder.class,
-            cardinality = ReferenceCardinality.MULTIPLE,
+            cardinality = ReferenceCardinality.OPTIONAL,
             policy = ReferencePolicy.DYNAMIC,
             unbind = "unregisterBuilder")
     protected void registerBuilder(Builder mediatorProvider) {
