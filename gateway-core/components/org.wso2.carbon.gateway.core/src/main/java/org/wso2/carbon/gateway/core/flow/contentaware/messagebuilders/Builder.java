@@ -21,14 +21,12 @@ package org.wso2.carbon.gateway.core.flow.contentaware.messagebuilders;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.MessageDataSource;
 
-import java.io.IOException;
-
 /**
  * An common interface for builders
  */
 public interface Builder {
 
-    public MessageDataSource processDocument(CarbonMessage carbonMessage) throws IOException;
+    public MessageDataSource processDocument(CarbonMessage carbonMessage) throws Exception;
 
     public String getContentType();
 
