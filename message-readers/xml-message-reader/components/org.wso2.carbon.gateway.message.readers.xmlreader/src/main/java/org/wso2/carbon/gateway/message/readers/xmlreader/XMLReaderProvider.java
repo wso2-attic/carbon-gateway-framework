@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.gateway.message.readers.jsonreader;
+package org.wso2.carbon.gateway.message.readers.xmlreader;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
@@ -29,13 +29,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A Service class which can be used to register JSONReader
+ * A Service class which can be used to register XMLReaders
  */
 @Component(
-        name = "org.wso2.carbon.gateway.message.readers.jsonreader.JSONReaderProvider",
+        name = "org.wso2.carbon.gateway.message.readers.xmlreader.XMLReaderProvider",
         immediate = true,
         service = ReaderProvider.class)
-public class JSONReaderProvider implements ReaderProvider {
+public class XMLReaderProvider implements ReaderProvider {
 
     @Activate
     protected void start(BundleContext bundleContext) {
@@ -45,7 +45,9 @@ public class JSONReaderProvider implements ReaderProvider {
     @Override
     public List<Reader> getReader() {
         List<Reader> readers = new ArrayList<>();
-        readers.add(new JSONReader(MIMEType.APPLICATION_JSON));
+        readers.add(new SOAPReader(MIMEType.APPLICATION_SOAP_XML));
+        readers.add(new SOAPReader(MIMEType.TEXT_XML));
+        readers.add(new ApplicationXMLReader(MIMEType.APPLICATION_XML));
         return readers;
     }
 }

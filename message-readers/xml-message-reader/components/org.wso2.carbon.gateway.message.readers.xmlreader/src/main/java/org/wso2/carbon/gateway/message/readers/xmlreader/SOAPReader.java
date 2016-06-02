@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.gateway.core.flow.contentaware.messagereaders;
+package org.wso2.carbon.gateway.message.readers.xmlreader;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMXMLBuilderFactory;
@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.gateway.core.flow.contentaware.MIMEType;
-import org.wso2.carbon.gateway.core.flow.contentaware.messagesourceimpl.CarbonSOAPMessageImpl;
+import org.wso2.carbon.gateway.core.flow.contentaware.messagereaders.AbstractReader;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.MessageDataSource;
 
@@ -83,15 +83,15 @@ public class SOAPReader extends AbstractReader {
             carbonMessage.setProperty(Constants.DETACHABLE_INPUT_STREAM, is);
 
             // Get the actual encoding by looking at the BOM of the InputStream
-            pis = ReaderUtil.getPushbackInputStream(is);
+            pis = XMLUtil.getPushbackInputStream(is);
             int bytesRead = pis.read();
             if (bytesRead != -1) {
                 pis.unread(bytesRead);
-                String actualCharSetEncoding = ReaderUtil.getCharSetEncoding(pis, charset);
+                String actualCharSetEncoding = XMLUtil.getCharSetEncoding(pis, charset);
                 OMXMLParserWrapper builder = OMXMLBuilderFactory.createSOAPModelBuilder(pis, actualCharSetEncoding);
                 envelope = (SOAPEnvelope) builder.getDocumentElement();
-                ReaderUtil.validateSOAPVersion(ReaderUtil.getEnvelopeNamespace(contentType), envelope);
-                ReaderUtil.validateCharSetEncoding(charset, builder.getDocument().getCharsetEncoding(),
+                XMLUtil.validateSOAPVersion(XMLUtil.getEnvelopeNamespace(contentType), envelope);
+                XMLUtil.validateCharSetEncoding(charset, builder.getDocument().getCharsetEncoding(),
                         envelope.getNamespace().getNamespaceURI());
             } else {
                 if (contentType != null) {
@@ -112,16 +112,13 @@ public class SOAPReader extends AbstractReader {
             pis.close();
             throw new IOException(msg, e);
         }
-        CarbonSOAPMessageImpl carbonSOAPMessage = new CarbonSOAPMessageImpl(envelope, contentType, outputStream);
+        CarbonXMLMessageImpl carbonSOAPMessage = new CarbonXMLMessageImpl(envelope, contentType, outputStream);
         carbonSOAPMessage.setCharsetEncoding(charset);
         attachMessageDataSource(carbonSOAPMessage, carbonMessage);
         return carbonSOAPMessage;
     }
 
-    @Override
-    public String getContentType() {
-        return null;
-    }
+
 
     private boolean isRESTRequest(String contentType) {
         return contentType != null && (contentType.indexOf(Constants.MEDIA_TYPE_APPLICATION_XML) > -1 ||

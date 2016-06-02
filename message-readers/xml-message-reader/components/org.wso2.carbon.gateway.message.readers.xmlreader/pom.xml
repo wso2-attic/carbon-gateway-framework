@@ -26,9 +26,85 @@
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
+    <name>WSO2 Gateway- XML Reader</name>
     <modelVersion>4.0.0</modelVersion>
-
     <artifactId>org.wso2.carbon.gateway.message.readers.xmlreader</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>bundle</packaging>
+    <dependencies>
+        <dependency>
+            <groupId>org.wso2.eclipse.osgi</groupId>
+            <artifactId>org.eclipse.osgi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.eclipse.osgi</groupId>
+            <artifactId>org.eclipse.osgi.services</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.messaging</groupId>
+            <artifactId>org.wso2.carbon.messaging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.gateway</groupId>
+            <artifactId>org.wso2.carbon.gateway.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ws.commons.axiom</groupId>
+            <artifactId>axiom-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ws.commons.axiom</groupId>
+            <artifactId>axiom-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ws.commons.axiom</groupId>
+            <artifactId>axiom-dom</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-javamail_1.4_spec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jaxen</groupId>
+            <artifactId>jaxen</artifactId>
+        </dependency>
+    </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <version>4.5.1</version>
+            </plugin>
+        </plugins>
+    </build>
+
+    <properties>
+        <export.package>
+            org.wso2.carbon.gateway.message.readers.xmlreader.*
+        </export.package>
+        <import.package>
+            org.osgi.framework.*;version="${osgi.framework.import.version.range}",
+            org.wso2.carbon.kernel.startupresolver.*;version="${carbon.kernel.package.import.version.range}",
+            org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
+            org.antlr.v4.runtime.*,
+            org.apache.ws.commons.axiom.*;version="${axiom.version}",
+            org.apache.axiom.*;version="0.0.0",
+            javax.mail.*;version=0.0.0,
+            javax.xml.*;version=0.0.0,
+            org.jaxen.*;version="${jaxen.version}",
+            org.wso2.carbon.messaging.*;version="${carbon.messaging.package.import.version.range}",
+            org.wso2.carbon.gateway.core.*;version="${carbon.gw.package.export.version}"
+        </import.package>
+        <carbon.component>
+            osgi.service; objectClass="org.wso2.carbon.gateway.core.flow.contentaware.messagereaders.ReaderProvider"
+        </carbon.component>
+        <osgi.framework.import.version.range>[1.8.0, 2.0.0)</osgi.framework.import.version.range>
+    </properties>
 
 </project>

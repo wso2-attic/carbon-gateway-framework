@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.gateway.core.flow.contentaware.messagereaders;
+package org.wso2.carbon.gateway.message.readers.xmlreader;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.impl.OMNodeEx;
@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.gateway.core.flow.contentaware.MIMEType;
-import org.wso2.carbon.gateway.core.flow.contentaware.messagesourceimpl.CarbonSOAPMessageImpl;
+import org.wso2.carbon.gateway.core.flow.contentaware.messagereaders.AbstractReader;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.MessageDataSource;
 
@@ -119,7 +119,7 @@ public class ApplicationXMLReader extends AbstractReader {
             pushbackInputStream.close();
             throw new IOException(msg, e);
         }
-        CarbonSOAPMessageImpl carbonSOAPMessage = new CarbonSOAPMessageImpl(soapEnvelope, contentType, outputStream);
+        CarbonXMLMessageImpl carbonSOAPMessage = new CarbonXMLMessageImpl(soapEnvelope, contentType, outputStream);
         carbonSOAPMessage.setCharsetEncoding(charset);
         attachMessageDataSource(carbonSOAPMessage, carbonMessage);
         return carbonSOAPMessage;

@@ -83,18 +83,6 @@
             <groupId>jaxen</groupId>
             <artifactId>jaxen</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.minidev</groupId>
-            <artifactId>json-smart</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
@@ -149,50 +137,9 @@
                                     <version>${antlr4.runtime.version}</version>
                                 </bundle>
                                 <bundle>
-                                    <symbolicName>org.apache.ws.commons.axiom.axiom-api</symbolicName>
-                                    <version>${axiom.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>org.apache.ws.commons.axiom.axiom-dom</symbolicName>
-                                    <version>${axiom.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>org.apache.ws.commons.axiom.axiom-impl</symbolicName>
-                                    <version>${axiom.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>org.apache.geronimo.specs.geronimo-javamail_1.4_spec</symbolicName>
-                                    <version>${geronimo.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>org.apache.geronimo.specs.geronimo-stax-api_1.0_spec</symbolicName>
-                                    <version>${geronimo.stax.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>jaxen</symbolicName>
-                                    <version>${jaxen.version}</version>
-                                </bundle>
-                                <bundle>
                                     <symbolicName>org.wso2.carbon.deployment.engine</symbolicName>
                                     <version>${carbon.deployment.version}</version>
                                 </bundle>
-                                <bundle>
-                                    <symbolicName>jackson-databind</symbolicName>
-                                    <version>${jackson.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>com.jayway.jsonpath.json-path</symbolicName>
-                                    <version>${jayway.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>net.minidev.json-smart</symbolicName>
-                                    <version>${net.minidev.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName> org.apache.commons.io</symbolicName>
-                                    <version>${commons.io.version}</version>
-                                </bundle>
-
                             </bundles>
                         </configuration>
                     </execution>

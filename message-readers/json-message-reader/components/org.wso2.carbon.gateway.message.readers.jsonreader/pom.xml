@@ -36,6 +36,14 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.wso2.eclipse.osgi</groupId>
+            <artifactId>org.eclipse.osgi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.eclipse.osgi</groupId>
+            <artifactId>org.eclipse.osgi.services</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
@@ -59,7 +67,6 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
-
     </dependencies>
     <build>
         <plugins>
@@ -73,21 +80,20 @@
 
     <properties>
         <export.package>
-            org.wso2.carbon.gateway.message.readers.jsonreader.*;version="${carbon.gw.package.export.version}"
+            org.wso2.carbon.gateway.message.readers.jsonreader.*
         </export.package>
         <import.package>
             org.osgi.framework.*;version="${osgi.framework.import.version.range}",
             org.wso2.carbon.kernel.startupresolver.*;version="${carbon.kernel.package.import.version.range}",
             org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
             org.antlr.v4.runtime.*,
-            org.jaxen.*;version="${jaxen.version}",
             com.jayway.*;version="${jayway.version}",
             org.apache.commons.io.*;version="${commons.io.version}",
             org.wso2.carbon.messaging.*;version="${carbon.messaging.package.import.version.range}",
-            org.wso2.carbon.gateway.core.*;version"${carbon.gw.package.export.version}"
+            org.wso2.carbon.gateway.core.*;version="${carbon.gw.package.export.version}"
         </import.package>
         <carbon.component>
-            osgi.service; objectClass="org.wso2.carbon.gateway.core.flow.contentaware.messagereaders.ReaderProvider";
+            osgi.service; objectClass="org.wso2.carbon.gateway.core.flow.contentaware.messagereaders.ReaderProvider"
         </carbon.component>
         <osgi.framework.import.version.range>[1.8.0, 2.0.0)</osgi.framework.import.version.range>
     </properties>

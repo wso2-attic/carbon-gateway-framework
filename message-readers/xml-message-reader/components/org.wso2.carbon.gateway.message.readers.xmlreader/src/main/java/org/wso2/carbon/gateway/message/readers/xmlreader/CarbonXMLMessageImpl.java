@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.gateway.core.flow.contentaware.messagesourceimpl;
+package org.wso2.carbon.gateway.message.readers.xmlreader;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNode;
@@ -24,7 +24,6 @@ import org.apache.axiom.soap.SOAPEnvelope;
 import org.jaxen.JaxenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.gateway.core.flow.contentaware.xpath.CarbonXPathImpl;
 import org.wso2.carbon.messaging.MessageDataSource;
 
 import java.io.OutputStream;
@@ -35,16 +34,16 @@ import javax.xml.stream.XMLStreamException;
 /**
  * A Class which represents SOAP Messages
  */
-public class CarbonSOAPMessageImpl implements MessageDataSource {
+public class CarbonXMLMessageImpl implements MessageDataSource {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CarbonSOAPMessageImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CarbonXMLMessageImpl.class);
 
     private OMElement omElement;
     private String contentType;
     private String charsetEncoding;
     private OutputStream outputStream;
 
-    public CarbonSOAPMessageImpl(OMElement omElement, String contentType, OutputStream outputStream) {
+    public CarbonXMLMessageImpl(OMElement omElement, String contentType, OutputStream outputStream) {
         this.omElement = omElement;
         this.contentType = contentType;
         this.outputStream = outputStream;

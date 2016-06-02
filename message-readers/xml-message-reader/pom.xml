@@ -30,7 +30,6 @@
     <artifactId>org.wso2.carbon.gateway.message.readers.xmlreader.parent</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>components/org.wso2.carbon.gateway.message.readers.soapreader</module>
         <module>components/org.wso2.carbon.gateway.message.readers.xmlreader</module>
         <module>features/org.wso2.carbon.gateway.message.readers.xmlreader.feature</module>
     </modules>

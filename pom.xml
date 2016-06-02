@@ -134,6 +134,17 @@
                 <type>zip</type>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.gateway</groupId>
+                <artifactId>org.wso2.carbon.gateway.message.readers.xmlreader</artifactId>
+                <version>${carbon.gw.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.gateway</groupId>
+                <artifactId>org.wso2.carbon.gateway.message.readers.xmlreader.feature</artifactId>
+                <version>${carbon.gw.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
                 <version>${osgi.api.version}</version>

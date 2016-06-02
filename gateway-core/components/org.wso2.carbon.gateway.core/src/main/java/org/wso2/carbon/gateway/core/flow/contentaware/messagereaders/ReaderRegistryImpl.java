@@ -28,17 +28,14 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * A manager class for select builder and manage builders
  */
-public class ReaderProviderRegistry implements ReaderProvider {
+public class ReaderRegistryImpl implements ReaderRegistry {
 
-    private static final ReaderProviderRegistry builder = new ReaderProviderRegistry();
+    private static final ReaderRegistryImpl builder = new ReaderRegistryImpl();
 
     private Map<String, Reader> builderMap = new ConcurrentHashMap<>();
 
-    private ReaderProviderRegistry() {
-        builderMap.put(MIMEType.APPLICATION_SOAP_XML, new SOAPReader(MIMEType.APPLICATION_SOAP_XML));
-        builderMap.put(MIMEType.TEXT_XML, new SOAPReader(MIMEType.TEXT_XML));
-        builderMap.put(MIMEType.APPLICATION_XML, new ApplicationXMLReader(MIMEType.APPLICATION_XML));
-        builderMap.put(MIMEType.APPLICATION_JSON, new JSONReader(MIMEType.APPLICATION_JSON));
+    private ReaderRegistryImpl() {
+
     }
 
     public Reader getReader(CarbonMessage carbonMessage) {
@@ -60,7 +57,7 @@ public class ReaderProviderRegistry implements ReaderProvider {
 
     }
 
-    public static ReaderProviderRegistry getInstance() {
+    public static ReaderRegistryImpl getInstance() {
         return builder;
     }
 }

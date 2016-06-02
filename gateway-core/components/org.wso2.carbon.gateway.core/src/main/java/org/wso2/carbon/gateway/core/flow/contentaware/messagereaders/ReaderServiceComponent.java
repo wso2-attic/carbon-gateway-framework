@@ -51,7 +51,7 @@ public class ReaderServiceComponent implements RequiredCapabilityListener {
         this.bundleContext = bundleContext;
 
         if (isAllProviderAvailable) {
-            bundleContext.registerService(ReaderProvider.class, ReaderProviderRegistry.getInstance(), null);
+            bundleContext.registerService(ReaderRegistry.class, ReaderRegistryImpl.getInstance(), null);
         }
     }
 
@@ -63,21 +63,24 @@ public class ReaderServiceComponent implements RequiredCapabilityListener {
 
         isAllProviderAvailable = true;
         if (bundleContext != null) {
-            bundleContext.registerService(ReaderProvider.class, ReaderProviderRegistry.getInstance(), null);
+            bundleContext.registerService(ReaderRegistry.class, ReaderRegistryImpl.getInstance(), null);
         }
     }
 
     @Reference(
             name = "Reader-Service",
-            service = Reader.class,
-            cardinality = ReferenceCardinality.OPTIONAL,
+            service = ReaderProvider.class,
+            cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC,
-            unbind = "unregisterReader")
-    protected void registerReader(Reader readerProvider) {
-        ReaderProviderRegistry.getInstance().registerBuilder(readerProvider.getContentType(), readerProvider);
+            unbind = "unregisterReaderProvider")
+    protected void registerReaderProvider(ReaderProvider readerProvider) {
+        readerProvider.getReader()
+                .forEach(reader -> ReaderRegistryImpl.getInstance().registerBuilder(reader.getContentType(), reader));
+
     }
 
-    protected void unregisterReader(Reader readerProvider) {
-        ReaderProviderRegistry.getInstance().unregisterBuilder(readerProvider.getContentType(), readerProvider);
+    protected void unregisterReaderProvider(ReaderProvider readerProvider) {
+        readerProvider.getReader()
+                .forEach(reader -> ReaderRegistryImpl.getInstance().unregisterBuilder(reader.getContentType(), reader));
     }
 }
