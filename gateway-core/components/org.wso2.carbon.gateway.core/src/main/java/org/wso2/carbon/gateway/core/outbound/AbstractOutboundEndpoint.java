@@ -25,8 +25,6 @@ import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.MessageDataSource;
 
-import java.nio.ByteBuffer;
-
 /**
  * Basic implementation for Outbound Endpoint
  */
@@ -47,14 +45,15 @@ public abstract class AbstractOutboundEndpoint implements OutboundEndpoint {
 
     @Override
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
-        if (carbonMessage.isAlreadyBuild()) {
+        if (carbonMessage.isAlreadyRead()) {
             MessageDataSource messageDataSource = carbonMessage.getMessageDataSource();
             if (messageDataSource != null) {
-                ByteBuffer byteBuffer = messageDataSource.getDataAsByteBuffer();
-                carbonMessage.getHeaders().remove(Constants.HTTP_CONTENT_LENGTH);
-                carbonMessage.getHeaders().put(Constants.HTTP_CONTENT_LENGTH, String.valueOf(byteBuffer.limit()));
-                carbonMessage.addMessageBody(byteBuffer);
+                messageDataSource.serializeData();
                 carbonMessage.setEndOfMsgAdded(true);
+                carbonMessage.getHeaders().remove(Constants.HTTP_CONTENT_LENGTH);
+                carbonMessage.getHeaders()
+                        .put(Constants.HTTP_CONTENT_LENGTH, String.valueOf(carbonMessage.getFullMessageLength()));
+
             } else {
                 LOGGER.error("Message is already built but cannot find the MessageDataSource");
             }

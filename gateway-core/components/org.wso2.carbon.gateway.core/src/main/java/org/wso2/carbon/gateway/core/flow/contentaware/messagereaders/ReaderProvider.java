@@ -16,19 +16,19 @@
  * under the License.
  */
 
-package org.wso2.carbon.gateway.core.flow.contentaware.messagebuilders;
+package org.wso2.carbon.gateway.core.flow.contentaware.messagereaders;
 
 import org.wso2.carbon.messaging.CarbonMessage;
 
 /**
  * An interface for BuilderProviders
  */
-public interface BuilderProvider {
+public interface ReaderProvider {
 
     /**
      * Return the Builder which matches with carbon message
      * @param carbonMessage
      * @return
      */
-    public Builder getBuilder(CarbonMessage carbonMessage);
+    public Reader getReader(CarbonMessage carbonMessage);
 }

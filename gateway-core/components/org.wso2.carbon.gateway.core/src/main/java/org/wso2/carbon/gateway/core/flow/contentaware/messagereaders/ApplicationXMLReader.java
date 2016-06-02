@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.gateway.core.flow.contentaware.messagebuilders;
+package org.wso2.carbon.gateway.core.flow.contentaware.messagereaders;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.impl.OMNodeEx;
@@ -37,9 +37,9 @@ import org.wso2.carbon.messaging.MessageDataSource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PushbackInputStream;
 import java.util.Locale;
-
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -47,14 +47,14 @@ import javax.xml.stream.XMLStreamException;
 /**
  * A builder class for application/xml contentType
  */
-public class ApplicationXMLBuilder extends AbstractBuilder {
+public class ApplicationXMLReader extends AbstractReader {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationXMLBuilder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationXMLReader.class);
 
     private final XMLInputFactory inputFactory = XMLInputFactory.newInstance();
     private static final String CHARSET = "charset";
 
-    public ApplicationXMLBuilder(String contentType) {
+    public ApplicationXMLReader(String contentType) {
         super(contentType);
         inputFactory.setProperty("javax.xml.stream.supportDTD", Boolean.FALSE);
         inputFactory.setProperty("javax.xml.stream.isReplacingEntityReferences", Boolean.FALSE);
@@ -62,10 +62,11 @@ public class ApplicationXMLBuilder extends AbstractBuilder {
     }
 
     @Override
-    public MessageDataSource processDocument(CarbonMessage carbonMessage) throws IOException, XMLStreamException {
+    public MessageDataSource makeMessageReadable(CarbonMessage carbonMessage) throws IOException, XMLStreamException {
         SOAPFactory soapFactory = OMAbstractFactory.getSOAP11Factory();
         SOAPEnvelope soapEnvelope = soapFactory.getDefaultEnvelope();
         InputStream inputStream = carbonMessage.getInputStream();
+        OutputStream outputStream = carbonMessage.getOutputStream();
         PushbackInputStream pushbackInputStream = null;
         String charset = null;
         String contentType = carbonMessage.getHeader(Constants.HTTP_CONTENT_TYPE);
@@ -118,7 +119,7 @@ public class ApplicationXMLBuilder extends AbstractBuilder {
             pushbackInputStream.close();
             throw new IOException(msg, e);
         }
-        CarbonSOAPMessageImpl carbonSOAPMessage = new CarbonSOAPMessageImpl(soapEnvelope, contentType);
+        CarbonSOAPMessageImpl carbonSOAPMessage = new CarbonSOAPMessageImpl(soapEnvelope, contentType, outputStream);
         carbonSOAPMessage.setCharsetEncoding(charset);
         attachMessageDataSource(carbonSOAPMessage, carbonMessage);
         return carbonSOAPMessage;

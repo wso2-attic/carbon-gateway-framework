@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.gateway.core.flow.contentaware.messagebuilders;
+package org.wso2.carbon.gateway.core.flow.contentaware.messagereaders;
 
 import org.apache.axiom.attachments.utils.IOUtils;
 import org.apache.axiom.om.OMException;
@@ -47,9 +47,9 @@ import javax.xml.stream.XMLStreamReader;
 /**
  * A utility class for Builders
  */
-public class BuilderUtil {
+public class ReaderUtil {
 
-    private static final Logger log = LoggerFactory.getLogger(BuilderUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(ReaderUtil.class);
 
     public static final int BOM_SIZE = 4;
 

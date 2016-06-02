@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.gateway.core.flow.contentaware.messagebuilders;
+package org.wso2.carbon.gateway.core.flow.contentaware.messagereaders;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMXMLBuilderFactory;
@@ -36,26 +36,28 @@ import org.wso2.carbon.messaging.MessageDataSource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PushbackInputStream;
 import java.util.Locale;
 
 /**
  * A class which builds SOAPMessage
  */
-public class SOAPBuilder extends AbstractBuilder {
+public class SOAPReader extends AbstractReader {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SOAPBuilder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SOAPReader.class);
 
     private static final String CHARSET = "charset";
 
-    public SOAPBuilder(String contentType) {
+    public SOAPReader(String contentType) {
         super(contentType);
     }
 
-    public MessageDataSource processDocument(CarbonMessage carbonMessage) throws IOException {
+    public MessageDataSource makeMessageReadable(CarbonMessage carbonMessage) throws IOException {
         SOAPFactory soapFactory = null;
         SOAPEnvelope envelope = null;
         PushbackInputStream pis = null;
+        OutputStream outputStream = carbonMessage.getOutputStream();
         String charset = null;
         InputStream inputStream = carbonMessage.getInputStream();
         String contentType = carbonMessage.getHeader(Constants.HTTP_CONTENT_TYPE);
@@ -81,15 +83,15 @@ public class SOAPBuilder extends AbstractBuilder {
             carbonMessage.setProperty(Constants.DETACHABLE_INPUT_STREAM, is);
 
             // Get the actual encoding by looking at the BOM of the InputStream
-            pis = BuilderUtil.getPushbackInputStream(is);
+            pis = ReaderUtil.getPushbackInputStream(is);
             int bytesRead = pis.read();
             if (bytesRead != -1) {
                 pis.unread(bytesRead);
-                String actualCharSetEncoding = BuilderUtil.getCharSetEncoding(pis, charset);
+                String actualCharSetEncoding = ReaderUtil.getCharSetEncoding(pis, charset);
                 OMXMLParserWrapper builder = OMXMLBuilderFactory.createSOAPModelBuilder(pis, actualCharSetEncoding);
                 envelope = (SOAPEnvelope) builder.getDocumentElement();
-                BuilderUtil.validateSOAPVersion(BuilderUtil.getEnvelopeNamespace(contentType), envelope);
-                BuilderUtil.validateCharSetEncoding(charset, builder.getDocument().getCharsetEncoding(),
+                ReaderUtil.validateSOAPVersion(ReaderUtil.getEnvelopeNamespace(contentType), envelope);
+                ReaderUtil.validateCharSetEncoding(charset, builder.getDocument().getCharsetEncoding(),
                         envelope.getNamespace().getNamespaceURI());
             } else {
                 if (contentType != null) {
@@ -110,7 +112,7 @@ public class SOAPBuilder extends AbstractBuilder {
             pis.close();
             throw new IOException(msg, e);
         }
-        CarbonSOAPMessageImpl carbonSOAPMessage = new CarbonSOAPMessageImpl(envelope, contentType);
+        CarbonSOAPMessageImpl carbonSOAPMessage = new CarbonSOAPMessageImpl(envelope, contentType, outputStream);
         carbonSOAPMessage.setCharsetEncoding(charset);
         attachMessageDataSource(carbonSOAPMessage, carbonMessage);
         return carbonSOAPMessage;

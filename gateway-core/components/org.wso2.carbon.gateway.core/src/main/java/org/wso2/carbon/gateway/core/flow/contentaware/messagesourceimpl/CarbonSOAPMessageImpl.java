@@ -27,9 +27,10 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.flow.contentaware.xpath.CarbonXPathImpl;
 import org.wso2.carbon.messaging.MessageDataSource;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
+import java.io.OutputStream;
 import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
 
 /**
  * A Class which represents SOAP Messages
@@ -41,10 +42,12 @@ public class CarbonSOAPMessageImpl implements MessageDataSource {
     private OMElement omElement;
     private String contentType;
     private String charsetEncoding;
+    private OutputStream outputStream;
 
-    public CarbonSOAPMessageImpl(OMElement omElement, String contentType) {
+    public CarbonSOAPMessageImpl(OMElement omElement, String contentType, OutputStream outputStream) {
         this.omElement = omElement;
         this.contentType = contentType;
+        this.outputStream = outputStream;
     }
 
     @Override
@@ -107,6 +110,15 @@ public class CarbonSOAPMessageImpl implements MessageDataSource {
         this.contentType = s;
     }
 
+    @Override
+    public void serializeData() {
+        try {
+            omElement.serialize(outputStream);
+        } catch (XMLStreamException e) {
+            LOGGER.error("Wrong CharSet Encoding", e);
+        }
+    }
+
     public String getCharsetEncoding() {
         return charsetEncoding;
     }
@@ -115,13 +127,4 @@ public class CarbonSOAPMessageImpl implements MessageDataSource {
         this.charsetEncoding = charsetEncoding;
     }
 
-    @Override
-    public ByteBuffer getDataAsByteBuffer() {
-        try {
-            return ByteBuffer.wrap(omElement.toString().getBytes(charsetEncoding));
-        } catch (UnsupportedEncodingException e) {
-            LOGGER.error("Wrong CharSet Encoding", e);
-        }
-        return null;
-    }
 }

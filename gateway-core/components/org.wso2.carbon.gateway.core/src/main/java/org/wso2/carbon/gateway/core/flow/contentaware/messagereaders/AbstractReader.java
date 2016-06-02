@@ -16,18 +16,28 @@
  * under the License.
  */
 
-package org.wso2.carbon.gateway.core.flow.contentaware.messagebuilders;
+package org.wso2.carbon.gateway.core.flow.contentaware.messagereaders;
 
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.MessageDataSource;
 
 /**
- * An common interface for builders
+ * An abstract class for Builders
  */
-public interface Builder {
+public abstract class AbstractReader implements Reader {
 
-    public MessageDataSource processDocument(CarbonMessage carbonMessage) throws Exception;
+    protected String contentType;
 
-    public String getContentType();
+    public AbstractReader(String contentType) {
+        this.contentType = contentType;
+    }
 
+    public void attachMessageDataSource(MessageDataSource messageDataSource, CarbonMessage carbonMessage) {
+        carbonMessage.setMessageDataSource(messageDataSource);
+    }
+
+    @Override
+    public String getContentType() {
+        return contentType;
+    }
 }

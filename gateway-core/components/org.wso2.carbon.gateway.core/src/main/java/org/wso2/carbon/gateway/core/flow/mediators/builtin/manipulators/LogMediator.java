@@ -21,8 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.flow.AbstractMediator;
-import org.wso2.carbon.gateway.core.flow.contentaware.messagebuilders.Builder;
-import org.wso2.carbon.gateway.core.flow.contentaware.messagebuilders.BuilderProviderRegistry;
+import org.wso2.carbon.gateway.core.flow.contentaware.messagereaders.Reader;
+import org.wso2.carbon.gateway.core.flow.contentaware.messagereaders.ReaderProviderRegistry;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.MessageDataSource;
@@ -56,9 +56,9 @@ public class LogMediator extends AbstractMediator {
         log.info(getValue(carbonMessage, logMessage).toString());
         MessageDataSource messageDataSource = null;
         String msg = null;
-        if (!carbonMessage.isAlreadyBuild()) {
-            Builder builder = BuilderProviderRegistry.getInstance().getBuilder(carbonMessage);
-            messageDataSource = builder.processDocument(carbonMessage);
+        if (!carbonMessage.isAlreadyRead()) {
+            Reader reader = ReaderProviderRegistry.getInstance().getReader(carbonMessage);
+            messageDataSource = reader.makeMessageReadable(carbonMessage);
         } else {
             messageDataSource = carbonMessage.getMessageDataSource();
         }

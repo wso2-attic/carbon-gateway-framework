@@ -83,6 +83,18 @@
             <groupId>jaxen</groupId>
             <artifactId>jaxen</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -164,6 +176,23 @@
                                     <symbolicName>org.wso2.carbon.deployment.engine</symbolicName>
                                     <version>${carbon.deployment.version}</version>
                                 </bundle>
+                                <bundle>
+                                    <symbolicName>jackson-databind</symbolicName>
+                                    <version>${jackson.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>com.jayway.jsonpath.json-path</symbolicName>
+                                    <version>${jayway.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>net.minidev.json-smart</symbolicName>
+                                    <version>${net.minidev.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName> org.apache.commons.io</symbolicName>
+                                    <version>${commons.io.version}</version>
+                                </bundle>
+
                             </bundles>
                         </configuration>
                     </execution>

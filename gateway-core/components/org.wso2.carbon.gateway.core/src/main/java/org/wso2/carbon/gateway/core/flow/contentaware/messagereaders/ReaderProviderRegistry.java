@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.gateway.core.flow.contentaware.messagebuilders;
+package org.wso2.carbon.gateway.core.flow.contentaware.messagereaders;
 
 import org.wso2.carbon.gateway.core.flow.contentaware.MIMEType;
 import org.wso2.carbon.messaging.CarbonMessage;
@@ -28,19 +28,20 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * A manager class for select builder and manage builders
  */
-public class BuilderProviderRegistry implements BuilderProvider {
+public class ReaderProviderRegistry implements ReaderProvider {
 
-    private static final BuilderProviderRegistry builder = new BuilderProviderRegistry();
+    private static final ReaderProviderRegistry builder = new ReaderProviderRegistry();
 
-    private Map<String, Builder> builderMap = new ConcurrentHashMap<>();
+    private Map<String, Reader> builderMap = new ConcurrentHashMap<>();
 
-    private BuilderProviderRegistry() {
-        builderMap.put(MIMEType.APPLICATION_SOAP_XML, new SOAPBuilder(MIMEType.APPLICATION_SOAP_XML));
-        builderMap.put(MIMEType.TEXT_XML, new SOAPBuilder(MIMEType.TEXT_XML));
-        builderMap.put(MIMEType.APPLICATION_XML, new ApplicationXMLBuilder(MIMEType.APPLICATION_XML));
+    private ReaderProviderRegistry() {
+        builderMap.put(MIMEType.APPLICATION_SOAP_XML, new SOAPReader(MIMEType.APPLICATION_SOAP_XML));
+        builderMap.put(MIMEType.TEXT_XML, new SOAPReader(MIMEType.TEXT_XML));
+        builderMap.put(MIMEType.APPLICATION_XML, new ApplicationXMLReader(MIMEType.APPLICATION_XML));
+        builderMap.put(MIMEType.APPLICATION_JSON, new JSONReader(MIMEType.APPLICATION_JSON));
     }
 
-    public Builder getBuilder(CarbonMessage carbonMessage) {
+    public Reader getReader(CarbonMessage carbonMessage) {
         String contentType = carbonMessage.getHeader(Constants.HTTP_CONTENT_TYPE);
         if (builderMap.containsKey(contentType)) {
             return builderMap.get(contentType);
@@ -49,17 +50,17 @@ public class BuilderProviderRegistry implements BuilderProvider {
         }
     }
 
-    public void registerBuilder(String contentType, Builder builder) {
-        builderMap.put(contentType, builder);
+    public void registerBuilder(String contentType, Reader reader) {
+        builderMap.put(contentType, reader);
 
     }
 
-    public void unregisterBuilder(String contentType, Builder builder) {
-        builderMap.remove(contentType, builder);
+    public void unregisterBuilder(String contentType, Reader reader) {
+        builderMap.remove(contentType, reader);
 
     }
 
-    public static BuilderProviderRegistry getInstance() {
+    public static ReaderProviderRegistry getInstance() {
         return builder;
     }
 }
