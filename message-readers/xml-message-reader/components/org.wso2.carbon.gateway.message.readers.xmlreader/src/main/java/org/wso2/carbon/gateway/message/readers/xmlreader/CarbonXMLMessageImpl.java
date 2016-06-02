@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.gateway.core.flow.contentaware.messagesourceimpl;
+package org.wso2.carbon.gateway.message.readers.xmlreader;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNode;
@@ -24,27 +24,29 @@ import org.apache.axiom.soap.SOAPEnvelope;
 import org.jaxen.JaxenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.gateway.core.flow.contentaware.xpath.CarbonXPathImpl;
 import org.wso2.carbon.messaging.MessageDataSource;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
+import java.io.OutputStream;
 import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
 
 /**
  * A Class which represents SOAP Messages
  */
-public class CarbonSOAPMessageImpl implements MessageDataSource {
+public class CarbonXMLMessageImpl implements MessageDataSource {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CarbonSOAPMessageImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CarbonXMLMessageImpl.class);
 
     private OMElement omElement;
     private String contentType;
     private String charsetEncoding;
+    private OutputStream outputStream;
 
-    public CarbonSOAPMessageImpl(OMElement omElement, String contentType) {
+    public CarbonXMLMessageImpl(OMElement omElement, String contentType, OutputStream outputStream) {
         this.omElement = omElement;
         this.contentType = contentType;
+        this.outputStream = outputStream;
     }
 
     @Override
@@ -107,6 +109,15 @@ public class CarbonSOAPMessageImpl implements MessageDataSource {
         this.contentType = s;
     }
 
+    @Override
+    public void serializeData() {
+        try {
+            omElement.serialize(outputStream);
+        } catch (XMLStreamException e) {
+            LOGGER.error("Wrong CharSet Encoding", e);
+        }
+    }
+
     public String getCharsetEncoding() {
         return charsetEncoding;
     }
@@ -115,13 +126,4 @@ public class CarbonSOAPMessageImpl implements MessageDataSource {
         this.charsetEncoding = charsetEncoding;
     }
 
-    @Override
-    public ByteBuffer getDataAsByteBuffer() {
-        try {
-            return ByteBuffer.wrap(omElement.toString().getBytes(charsetEncoding));
-        } catch (UnsupportedEncodingException e) {
-            LOGGER.error("Wrong CharSet Encoding", e);
-        }
-        return null;
-    }
 }

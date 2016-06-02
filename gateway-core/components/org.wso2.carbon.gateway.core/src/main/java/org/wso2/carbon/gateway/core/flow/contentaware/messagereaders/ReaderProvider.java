@@ -16,32 +16,14 @@
  * under the License.
  */
 
-package org.wso2.carbon.gateway.core.flow.contentaware.xpath;
+package org.wso2.carbon.gateway.core.flow.contentaware.messagereaders;
 
-import org.apache.axiom.om.xpath.AXIOMXPath;
-import org.jaxen.JaxenException;
+import java.util.List;
 
 /**
- * A carbon xpath implementation
+ * An interface for provide message readers.
  */
-public class CarbonXPathImpl extends AXIOMXPath {
+public interface ReaderProvider {
 
-    private static final long serialVersionUID = 763922613753433423L;
-
-    private String expression;
-
-    public CarbonXPathImpl(String expression) throws JaxenException {
-        super(expression);
-        this.expression = expression;
-    }
-
-    public String getExpression() {
-        return expression;
-    }
-
-    @Override
-    public Object evaluate(Object context) throws JaxenException {
-        return super.evaluate(context);
-    }
-
+    public List<Reader> getReader();
 }

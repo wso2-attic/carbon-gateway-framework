@@ -21,8 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.flow.AbstractMediator;
-import org.wso2.carbon.gateway.core.flow.contentaware.messagebuilders.Builder;
-import org.wso2.carbon.gateway.core.flow.contentaware.messagebuilders.BuilderProviderRegistry;
+import org.wso2.carbon.gateway.core.flow.contentaware.messagereaders.Reader;
+import org.wso2.carbon.gateway.core.flow.contentaware.messagereaders.ReaderRegistryImpl;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.MessageDataSource;
@@ -56,9 +56,16 @@ public class LogMediator extends AbstractMediator {
         log.info(getValue(carbonMessage, logMessage).toString());
         MessageDataSource messageDataSource = null;
         String msg = null;
-        if (!carbonMessage.isAlreadyBuild()) {
-            Builder builder = BuilderProviderRegistry.getInstance().getBuilder(carbonMessage);
-            messageDataSource = builder.processDocument(carbonMessage);
+        if (!carbonMessage.isAlreadyRead()) {
+            Reader reader = ReaderRegistryImpl.getInstance().getReader(carbonMessage);
+            if (reader != null) {
+                messageDataSource = reader.makeMessageReadable(carbonMessage);
+            } else {
+                String errmsg = "Cannot find registered message reader for incoming content Type";
+                log.error(errmsg);
+                throw new Exception(errmsg);
+            }
+
         } else {
             messageDataSource = carbonMessage.getMessageDataSource();
         }

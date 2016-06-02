@@ -87,30 +87,6 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.ws.commons.axiom</groupId>
-            <artifactId>axiom-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.ws.commons.axiom</groupId>
-            <artifactId>axiom-impl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.ws.commons.axiom</groupId>
-            <artifactId>axiom-dom</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-javamail_1.4_spec</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-stax-api_1.0_spec</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>jaxen</groupId>
-            <artifactId>jaxen</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
@@ -151,8 +127,8 @@
             requiredService="org.wso2.carbon.gateway.core.inbound.Provider",
             startup.listener;componentName="outbound-provider";
             requiredService="org.wso2.carbon.gateway.core.outbound.OutboundEPProvider",
-            startup.listener;componentName="builder-provider";
-            requiredService="org.wso2.carbon.gateway.core.flow.contentaware.messagebuilders.BuilderProvider",
+            startup.listener;componentName="reader-provider";
+            requiredService="org.wso2.carbon.gateway.core.flow.contentaware.messagereaders.ReaderProvider",
             osgi.service; objectClass="org.wso2.carbon.deployment.engine.Deployer",
             osgi.service; objectClass="org.wso2.carbon.messaging.CarbonMessageProcessor";
             requiredByComponentName="netty-transports-mgt"

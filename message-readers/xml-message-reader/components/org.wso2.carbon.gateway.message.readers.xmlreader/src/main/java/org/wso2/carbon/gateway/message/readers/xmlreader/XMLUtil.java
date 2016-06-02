@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.gateway.core.flow.contentaware.messagebuilders;
+package org.wso2.carbon.gateway.message.readers.xmlreader;
 
 import org.apache.axiom.attachments.utils.IOUtils;
 import org.apache.axiom.om.OMException;
@@ -43,13 +43,12 @@ import java.util.Locale;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-
 /**
  * A utility class for Builders
  */
-public class BuilderUtil {
+public class XMLUtil {
 
-    private static final Logger log = LoggerFactory.getLogger(BuilderUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(XMLUtil.class);
 
     public static final int BOM_SIZE = 4;
 
@@ -159,7 +158,7 @@ public class BuilderUtil {
      *
      * @param in an InputStream
      * @return a StAXSOAPModelBuilder for the given InputStream
-     * @throws XMLStreamException
+     * @throws javax.xml.stream.XMLStreamException
      * @deprecated If some one really need this method, please shout.
      */
     public static StAXBuilder getBuilder(Reader in) throws XMLStreamException {
@@ -172,7 +171,7 @@ public class BuilderUtil {
      *
      * @param inStream InputStream for a XML message
      * @return Handler to a OMBuilder implementation instance
-     * @throws XMLStreamException
+     * @throws javax.xml.stream.XMLStreamException
      */
     public static StAXBuilder getBuilder(InputStream inStream) throws XMLStreamException {
         XMLStreamReader xmlReader = StAXUtils.createXMLStreamReader(inStream);
@@ -185,7 +184,7 @@ public class BuilderUtil {
      * @param inStream   InputStream for a XML message
      * @param charSetEnc Character set encoding to be used
      * @return Handler to a OMBuilder implementation instance
-     * @throws XMLStreamException
+     * @throws javax.xml.stream.XMLStreamException
      */
     public static StAXBuilder getBuilder(InputStream inStream, String charSetEnc) throws XMLStreamException {
         XMLStreamReader xmlReader = StAXUtils.createXMLStreamReader(inStream, charSetEnc);
@@ -208,7 +207,7 @@ public class BuilderUtil {
      *
      * @param inStream InputStream for a SOAP message
      * @return Handler to a OMBuilder implementation instance
-     * @throws XMLStreamException
+     * @throws javax.xml.stream.XMLStreamException
      */
     public static StAXBuilder getSOAPBuilder(InputStream inStream) throws XMLStreamException {
         XMLStreamReader xmlReader = StAXUtils.createXMLStreamReader(inStream);
@@ -232,7 +231,7 @@ public class BuilderUtil {
      * @param inStream   InputStream for a SOAP message
      * @param charSetEnc Character set encoding to be used
      * @return Handler to a OMBuilder implementation instance
-     * @throws XMLStreamException
+     * @throws javax.xml.stream.XMLStreamException
      */
     public static StAXBuilder getSOAPBuilder(InputStream inStream, String charSetEnc) throws XMLStreamException {
         XMLStreamReader xmlReader = StAXUtils.createXMLStreamReader(inStream, charSetEnc);

@@ -16,9 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.gateway.core.flow.contentaware.messagebuilders;
-
-
+package org.wso2.carbon.gateway.core.flow.contentaware.messagereaders;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
@@ -35,14 +33,14 @@ import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
  * This waits until all the builders get registered.
  */
 @Component(
-        name = "org.wso2.carbon.gateway.core.flow.contentaware.messagebuilders.BuilderServiceComponent",
+        name = "org.wso2.carbon.gateway.core.flow.contentaware.messagereaders.ReaderServiceComponent",
         immediate = true,
         property = {
-                "componentName=builder-provider"
+                "componentName=reader-provider"
         })
-public class BuilderServiceComponent implements RequiredCapabilityListener {
+public class ReaderServiceComponent implements RequiredCapabilityListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(BuilderServiceComponent.class);
+    private static final Logger logger = LoggerFactory.getLogger(ReaderServiceComponent.class);
 
     private BundleContext bundleContext;
 
@@ -53,7 +51,7 @@ public class BuilderServiceComponent implements RequiredCapabilityListener {
         this.bundleContext = bundleContext;
 
         if (isAllProviderAvailable) {
-            bundleContext.registerService(BuilderProvider.class, BuilderProviderRegistry.getInstance(), null);
+            bundleContext.registerService(ReaderRegistry.class, ReaderRegistryImpl.getInstance(), null);
         }
     }
 
@@ -64,23 +62,25 @@ public class BuilderServiceComponent implements RequiredCapabilityListener {
         }
 
         isAllProviderAvailable = true;
-//TODO remove comments if there is atleast one Builder Service Registered.
-//        if (bundleContext != null) {
-//            bundleContext.registerService(BuilderProvider.class, BuilderProviderRegistry.getInstance(), null);
-//        }
+        if (bundleContext != null) {
+            bundleContext.registerService(ReaderRegistry.class, ReaderRegistryImpl.getInstance(), null);
+        }
     }
 
     @Reference(
-            name = "Builder-Service",
-            service = Builder.class,
-            cardinality = ReferenceCardinality.OPTIONAL,
+            name = "Reader-Service",
+            service = ReaderProvider.class,
+            cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC,
-            unbind = "unregisterBuilder")
-    protected void registerBuilder(Builder mediatorProvider) {
-        BuilderProviderRegistry.getInstance().registerBuilder(mediatorProvider.getContentType(), mediatorProvider);
+            unbind = "unregisterReaderProvider")
+    protected void registerReaderProvider(ReaderProvider readerProvider) {
+        readerProvider.getReader()
+                .forEach(reader -> ReaderRegistryImpl.getInstance().registerBuilder(reader.getContentType(), reader));
+
     }
 
-    protected void unregisterBuilder(Builder mediatorProvider) {
-        BuilderProviderRegistry.getInstance().unregisterBuilder(mediatorProvider.getContentType(), mediatorProvider);
+    protected void unregisterReaderProvider(ReaderProvider readerProvider) {
+        readerProvider.getReader()
+                .forEach(reader -> ReaderRegistryImpl.getInstance().unregisterBuilder(reader.getContentType(), reader));
     }
 }
