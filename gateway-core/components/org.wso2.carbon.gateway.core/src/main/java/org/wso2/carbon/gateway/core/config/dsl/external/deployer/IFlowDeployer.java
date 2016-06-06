@@ -29,6 +29,10 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.deployment.engine.Artifact;
+import org.wso2.carbon.deployment.engine.ArtifactType;
+import org.wso2.carbon.deployment.engine.Deployer;
+import org.wso2.carbon.deployment.engine.exception.CarbonDeploymentException;
 import org.wso2.carbon.gateway.core.config.ConfigRegistry;
 import org.wso2.carbon.gateway.core.config.GWConfigHolder;
 import org.wso2.carbon.gateway.core.config.dsl.external.WUMLConfigurationBuilder;
@@ -36,10 +40,7 @@ import org.wso2.carbon.gateway.core.config.dsl.external.wuml.WUMLBaseListenerImp
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLLexer;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLParser;
 import org.wso2.carbon.gateway.core.inbound.ProviderRegistry;
-import org.wso2.carbon.kernel.deployment.Artifact;
-import org.wso2.carbon.kernel.deployment.ArtifactType;
-import org.wso2.carbon.kernel.deployment.Deployer;
-import org.wso2.carbon.kernel.deployment.exception.CarbonDeploymentException;
+
 
 import java.io.File;
 import java.io.FileInputStream;

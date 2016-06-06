@@ -39,8 +39,7 @@ import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
         name = "org.wso2.carbon.gateway.core.flow.MediatorServiceComponent",
         immediate = true,
         property = {
-                "capability-name=org.wso2.carbon.gateway.core.flow.MediatorProvider",
-                "component-key=mediator-provider"
+                "componentName=mediator-provider"
         }
 )
 public class MediatorServiceComponent implements RequiredCapabilityListener {

@@ -18,13 +18,19 @@
 
 package org.wso2.carbon.gateway.core.outbound;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.MessageDataSource;
 
 /**
  * Basic implementation for Outbound Endpoint
  */
 public abstract class AbstractOutboundEndpoint implements OutboundEndpoint {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractOutboundEndpoint.class);
 
     private int timeOut;
 
@@ -34,11 +40,26 @@ public abstract class AbstractOutboundEndpoint implements OutboundEndpoint {
         this.name = name;
     }
 
-    public AbstractOutboundEndpoint() {}
+    public AbstractOutboundEndpoint() {
+    }
 
     @Override
-    public abstract boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback)
-            throws Exception;
+    public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
+        if (carbonMessage.isAlreadyRead()) {
+            MessageDataSource messageDataSource = carbonMessage.getMessageDataSource();
+            if (messageDataSource != null) {
+                messageDataSource.serializeData();
+                carbonMessage.setEndOfMsgAdded(true);
+                carbonMessage.getHeaders().remove(Constants.HTTP_CONTENT_LENGTH);
+                carbonMessage.getHeaders()
+                        .put(Constants.HTTP_CONTENT_LENGTH, String.valueOf(carbonMessage.getFullMessageLength()));
+
+            } else {
+                LOGGER.error("Message is already built but cannot find the MessageDataSource");
+            }
+        }
+        return true;
+    }
 
     public int getTimeOut() {
         return timeOut;

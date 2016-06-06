@@ -39,8 +39,7 @@ import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
         name = "org.wso2.carbon.gateway.core.inbound.InboundServiceComponent",
         immediate = true,
         property = {
-                "capability-name=org.wso2.carbon.gateway.core.inbound.InboundEPProvider",
-                "component-key=inbound-provider"
+                "componentName=inbound-provider"
         }
 )
 public class InboundEPServiceComponent implements RequiredCapabilityListener {

@@ -30,7 +30,9 @@ public class Constants {
     /**
      * Enumeration of supported types.
      */
-    public enum TYPES { STRING, INTEGER, BOOLEAN, DOUBLE, FLOAT, LONG, SHORT, XML, JSON, UNKNOWN }
+    public enum TYPES {
+        STRING, INTEGER, BOOLEAN, DOUBLE, FLOAT, LONG, SHORT, XML, JSON, UNKNOWN
+    }
 
     public static final String GW_GT_SCOPE = "GW_GT_SCOPE";
 
@@ -38,5 +40,31 @@ public class Constants {
     public static final String SERVICE_CONTEXT = "SERVICE_CONTEXT";
     public static final String SERVICE_SUB_GROUP_PATH = "SERVICE_SUB_GROUP_PATH";
 
+    /*
+    * Field CHARACTER_SET_ENCODING
+    */
+    public static final String CHARACTER_SET_ENCODING = "CHARACTER_SET_ENCODING";
+
+    /**
+     * On inbound requests, the detachable input stream can be queried to get
+     * the inbound length.  It can also be "detached" from the inbound http stream
+     * to allow resources to be freed.
+     */
+    public static final String DETACHABLE_INPUT_STREAM = "org.apache.axiom.om.util.DetachableInputStream";
+
+    public static final String HTTP_CONTENT_TYPE = "Content-Type";
+    public static final String HTTP_CONTENT_LENGTH = "Content-Length";
+    public static final String PROTOCOL_VERSION = "PROTOCOL";
+    public static final String MEDIA_TYPE_X_WWW_FORM = "application/x-www-form-urlencoded";
+    public static final String MEDIA_TYPE_TEXT_XML = "text/xml";
+    public static final String MEDIA_TYPE_MULTIPART_RELATED = "multipart/related";
+    public static final String MEDIA_TYPE_MULTIPART_FORM_DATA = "multipart/form-data";
+    public static final String MEDIA_TYPE_APPLICATION_XML = "application/xml";
+    public static final String MEDIA_TYPE_APPLICATION_SOAP_XML = "application/soap+xml";
+    public static final String MEDIA_TYPE_APPLICATION_ECHO_XML = "application/echo+xml";
+    public static final String MEDIA_TYPE_APPLICATION_JSON = "application/json";
+    public static final String MEDIA_TYPE_APPLICATION_JWT = "application/jwt";
+
+    public static final String APPLICATION_XML_BUILDER_ALLOW_DTD = "application.xml.builder.allow.DTD";
 
 }
