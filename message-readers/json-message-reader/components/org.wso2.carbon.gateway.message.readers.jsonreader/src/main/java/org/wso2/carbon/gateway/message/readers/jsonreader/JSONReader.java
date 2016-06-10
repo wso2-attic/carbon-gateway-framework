@@ -23,12 +23,12 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.gateway.core.flow.contentaware.MIMEType;
 import org.wso2.carbon.gateway.core.flow.contentaware.messagereaders.AbstractReader;
+import org.wso2.carbon.gateway.core.flow.contentaware.messagereaders.ReaderUtil;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.MessageDataSource;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Locale;
 
 /**
  * A class that responsible for provide the  JSON inputStream.
@@ -36,8 +36,6 @@ import java.util.Locale;
 public class JSONReader extends AbstractReader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JSONReader.class);
-
-    private static final String CHARSET = "charset";
 
     public JSONReader(String contentType) {
         super(contentType);
@@ -52,18 +50,11 @@ public class JSONReader extends AbstractReader {
         CarbonJSONMessageImpl carbonJSONMessage;
         if (contentType == null) {
             contentType = MIMEType.APPLICATION_JSON;
+        } else {
+            contentType = ReaderUtil.parseContentType(contentType);
+            charset = ReaderUtil.parseCharset(contentType);
         }
         try {
-
-            if (contentType.toLowerCase(Locale.getDefault()).contains(CHARSET)) {
-                String[] splitted = contentType.split(";");
-                if (splitted.length > 0) {
-                    contentType = splitted[0];
-                    charset = splitted[1].substring(splitted[1].indexOf("=") + 1);
-                }
-            } else {
-                charset = "UTF-8";
-            }
             carbonMessage.setProperty(Constants.CHARACTER_SET_ENCODING, charset);
 
             carbonJSONMessage = new CarbonJSONMessageImpl(contentType, inputStream, outputStream);

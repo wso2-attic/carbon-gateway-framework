@@ -50,18 +50,12 @@ public class CarbonXMLMessageImpl implements MessageDataSource {
     }
 
     @Override
-    public String getStringValue(String xPath) {
+    public String getValueAsString(String xPath) {
         try {
             Object result = null;
             OMElement eval = null;
             CarbonXPathImpl carbonXPath = new CarbonXPathImpl(xPath);
-            if (omElement instanceof SOAPEnvelope) {
-                eval = ((SOAPEnvelope) omElement).getBody().getFirstElement();
-                result = carbonXPath.evaluate(eval);
-            } else {
-                result = carbonXPath.evaluate(omElement);
-            }
-
+            result = carbonXPath.evaluate(omElement);
             StringBuffer sb = new StringBuffer();
             if (result instanceof OMNode) {
                 return result.toString();
@@ -75,6 +69,7 @@ public class CarbonXMLMessageImpl implements MessageDataSource {
         }
         return null;
     }
+
 
     @Override
     public Object getValue(String xPath) {

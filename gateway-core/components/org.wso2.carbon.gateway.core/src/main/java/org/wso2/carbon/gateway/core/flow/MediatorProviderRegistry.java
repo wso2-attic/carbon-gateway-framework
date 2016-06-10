@@ -24,9 +24,11 @@ import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filte
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.invokers.CallMediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.invokers.RespondMediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.manipulators.EnrichMediator;
-import org.wso2.carbon.gateway.core.flow.mediators.builtin.manipulators.LogMediator;
+
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.manipulators.PropertyMediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.manipulators.TransformMediator;
+
+import org.wso2.carbon.gateway.core.flow.mediators.builtin.manipulators.log.LogMediator;
 
 import java.util.HashMap;
 import java.util.Map;

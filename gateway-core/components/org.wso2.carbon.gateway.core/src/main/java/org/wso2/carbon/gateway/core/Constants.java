@@ -67,4 +67,10 @@ public class Constants {
 
     public static final String APPLICATION_XML_BUILDER_ALLOW_DTD = "application.xml.builder.allow.DTD";
 
+    public static final String TRACE_LOGGER = "TRACE_LOGGER";
+
+    public static final String SOAPACTION = "SOAPAction";
+
+    public static final String CHARSET = "charset";
+
 }
