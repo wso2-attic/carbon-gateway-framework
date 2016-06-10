@@ -82,7 +82,7 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     public void exitVariableDeclarationStatement(WUMLParser.VariableDeclarationStatementContext ctx) {
         String varType = ctx.TYPEDEFINITIONX().getText();
         String varIdentifier = ctx.IDENTIFIER().getText();
-        String varValue =  StringParserUtil.getValueWithinDoubleQuotes(ctx.COMMENTSTRINGX().getText());
+        String varValue = StringParserUtil.getValueWithinDoubleQuotes(ctx.COMMENTSTRINGX().getText());
 
         Mediator mediator = MediatorProviderRegistry.getInstance().getMediator("property");
 
@@ -138,8 +138,8 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         }
 
         if (pipelineStack.size() == 0) {
-            integrationFlow.getGWConfigHolder().addGlobalConstant(
-                    VariableUtil.getType(constType), constIdentifier, constValue);
+            integrationFlow.getGWConfigHolder()
+                    .addGlobalConstant(VariableUtil.getType(constType), constIdentifier, constValue);
         } // constants only allowed at the highest level
 
         super.exitConstStatement(ctx);
@@ -190,8 +190,8 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         for (TerminalNode terminalNode : ctx.inboundEndpointDef().PARAMX()) {
             String keyValue = terminalNode.getSymbol().getText();
             String key = keyValue.substring(1, keyValue.indexOf("("));
-            String value =
-                    getValue(keyValue.substring(keyValue.indexOf("\"") + 1, keyValue.lastIndexOf("\""))).toString();
+            String value = getValue(keyValue.substring(keyValue.indexOf("\"") + 1, keyValue.lastIndexOf("\"")))
+                    .toString();
 
             parameterHolder.addParameter(new Parameter(key, value));
         }
@@ -224,8 +224,8 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         for (TerminalNode terminalNode : ctx.outboundEndpointDef().PARAMX()) {
             String keyValue = terminalNode.getSymbol().getText();
             String key = keyValue.substring(1, keyValue.indexOf("("));
-            String value =
-                    getValue(keyValue.substring(keyValue.indexOf("\"") + 1, keyValue.lastIndexOf("\""))).toString();
+            String value = getValue(keyValue.substring(keyValue.indexOf("\"") + 1, keyValue.lastIndexOf("\"")))
+                    .toString();
 
             parameterHolder.addParameter(new Parameter(key, value));
         }
@@ -269,15 +269,54 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         String mediatorDefinition = ctx.MEDIATORDEFINITIONX().getText();
         String mediatorName = mediatorDefinition.split(DOUBLECOLON)[1];
 
-        String configurations = StringParserUtil.getValueWithinDoubleQuotes(ctx.ARGUMENTLISTDEF().getText());
-        Mediator mediator = MediatorProviderRegistry.getInstance().getMediator(mediatorName);
+        if (mediatorName.equals("log")) {
+            WUMLParser.LogMediatorStatementDefContext logCtx = ctx.logMediatorStatementDef();
+            Mediator mediator = MediatorProviderRegistry.getInstance().getMediator(mediatorName);
+            ParameterHolder parameterHolder = new ParameterHolder();
+            String level = StringParserUtil.getValueWithinDoubleQuotes(logCtx.LEVELDEF().getSymbol().getText());
+            parameterHolder.addParameter(new Parameter("level", level));
+            for (TerminalNode terminalNode : logCtx.PARAMX()) {
+                String keyValue = terminalNode.getSymbol().getText();
+                String key = keyValue.substring(1, keyValue.indexOf("("));
+                String value = keyValue.substring(keyValue.indexOf("\"") + 1, keyValue.lastIndexOf("\""));
+                parameterHolder.addParameter(new Parameter(key, value));
+            }
+            for (WUMLParser.LogPropertyStatementDefContext logPropertyStatementDefContext : logCtx
+                    .logPropertyStatementDef()) {
+                String key = StringParserUtil
+                        .getValueWithinDoubleQuotes(logPropertyStatementDefContext.KEYDEF().getSymbol().getText());
 
-        ParameterHolder parameterHolder = new ParameterHolder();
-        parameterHolder.addParameter(new Parameter("parameters", configurations));
-        mediator.setParameters(parameterHolder);
+                if (logPropertyStatementDefContext.VALUEDEF() != null) {
+                    String value = StringParserUtil.getValueWithinDoubleQuotes(
+                            logPropertyStatementDefContext.VALUEDEF().getSymbol().getText());
+                    parameterHolder.addParameter(new Parameter(key, value));
+                } else if (logPropertyStatementDefContext.XPATHDEF() != null) {
+                    String expression = StringParserUtil.getValueWithinDoubleQuotes(
+                            logPropertyStatementDefContext.XPATHDEF().getSymbol().getText());
+                    expression = "xpath=" + expression;
+                    parameterHolder.addParameter(new Parameter(key, expression));
+                } else if (logPropertyStatementDefContext.JSONPATHDEF() != null) {
+                    String expression = StringParserUtil.getValueWithinDoubleQuotes(logPropertyStatementDefContext.
+                            JSONPATHDEF().getSymbol().getText());
+                    expression = "jsonPath=" + expression;
+                    parameterHolder.addParameter(new Parameter(key, expression));
+                }
 
-        // mediator.setParameters(configurations);
-        dropMediatorFilterAware(mediator);
+            }
+            mediator.setParameters(parameterHolder);
+            dropMediatorFilterAware(mediator);
+        } else {
+
+            String configurations = StringParserUtil.getValueWithinDoubleQuotes(ctx.ARGUMENTLISTDEF().getText());
+            Mediator mediator = MediatorProviderRegistry.getInstance().getMediator(mediatorName);
+
+            ParameterHolder parameterHolder = new ParameterHolder();
+            parameterHolder.addParameter(new Parameter("parameters", configurations));
+            mediator.setParameters(parameterHolder);
+
+            // mediator.setParameters(configurations);
+            dropMediatorFilterAware(mediator);
+        }
         super.exitMediatorStatementDef(ctx);
     }
 
@@ -378,6 +417,16 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     }
 
     @Override
+    public void exitLogMediatorStatementDef(WUMLParser.LogMediatorStatementDefContext ctx) {
+        super.exitLogMediatorStatementDef(ctx);
+    }
+
+    @Override
+    public void exitLogPropertyStatementDef(WUMLParser.LogPropertyStatementDefContext ctx) {
+        super.exitLogPropertyStatementDef(ctx);
+    }
+
+    @Override
     public void exitExpression(WUMLParser.ExpressionContext ctx) {
         super.exitExpression(ctx);
     }
@@ -468,6 +517,7 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
     /**
      * Helper method to place mediator in correct stack when filter mediator is in use in mediation flow.
+     *
      * @param mediator
      */
     private void dropMediatorFilterAware(Mediator mediator) {
@@ -483,9 +533,9 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         }
     }
 
-
     /**
      * If variable detected, return value from global constants if it exists, in all other cases return key back.
+     *
      * @param key
      * @return Variable value or key
      */

@@ -18,7 +18,6 @@
 
 package org.wso2.carbon.gateway.core.flow.contentaware.messagereaders;
 
-import org.wso2.carbon.gateway.core.flow.contentaware.MIMEType;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.Constants;
 
@@ -40,11 +39,11 @@ public class ReaderRegistryImpl implements ReaderRegistry {
 
     public Reader getReader(CarbonMessage carbonMessage) {
         String contentType = carbonMessage.getHeader(Constants.HTTP_CONTENT_TYPE);
+        contentType = ReaderUtil.parseContentType(contentType);
         if (builderMap.containsKey(contentType)) {
             return builderMap.get(contentType);
-        } else {
-            return builderMap.get(MIMEType.TEXT_XML);
         }
+        return null;
     }
 
     public void registerBuilder(String contentType, Reader reader) {

@@ -50,7 +50,7 @@ public class CarbonJSONMessageImpl implements MessageDataSource {
     }
 
     @Override
-    public String getStringValue(String jsonPath) {
+    public String getValueAsString(String jsonPath) {
         this.jsonPath = JsonPath.compile(jsonPath);
         try {
             Object result = this.jsonPath.read(inputStream);
@@ -64,6 +64,7 @@ public class CarbonJSONMessageImpl implements MessageDataSource {
         }
         return null;
     }
+
 
     @Override
     public Object getValue(String jsonPath) {

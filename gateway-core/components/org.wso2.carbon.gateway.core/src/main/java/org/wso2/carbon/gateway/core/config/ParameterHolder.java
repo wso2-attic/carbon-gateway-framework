@@ -40,7 +40,7 @@ public class ParameterHolder {
         return parameters.get(paramName);
     }
 
-    public Map getParameters() {
+    public Map<String, Parameter> getParameters() {
         return parameters;
     }
 
