@@ -35,6 +35,7 @@ import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.MessageDataSource;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -191,14 +192,21 @@ public class LogMediator extends AbstractMediator {
             String expression = null;
             if (val.startsWith("xpath=")) {
                 expression = val.substring(("xpath=").length());
+
             } else if (val.startsWith("jsonPath=")) {
                 expression = val.substring(("jsonPath=").length());
             }
-
             if (expression != null) {
-                LogMediatorProperty logMediatorProperty = new LogMediatorProperty(key, null, expression);
-                this.properties.add(logMediatorProperty);
-            } else {
+                Map<String, String> map = getNameSpaceMap(properties);
+                if (map != null) {
+                    LogMediatorProperty logMediatorProperty = new LogMediatorProperty(key, null, expression, map);
+                    this.properties.add(logMediatorProperty);
+                } else {
+                    LogMediatorProperty logMediatorProperty = new LogMediatorProperty(key, null, expression);
+                    this.properties.add(logMediatorProperty);
+                }
+
+            } else if (!key.startsWith("namespace=")) {
                 LogMediatorProperty logMediatorProperty = new LogMediatorProperty(key, val, null);
                 this.properties.add(logMediatorProperty);
             }
@@ -325,12 +333,19 @@ public class LogMediator extends AbstractMediator {
                     } else {
                         if (carbonMessage.getMessageDataSource() != null) {
                             sb.append(separator).append(property.getKey()).append(" = ")
-                                    .append(carbonMessage.getMessageDataSource()
-                                            .getValueAsString(property.getExpression()));
+                                    .append(property.getNameSpaceMap() == null ?
+                                            carbonMessage.getMessageDataSource()
+                                                    .getValueAsString(property.getExpression()) :
+                                            carbonMessage.getMessageDataSource()
+                                                    .getValueAsString(property.getExpression(),
+                                                            property.getNameSpaceMap()));
                         } else {
                             MessageDataSource messageDataSource = reader.makeMessageReadable(carbonMessage);
                             sb.append(separator).append(property.getKey()).append(" = ")
-                                    .append(messageDataSource.getValueAsString(property.getExpression()));
+                                    .append(property.getNameSpaceMap() == null ?
+                                            messageDataSource.getValueAsString(property.getExpression()) :
+                                            messageDataSource.getValueAsString(property.getExpression(),
+                                                    property.getNameSpaceMap()));
                         }
                     }
                 }
@@ -361,5 +376,23 @@ public class LogMediator extends AbstractMediator {
             return true;
         }
         return false;
+    }
+
+    private Map<String, String> getNameSpaceMap(Map<String, Parameter> parameterMap) {
+        Map<String, String> nameSpaceMap = null;
+        for (Map.Entry entry : parameterMap.entrySet()) {
+            String key = (String) entry.getKey();
+            String modifiedKey = null;
+            Parameter parameter = (Parameter) entry.getValue();
+            String val = parameter.getValue();
+            if (key.startsWith("namespace=")) {
+                modifiedKey = key.substring(("namespace=").length());
+                if (nameSpaceMap == null) {
+                    nameSpaceMap = new HashMap<>();
+                }
+                nameSpaceMap.put(modifiedKey, val);
+            }
+        }
+        return nameSpaceMap;
     }
 }

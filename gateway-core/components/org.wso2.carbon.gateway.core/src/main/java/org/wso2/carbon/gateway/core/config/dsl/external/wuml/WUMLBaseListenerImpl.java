@@ -295,6 +295,17 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
                             logPropertyStatementDefContext.XPATHDEF().getSymbol().getText());
                     expression = "xpath=" + expression;
                     parameterHolder.addParameter(new Parameter(key, expression));
+                    if (logPropertyStatementDefContext.nameSpaceStatementDef() != null) {
+                        for (WUMLParser.NameSpaceStatementDefContext nameSpaceStatementDefContext :
+                                logPropertyStatementDefContext.nameSpaceStatementDef()) {
+                            String preFix = StringParserUtil.getValueWithinDoubleQuotes(
+                                    nameSpaceStatementDefContext.PREFIXDEF().getSymbol().getText());
+                            String uri = StringParserUtil.getValueWithinDoubleQuotes(
+                                    nameSpaceStatementDefContext.URIDEF().getSymbol().getText());
+                            String modifiedPrefix = "namespace=" + preFix;
+                            parameterHolder.addParameter(new Parameter(modifiedPrefix, uri));
+                        }
+                    }
                 } else if (logPropertyStatementDefContext.JSONPATHDEF() != null) {
                     String expression = StringParserUtil.getValueWithinDoubleQuotes(logPropertyStatementDefContext.
                             JSONPATHDEF().getSymbol().getText());
