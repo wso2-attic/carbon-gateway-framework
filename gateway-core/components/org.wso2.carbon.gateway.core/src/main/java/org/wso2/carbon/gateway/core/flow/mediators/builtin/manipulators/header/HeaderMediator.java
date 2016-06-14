@@ -16,11 +16,23 @@
  * under the License.
  */
 
-package org.wso2.carbon.gateway.core.flow.mediators.builtin.manipulators;
+package org.wso2.carbon.gateway.core.flow.mediators.builtin.manipulators.header;
+
+import org.wso2.carbon.gateway.core.flow.AbstractMediator;
+import org.wso2.carbon.messaging.CarbonCallback;
+import org.wso2.carbon.messaging.CarbonMessage;
 
 /**
  * A Header Mediator uses to mediate headers
- * TODO: Not implemented yet
  */
-public class HeaderMediator {
+public class HeaderMediator extends AbstractMediator {
+    @Override
+    public String getName() {
+        return null;
+    }
+
+    @Override
+    public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
+        return false;
+    }
 }

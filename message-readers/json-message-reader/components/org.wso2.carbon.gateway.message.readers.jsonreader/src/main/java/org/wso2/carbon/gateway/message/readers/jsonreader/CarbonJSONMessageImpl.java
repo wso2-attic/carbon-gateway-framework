@@ -28,6 +28,7 @@ import org.wso2.carbon.messaging.MessageDataSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 
 /**
  * A class which represents JSON Message and JSON message Accessor.
@@ -65,6 +66,10 @@ public class CarbonJSONMessageImpl implements MessageDataSource {
         return null;
     }
 
+    @Override
+    public String getValueAsString(String s, Map<String, String> map) {
+        return null;
+    }
 
     @Override
     public Object getValue(String jsonPath) {

@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.gateway.core.flow.mediators.builtin.manipulators.log;
 
+import java.util.Map;
+
 /**
  * A class for represent property values within log
  */
@@ -26,6 +28,14 @@ public class LogMediatorProperty {
     private String key;
     private String value;
     private String expression;
+    private Map<String, String> nameSpaceMap;
+
+    LogMediatorProperty(String key, String value, String expression, Map<String, String> nameSpaceMap) {
+        this.key = key;
+        this.value = value;
+        this.expression = expression;
+        this.nameSpaceMap = nameSpaceMap;
+    }
 
     LogMediatorProperty(String key, String value, String expression) {
         this.key = key;
@@ -45,5 +55,7 @@ public class LogMediatorProperty {
         return expression;
     }
 
-
+    public Map<String, String> getNameSpaceMap() {
+        return nameSpaceMap;
+    }
 }

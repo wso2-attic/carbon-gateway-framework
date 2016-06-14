@@ -28,6 +28,7 @@ import org.wso2.carbon.messaging.MessageDataSource;
 
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -53,7 +54,6 @@ public class CarbonXMLMessageImpl implements MessageDataSource {
     public String getValueAsString(String xPath) {
         try {
             Object result = null;
-            OMElement eval = null;
             CarbonXPathImpl carbonXPath = new CarbonXPathImpl(xPath);
             result = carbonXPath.evaluate(omElement);
             StringBuffer sb = new StringBuffer();
@@ -70,6 +70,28 @@ public class CarbonXMLMessageImpl implements MessageDataSource {
         return null;
     }
 
+    @Override
+    public String getValueAsString(String xPath, Map<String, String> nameSpaceProperties) {
+        try {
+            Object result = null;
+            CarbonXPathImpl carbonXPath = new CarbonXPathImpl(xPath);
+            for (Map.Entry<String, String> entry : nameSpaceProperties.entrySet()) {
+                carbonXPath.addNamespace(entry.getKey(), entry.getValue());
+            }
+            result = carbonXPath.evaluate(omElement);
+            StringBuffer sb = new StringBuffer();
+            if (result instanceof OMNode) {
+                return result.toString();
+            } else if (result instanceof List) {
+                ((List) result).forEach(re -> sb.append(re.toString()));
+                return sb.toString();
+            }
+
+        } catch (JaxenException e) {
+            LOGGER.error("Error occurred while evaluating xpath", e);
+        }
+        return null;
+    }
 
     @Override
     public Object getValue(String xPath) {
