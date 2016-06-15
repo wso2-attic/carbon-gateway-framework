@@ -35,5 +35,6 @@
         <module>sample-mediator</module>
         <module>jsontoxmltestmediator</module>
         <module>xmltojsontestmediator</module>
+        <module>header-mediator</module>
     </modules>
 </project>

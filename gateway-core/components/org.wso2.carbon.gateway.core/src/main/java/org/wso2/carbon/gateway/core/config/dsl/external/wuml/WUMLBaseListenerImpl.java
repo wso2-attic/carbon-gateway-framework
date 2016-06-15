@@ -268,54 +268,10 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     public void exitMediatorStatementDef(WUMLParser.MediatorStatementDefContext ctx) {
         String mediatorDefinition = ctx.MEDIATORDEFINITIONX().getText();
         String mediatorName = mediatorDefinition.split(DOUBLECOLON)[1];
+        if (parseLogMediator(ctx)) {
 
-        if (mediatorName.equals("log")) {
-            WUMLParser.LogMediatorStatementDefContext logCtx = ctx.logMediatorStatementDef();
-            Mediator mediator = MediatorProviderRegistry.getInstance().getMediator(mediatorName);
-            ParameterHolder parameterHolder = new ParameterHolder();
-            String level = StringParserUtil.getValueWithinDoubleQuotes(logCtx.LEVELDEF().getSymbol().getText());
-            parameterHolder.addParameter(new Parameter("level", level));
-            for (TerminalNode terminalNode : logCtx.PARAMX()) {
-                String keyValue = terminalNode.getSymbol().getText();
-                String key = keyValue.substring(1, keyValue.indexOf("("));
-                String value = keyValue.substring(keyValue.indexOf("\"") + 1, keyValue.lastIndexOf("\""));
-                parameterHolder.addParameter(new Parameter(key, value));
-            }
-            for (WUMLParser.LogPropertyStatementDefContext logPropertyStatementDefContext : logCtx
-                    .logPropertyStatementDef()) {
-                String key = StringParserUtil
-                        .getValueWithinDoubleQuotes(logPropertyStatementDefContext.KEYDEF().getSymbol().getText());
+        } else if (parseHeaderMediator(ctx)) {
 
-                if (logPropertyStatementDefContext.VALUEDEF() != null) {
-                    String value = StringParserUtil.getValueWithinDoubleQuotes(
-                            logPropertyStatementDefContext.VALUEDEF().getSymbol().getText());
-                    parameterHolder.addParameter(new Parameter(key, value));
-                } else if (logPropertyStatementDefContext.XPATHDEF() != null) {
-                    String expression = StringParserUtil.getValueWithinDoubleQuotes(
-                            logPropertyStatementDefContext.XPATHDEF().getSymbol().getText());
-                    expression = "xpath=" + expression;
-                    parameterHolder.addParameter(new Parameter(key, expression));
-                    if (logPropertyStatementDefContext.nameSpaceStatementDef() != null) {
-                        for (WUMLParser.NameSpaceStatementDefContext nameSpaceStatementDefContext :
-                                logPropertyStatementDefContext.nameSpaceStatementDef()) {
-                            String preFix = StringParserUtil.getValueWithinDoubleQuotes(
-                                    nameSpaceStatementDefContext.PREFIXDEF().getSymbol().getText());
-                            String uri = StringParserUtil.getValueWithinDoubleQuotes(
-                                    nameSpaceStatementDefContext.URIDEF().getSymbol().getText());
-                            String modifiedPrefix = "namespace=" + preFix;
-                            parameterHolder.addParameter(new Parameter(modifiedPrefix, uri));
-                        }
-                    }
-                } else if (logPropertyStatementDefContext.JSONPATHDEF() != null) {
-                    String expression = StringParserUtil.getValueWithinDoubleQuotes(logPropertyStatementDefContext.
-                            JSONPATHDEF().getSymbol().getText());
-                    expression = "jsonPath=" + expression;
-                    parameterHolder.addParameter(new Parameter(key, expression));
-                }
-
-            }
-            mediator.setParameters(parameterHolder);
-            dropMediatorFilterAware(mediator);
         } else {
 
             String configurations = StringParserUtil.getValueWithinDoubleQuotes(ctx.ARGUMENTLISTDEF().getText());
@@ -327,6 +283,7 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
             // mediator.setParameters(configurations);
             dropMediatorFilterAware(mediator);
+
         }
         super.exitMediatorStatementDef(ctx);
     }
@@ -563,5 +520,122 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         }
 
         return key;
+    }
+
+    private boolean parseLogMediator(WUMLParser.MediatorStatementDefContext ctx) {
+        String mediatorDefinition = ctx.MEDIATORDEFINITIONX().getText();
+        String mediatorName = mediatorDefinition.split(DOUBLECOLON)[1];
+        if (mediatorName.equals("log")) {
+            WUMLParser.LogMediatorStatementDefContext logCtx = ctx.logMediatorStatementDef();
+            Mediator mediator = MediatorProviderRegistry.getInstance().getMediator(mediatorName);
+            ParameterHolder parameterHolder = new ParameterHolder();
+            String level = StringParserUtil.getValueWithinDoubleQuotes(logCtx.LEVELDEF().getSymbol().getText());
+            parameterHolder.addParameter(new Parameter("level", level));
+            for (TerminalNode terminalNode : logCtx.PARAMX()) {
+                String keyValue = terminalNode.getSymbol().getText();
+                String key = keyValue.substring(1, keyValue.indexOf("("));
+                String value = keyValue.substring(keyValue.indexOf("\"") + 1, keyValue.lastIndexOf("\""));
+                parameterHolder.addParameter(new Parameter(key, value));
+            }
+            for (WUMLParser.LogPropertyStatementDefContext logPropertyStatementDefContext : logCtx
+                    .logPropertyStatementDef()) {
+                String key = StringParserUtil
+                        .getValueWithinDoubleQuotes(logPropertyStatementDefContext.KEYDEF().getSymbol().getText());
+
+                if (logPropertyStatementDefContext.VALUEDEF() != null) {
+                    String value = StringParserUtil.getValueWithinDoubleQuotes(
+                            logPropertyStatementDefContext.VALUEDEF().getSymbol().getText());
+                    parameterHolder.addParameter(new Parameter(key, value));
+                } else if (logPropertyStatementDefContext.XPATHDEF() != null) {
+                    String expression = StringParserUtil.getValueWithinDoubleQuotes(
+                            logPropertyStatementDefContext.XPATHDEF().getSymbol().getText());
+                    expression = "xpath=" + expression;
+                    parameterHolder.addParameter(new Parameter(key, expression));
+                    if (logPropertyStatementDefContext.nameSpaceStatementDef() != null) {
+                        for (WUMLParser.NameSpaceStatementDefContext nameSpaceStatementDefContext :
+                                logPropertyStatementDefContext
+                                .nameSpaceStatementDef()) {
+                            String preFix = StringParserUtil.getValueWithinDoubleQuotes(
+                                    nameSpaceStatementDefContext.PREFIXDEF().getSymbol().getText());
+                            String uri = StringParserUtil.getValueWithinDoubleQuotes(
+                                    nameSpaceStatementDefContext.URIDEF().getSymbol().getText());
+                            String modifiedPrefix = "namespace=" + preFix;
+                            parameterHolder.addParameter(new Parameter(modifiedPrefix, uri));
+                        }
+                    }
+                } else if (logPropertyStatementDefContext.JSONPATHDEF() != null) {
+                    String expression = StringParserUtil.getValueWithinDoubleQuotes(logPropertyStatementDefContext.
+                            JSONPATHDEF().getSymbol().getText());
+                    expression = "jsonPath=" + expression;
+                    parameterHolder.addParameter(new Parameter(key, expression));
+                }
+
+            }
+            mediator.setParameters(parameterHolder);
+            dropMediatorFilterAware(mediator);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean parseHeaderMediator(WUMLParser.MediatorStatementDefContext ctx) {
+        String mediatorDefinition = ctx.MEDIATORDEFINITIONX().getText();
+        String mediatorName = mediatorDefinition.split(DOUBLECOLON)[1];
+        if (mediatorName.equals("header")) {
+            WUMLParser.HeaderMediatorStatementDefContext headerCtx = ctx.headerMediatorStatementDef();
+            Mediator mediator = MediatorProviderRegistry.getInstance().getMediator(mediatorName);
+            ParameterHolder parameterHolder = new ParameterHolder();
+            if (headerCtx != null) {
+                if (headerCtx.NAMEDEF() != null) {
+                    TerminalNode terminalNode = headerCtx.NAMEDEF();
+                    String keyValue = terminalNode.getSymbol().getText();
+                    String key = keyValue.substring(0, keyValue.indexOf("("));
+                    String value = keyValue.substring(keyValue.indexOf("\"") + 1, keyValue.lastIndexOf("\""));
+                    parameterHolder.addParameter(new Parameter(key, value));
+                }
+
+                for (TerminalNode terminalNode : headerCtx.PARAMX()) {
+                    String keyValue = terminalNode.getSymbol().getText();
+                    String key = keyValue.substring(1, keyValue.indexOf("("));
+                    String value = keyValue.substring(keyValue.indexOf("\"") + 1, keyValue.lastIndexOf("\""));
+                    parameterHolder.addParameter(new Parameter(key, value));
+                }
+                if (headerCtx.VALUEDEF() != null) {
+                    String val = StringParserUtil
+                            .getValueWithinDoubleQuotes(headerCtx.VALUEDEF().getSymbol().getText());
+                    if (headerCtx.nameSpaceStatementDef() != null) {
+                        for (WUMLParser.NameSpaceStatementDefContext nameSpaceStatementDefContext : headerCtx
+                                .nameSpaceStatementDef()) {
+                            String preFix = StringParserUtil.getValueWithinDoubleQuotes(
+                                    nameSpaceStatementDefContext.PREFIXDEF().getSymbol().getText());
+                            String uri = StringParserUtil.getValueWithinDoubleQuotes(
+                                    nameSpaceStatementDefContext.URIDEF().getSymbol().getText());
+                            String modifiedPrefix = "namespace=" + preFix;
+                            parameterHolder.addParameter(new Parameter(modifiedPrefix, uri));
+                        }
+                    }
+                    parameterHolder.addParameter(new Parameter("value", val));
+                } else if (headerCtx.XPATHDEF() != null) {
+                    String val = StringParserUtil
+                            .getValueWithinDoubleQuotes(headerCtx.XPATHDEF().getSymbol().getText());
+                    parameterHolder.addParameter(new Parameter("xpath", val));
+                    if (headerCtx.nameSpaceStatementDef() != null) {
+                        for (WUMLParser.NameSpaceStatementDefContext nameSpaceStatementDefContext : headerCtx
+                                .nameSpaceStatementDef()) {
+                            String preFix = StringParserUtil.getValueWithinDoubleQuotes(
+                                    nameSpaceStatementDefContext.PREFIXDEF().getSymbol().getText());
+                            String uri = StringParserUtil.getValueWithinDoubleQuotes(
+                                    nameSpaceStatementDefContext.URIDEF().getSymbol().getText());
+                            String modifiedPrefix = "namespace=" + preFix;
+                            parameterHolder.addParameter(new Parameter(modifiedPrefix, uri));
+                        }
+                    }
+                }
+                mediator.setParameters(parameterHolder);
+                dropMediatorFilterAware(mediator);
+                return true;
+            }
+        }
+        return false;
     }
 }

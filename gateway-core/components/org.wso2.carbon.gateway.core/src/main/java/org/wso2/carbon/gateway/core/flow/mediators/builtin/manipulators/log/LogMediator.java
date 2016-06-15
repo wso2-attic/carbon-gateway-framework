@@ -223,7 +223,9 @@ public class LogMediator extends AbstractMediator {
 
     private String getSimpleLogMessage(CarbonMessage carbonMessage, Reader reader) throws Exception {
         StringBuffer sb = new StringBuffer();
-        if (carbonMessage.getProperty(org.wso2.carbon.messaging.Constants.TO) != null) {
+        if (carbonMessage.getHeader(org.wso2.carbon.messaging.Constants.TO) != null) {
+            sb.append("To: ").append(carbonMessage.getHeader(org.wso2.carbon.messaging.Constants.TO));
+        } else if (carbonMessage.getProperty(org.wso2.carbon.messaging.Constants.TO) != null) {
             sb.append("To: ").append(carbonMessage.getProperty(org.wso2.carbon.messaging.Constants.TO));
         } else {
             sb.append("To: ");
@@ -251,7 +253,11 @@ public class LogMediator extends AbstractMediator {
                 setCustomProperties(sb, carbonMessage, reader);
             }
         }
-        return trimLeadingSeparator(sb);
+
+        return
+
+                trimLeadingSeparator(sb);
+
     }
 
     private String getHeadersLogMessage(CarbonMessage carbonMessage, Reader reader) throws Exception {
