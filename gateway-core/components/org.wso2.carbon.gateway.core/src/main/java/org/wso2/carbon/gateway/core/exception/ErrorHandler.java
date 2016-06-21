@@ -20,12 +20,12 @@ package org.wso2.carbon.gateway.core.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.gateway.core.flow.FlowControllerCallback;
 import org.wso2.carbon.gateway.core.flow.MediatorCollection;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.invokers.RespondMediator;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
-import org.wso2.carbon.messaging.Constants;
 import org.wso2.carbon.messaging.DefaultCarbonMessage;
 import org.wso2.carbon.messaging.FaultHandler;
 
@@ -44,16 +44,14 @@ public class ErrorHandler implements FaultHandler {
 
     private String name;
 
-
     public ErrorHandler(String name, MediatorCollection mediatorCollection) {
         this.name = name;
         this.mediatorCollection = mediatorCollection;
     }
 
-
     @Override
     public void handleFault(String errorcode, Throwable throwable, CarbonMessage carbonMessage,
-                            CarbonCallback carbonCallback) {
+            CarbonCallback carbonCallback) {
 
         CarbonCallback initiatedCallback = getSuperParentCallback(carbonCallback);
 
@@ -76,10 +74,11 @@ public class ErrorHandler implements FaultHandler {
 
         } else {
             carbonMessage.setProperty(Constants.HTTP_STATUS_CODE, errorcode);
-            carbonMessage.setProperty(Constants.ERROR_CODE, errorcode);
-            carbonMessage.setProperty(Constants.ERROR_MESSAGE, throwable.getLocalizedMessage());
-            carbonMessage.setProperty(Constants.ERROR_DETAIL, throwable.getMessage());
-            carbonMessage.setProperty(Constants.ERROR_EXCEPTION, throwable);
+            carbonMessage.setProperty(org.wso2.carbon.messaging.Constants.ERROR_CODE, errorcode);
+            carbonMessage
+                    .setProperty(org.wso2.carbon.messaging.Constants.ERROR_MESSAGE, throwable.getLocalizedMessage());
+            carbonMessage.setProperty(org.wso2.carbon.messaging.Constants.ERROR_DETAIL, throwable.getMessage());
+            carbonMessage.setProperty(org.wso2.carbon.messaging.Constants.ERROR_EXCEPTION, throwable);
             try {
                 mediatorCollection.getFirstMediator().receive(carbonMessage, initiatedCallback);
             } catch (Exception e) {

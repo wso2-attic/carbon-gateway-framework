@@ -18,8 +18,9 @@
 
 package org.wso2.carbon.gateway.core.flow.contentaware.messagereaders;
 
+import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.messaging.CarbonMessage;
-import org.wso2.carbon.messaging.Constants;
+
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
