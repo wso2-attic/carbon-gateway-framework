@@ -1,8 +1,8 @@
 package org.wso2.carbon.gateway.core.config;
 
 import org.wso2.carbon.gateway.core.Constants;
-import org.wso2.carbon.gateway.core.config.annotations.IAnnotation;
 import org.wso2.carbon.gateway.core.config.annotations.Annotation;
+import org.wso2.carbon.gateway.core.config.annotations.IAnnotation;
 import org.wso2.carbon.gateway.core.config.annotations.common.Description;
 import org.wso2.carbon.gateway.core.config.annotations.integration.Path;
 import org.wso2.carbon.gateway.core.config.annotations.integration.Security;
@@ -25,7 +25,6 @@ public class Integration {
     private String name;
     private Map<String, Annotation> annotations = new HashMap<>();
 
-
     /**
      * Runtime objects
      */
@@ -33,7 +32,6 @@ public class Integration {
     private Map<String, InboundEndpoint> inbounds = new HashMap<>();
     private Map<String, OutboundEndpoint> outbounds = new HashMap<>();
     private Map<String, Resource> resources = new HashMap<>();
-
 
     public Integration(String name) {
         this.name = name;
@@ -55,7 +53,7 @@ public class Integration {
         return annotations;
     }
 
-    public void setAnnotation(String name, IAnnotation value) throws AnnotationNotSupportedException {
+    public void addAnnotation(String name, IAnnotation value) throws AnnotationNotSupportedException {
         if (annotations.get(name) != null) {
             annotations.get(name).setValue(value);
         } else {

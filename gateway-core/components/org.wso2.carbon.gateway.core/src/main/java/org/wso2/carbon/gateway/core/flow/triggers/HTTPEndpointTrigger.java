@@ -1,8 +1,11 @@
-package org.wso2.carbon.gateway.core.config.annotations.resource.impl;
+package org.wso2.carbon.gateway.core.flow.triggers;
 
 import org.wso2.carbon.gateway.core.flow.templates.uri.URITemplate;
 import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
 
+/**
+ * EndpointTrigger type related to HTTP Inbound sources.
+ */
 public class HTTPEndpointTrigger extends EndpointTrigger {
 
     private InboundEndpoint source;

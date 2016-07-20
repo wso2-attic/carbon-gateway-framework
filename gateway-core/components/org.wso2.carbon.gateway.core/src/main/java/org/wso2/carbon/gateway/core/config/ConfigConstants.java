@@ -1,6 +1,8 @@
 package org.wso2.carbon.gateway.core.config;
 
-
+/**
+ * Configuration related constants.
+ */
 public class ConfigConstants {
 
     // Annotations
