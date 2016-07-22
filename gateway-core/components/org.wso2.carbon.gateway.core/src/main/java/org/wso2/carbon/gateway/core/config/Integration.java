@@ -83,7 +83,7 @@ public class Integration {
     }
 
     public void addInbound(InboundEndpoint inbound) {
-        inbound.setGWConfigName(name);
+        inbound.setConfigName(name);
         inbounds.put(inbound.getName(), inbound);
     }
 
@@ -107,7 +107,7 @@ public class Integration {
         return resources;
     }
 
-    public void addResources(Resource resource) {
+    public void addResource(Resource resource) {
         resources.put(resource.getName(), resource);
     }
 }
