@@ -141,6 +141,8 @@
             requiredService="org.wso2.carbon.gateway.core.outbound.OutboundEPProvider",
             startup.listener;componentName="reader-provider";
             requiredService="org.wso2.carbon.gateway.core.flow.contentaware.messagereaders.ReaderProvider",
+            startup.listener;componentName="trigger-provider";
+            requiredService="org.wso2.carbon.gateway.core.flow.triggers.EndpointTriggerProvider,
             osgi.service; objectClass="org.wso2.carbon.deployment.engine.Deployer",
             osgi.service; objectClass="org.wso2.carbon.messaging.CarbonMessageProcessor";
             requiredByComponentName="netty-transports-mgt"

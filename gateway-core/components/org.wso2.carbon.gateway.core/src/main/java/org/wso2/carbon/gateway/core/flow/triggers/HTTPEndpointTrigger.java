@@ -8,11 +8,13 @@ import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
  */
 public class HTTPEndpointTrigger extends EndpointTrigger {
 
+    private static final String name = "HTTPEndpointTrigger";
     private InboundEndpoint source;
     private String condition;
     private URITemplate path;
 
     public HTTPEndpointTrigger(InboundEndpoint source, String condition, URITemplate path) {
+        super(name);
         this.source = source;
         this.condition = condition;
         this.path = path;
