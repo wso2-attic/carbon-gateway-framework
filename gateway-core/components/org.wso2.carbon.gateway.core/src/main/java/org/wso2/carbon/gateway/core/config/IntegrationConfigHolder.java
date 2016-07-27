@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.gateway.core.flow.Group;
-import org.wso2.carbon.gateway.core.flow.Pipeline;
+import org.wso2.carbon.gateway.core.flow.Worker;
 import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
 import org.wso2.carbon.gateway.core.outbound.OutboundEndpoint;
 import org.wso2.carbon.gateway.core.util.VariableUtil;
@@ -41,7 +41,7 @@ public class IntegrationConfigHolder {
 
     private InboundEndpoint inboundEndpoint;
 
-    private Map<String, Pipeline> pipelines = new HashMap<>();
+    private Map<String, Worker> workers = new HashMap<>();
 
     private Map<String, Group> groups = new HashMap<>();
 
@@ -83,16 +83,16 @@ public class IntegrationConfigHolder {
         this.inboundEndpoint = inboundEndpoint;
     }
 
-    public Pipeline getPipeline(String name) {
-        return pipelines.get(name);
+    public Worker getWorker(String name) {
+        return workers.get(name);
     }
 
-    public void addPipeline(Pipeline pipeline) {
-        pipelines.put(pipeline.getName(), pipeline);
+    public void addWorker(Worker worker) {
+        workers.put(worker.getName(), worker);
     }
 
-    public Map<String, Pipeline> getPipelines() {
-        return pipelines;
+    public Map<String, Worker> getWorkers() {
+        return workers;
     }
 
     public Map<String, OutboundEndpoint> getOutboundEndpoints() {

@@ -14,9 +14,11 @@ import org.wso2.carbon.gateway.core.flow.triggers.HTTPEndpointTrigger;
 import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
+import rx.Observable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Object model representing a single resource.
@@ -30,13 +32,14 @@ public class Resource {
     private String name;
     private Map<String, Annotation> annotations = new HashMap<>();
     private EndpointTrigger trigger;
+    private Worker defaultWorker;
 
 
     public Resource(String name, InboundEndpoint source, String condition, URITemplate uriTemplate,
                     EndpointTrigger trigger) {
         this.name = name;
         this.trigger = trigger;
-
+        defaultWorker = new Worker(name);
         annotations.put(ConfigConstants.AN_DESCRIPTION, new Description());
         annotations.put(ConfigConstants.AN_TRIGGER, new Trigger(getTriggerInstance(source, condition, uriTemplate)));
     }
@@ -51,6 +54,13 @@ public class Resource {
 
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) {
         log.info("Resource " + name + " received a message.");
+
+        Map<String, Observable> observableMap = new HashMap<>();
+        carbonMessage.setProperty("OBSERVABLES", observableMap);
+
+        defaultWorker.submit(UUID.randomUUID(),
+                carbonMessage, carbonCallback).empty(); // we don't need subscriber to return here?
+
         return true;
     }
 
@@ -68,6 +78,10 @@ public class Resource {
         } else {
             throw new AnnotationNotSupportedException("Annotation " + name + " is not supported by Integration");
         }
+    }
+
+    public Worker getDefaultWorker() {
+        return defaultWorker;
     }
 
     private EndpointTrigger getTriggerInstance(InboundEndpoint source, String condition, URITemplate uriTemplate) {
