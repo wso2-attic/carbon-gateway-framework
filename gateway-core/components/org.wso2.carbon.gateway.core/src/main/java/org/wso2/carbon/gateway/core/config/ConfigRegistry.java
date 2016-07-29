@@ -50,6 +50,8 @@ public class ConfigRegistry {
 
     private Map<String, GWConfigHolder> configurations = new HashMap<>();
 
+    private Map<String, IntegrationConfigHolder> intConfigs = new HashMap<>();
+
     public static ConfigRegistry getInstance() {
         return configRegistry;
     }
@@ -77,8 +79,35 @@ public class ConfigRegistry {
         unDeployArtifacts(configHolder);
     }
 
+    /**
+     * Add a Integration Configuration to the Registry
+     *
+     * @param configHolder a Gateway Artifact
+     */
+    public void addGWConfig(IntegrationConfigHolder configHolder) {
+        intConfigs.put(configHolder.getName(), configHolder);
+        //TODO remove GWConfigHolder and replace all methods to use IntegrationConfigHolder instead.
+        //updateArtifacts(configHolder);
+    }
+
+    /**
+     * Remove a Gateway Artifact configuration
+     *
+     * @param configHolder a Gateway Artifact
+     */
+    public void removeGWConfig(IntegrationConfigHolder configHolder) {
+        configurations.remove(configHolder.getName());
+        //TODO remove GWConfigHolder and replace all methods to use IntegrationConfigHolder instead.
+        //unDeployArtifacts(configHolder);
+    }
+
+
     public GWConfigHolder getGWConfig(String name) {
         return configurations.get(name);
+    }
+
+    public IntegrationConfigHolder getIntegrationConfig(String name) {
+        return intConfigs.get(name);
     }
 
     private void updateArtifacts(GWConfigHolder config) {
