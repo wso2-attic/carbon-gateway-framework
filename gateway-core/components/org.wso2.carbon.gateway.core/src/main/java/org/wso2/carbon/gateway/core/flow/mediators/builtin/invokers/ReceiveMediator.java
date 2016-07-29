@@ -32,9 +32,10 @@ public class ReceiveMediator extends AbstractMediator implements Invoker {
         parentIntegration = integration;
     }
 
-    public ReceiveMediator(String integration, List workers) {
+    public ReceiveMediator(String integration, List workers, boolean or) {
         parentIntegration = integration;
         this.workers = workers;
+        this.or = or;
     }
 
     public void setParameters(ParameterHolder parameterHolder) {
@@ -50,6 +51,10 @@ public class ReceiveMediator extends AbstractMediator implements Invoker {
 
     @Override
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
+        if (log.isDebugEnabled()) {
+            log.debug("Executing ReceiveMediator");
+        }
+
         Map<String, Observable> observableMap = (Map<String, Observable>) carbonMessage.getProperty("OBSERVABLES_MAP");
 
         if (observableMap == null) {
@@ -58,23 +63,30 @@ public class ReceiveMediator extends AbstractMediator implements Invoker {
         }
 
         if (or) {
+            log.debug("Executing ReceiveMediator OR");
+
             List<Observable<RxContext>> oList = new ArrayList<>();
 
             observableMap.forEach((k, v) -> {
                 oList.add(v);
             });
 
-            Observable<RxContext> mergedObservable = BehaviorSubject.create();
-            mergedObservable.merge(oList).first().subscribe(r -> {
+            BehaviorSubject behaviorSubject = BehaviorSubject.create();
+            //TODO FIX ME - we receive onNext event immediately as well as after mediation is done in worker
+            //Observable<RxContext> o = oList.remove(0);
+//            behaviorSubject.merge(oList).skip(oList.size()).first().subscribe(r -> {
+            behaviorSubject.merge(oList).first().subscribe(r -> {
                 try {
+                    log.debug("Receive Mediator received event. " + r.getId());
                     next(r.getCarbonMessage(), r.getCarbonCallback());
                 } catch (Throwable t) {
                     throw Exceptions.propagate(t);
                 }
             });
 
-            return true;
         } else {
+            log.debug("Executing ReceiveMediator non OR");
+
             Map.Entry<String, Observable> entry = observableMap.entrySet().iterator().next();
             if (entry.getValue() != null) {
                 Observable<RxContext> o = entry.getValue();
@@ -89,6 +101,8 @@ public class ReceiveMediator extends AbstractMediator implements Invoker {
                 log.error("Could not find observable.");
             }
         }
+
+        log.debug("Executing ReceiveMediator done!");
 
         return false;
     }

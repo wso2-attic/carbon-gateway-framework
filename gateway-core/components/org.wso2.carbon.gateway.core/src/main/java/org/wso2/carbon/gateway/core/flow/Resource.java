@@ -17,6 +17,7 @@ import org.wso2.carbon.messaging.CarbonMessage;
 import rx.Observable;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -34,6 +35,10 @@ public class Resource {
     private EndpointTrigger trigger;
     private Worker defaultWorker;
 
+    public Resource(String name) {
+        this.name = name;
+        defaultWorker = new Worker(name);
+    }
 
     public Resource(String name, InboundEndpoint source, String condition, URITemplate uriTemplate,
                     EndpointTrigger trigger) {
@@ -55,11 +60,12 @@ public class Resource {
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) {
         log.info("Resource " + name + " received a message.");
 
-        Map<String, Observable> observableMap = new HashMap<>();
+        Map<String, Observable> observableMap = new LinkedHashMap<>();
         carbonMessage.setProperty("OBSERVABLES", observableMap);
 
-        defaultWorker.submit(UUID.randomUUID(),
-                carbonMessage, carbonCallback).empty(); // we don't need subscriber to return here?
+        defaultWorker.submit(UUID.randomUUID(), carbonMessage, carbonCallback)
+                .subscribe(r -> log.info("Resource subscribe event " +
+                        ((RxContext) r).getId())); // we don't need subscriber to return here?
 
         return true;
     }

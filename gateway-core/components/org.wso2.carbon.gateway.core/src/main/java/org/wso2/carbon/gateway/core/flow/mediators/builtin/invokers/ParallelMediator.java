@@ -14,7 +14,7 @@ import rx.Observable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -49,13 +49,17 @@ public class ParallelMediator extends AbstractMediator implements Invoker {
 
     @Override
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
+        if (log.isDebugEnabled()) {
+            log.debug("Executing ParallelMediator");
+        }
         workers.stream()
                 .forEach(w -> {
-                    CarbonMessage cMsg = MessageUtil.cloneCarbonMessageWithData(carbonMessage);
+                    CarbonMessage cMsg = MessageUtil.cloneCarbonMessageWithOutData(carbonMessage);
+                    cMsg.setAlreadyRead(true);
                     Observable observable = createObserver(w, cMsg, carbonCallback);
 
                     if (carbonMessage.getProperty("OBSERVABLES_MAP") == null) {
-                        Map<String, Observable> observableMap = new HashMap<>();
+                        Map<String, Observable> observableMap = new LinkedHashMap<>();
                         carbonMessage.setProperty("OBSERVABLES_MAP", observableMap);
                     }
 
@@ -64,10 +68,11 @@ public class ParallelMediator extends AbstractMediator implements Invoker {
                     observableMap.put(String.valueOf(observable.hashCode()), observable);
                 });
 
-        return true;
+        return next(carbonMessage, carbonCallback);
     }
 
     private Observable createObserver(String worker, CarbonMessage carbonMessage, CarbonCallback carbonCallback) {
+        log.info("Retrieve worker " + worker);
         Worker w = ConfigRegistry.getInstance().getIntegrationConfig(parentIntegration).getWorker(worker);
         return w.submit(UUID.randomUUID(), carbonMessage, carbonCallback);
     }

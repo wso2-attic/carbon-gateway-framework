@@ -95,8 +95,8 @@
             <artifactId>axiom-dom</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.reactivex</groupId>
-            <artifactId>rxjava</artifactId>
+            <groupId>com.netflix.rxjava</groupId>
+            <artifactId>rxjava-core</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

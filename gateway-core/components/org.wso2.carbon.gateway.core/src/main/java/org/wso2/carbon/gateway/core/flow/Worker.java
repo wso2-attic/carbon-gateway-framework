@@ -66,11 +66,13 @@ public class Worker {
 
         Future f = WORKER_EXECUTOR_SERVICE.submit(() -> {
             try {
+                log.info("Thread using carbon message with UUID " + id);
                 mediators.getFirstMediator().receive(cMsg, cCallback);
+                log.debug("mediator receive returned");
                 behaviorSubject.onNext(rxContext);
             } catch (Exception e) {
                 log.error("Error while mediating", e);
-                behaviorSubject.onNext(rxContext);
+                //behaviorSubject.onNext(rxContext);
             }
         });
 
