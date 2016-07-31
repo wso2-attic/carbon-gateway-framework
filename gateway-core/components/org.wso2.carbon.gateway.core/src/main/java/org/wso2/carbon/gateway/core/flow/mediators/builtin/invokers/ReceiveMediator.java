@@ -72,9 +72,7 @@ public class ReceiveMediator extends AbstractMediator implements Invoker {
             });
 
             BehaviorSubject behaviorSubject = BehaviorSubject.create();
-            //TODO FIX ME - we receive onNext event immediately as well as after mediation is done in worker
-            //Observable<RxContext> o = oList.remove(0);
-//            behaviorSubject.merge(oList).skip(oList.size()).first().subscribe(r -> {
+            
             behaviorSubject.merge(oList).first().subscribe(r -> {
                 try {
                     log.debug("Receive Mediator received event. " + r.getId());
