@@ -62,7 +62,7 @@ public class Worker {
     public Observable submit(UUID id, CarbonMessage cMsg, CarbonCallback cCallback) {
 
         RxContext rxContext = new RxContext(id.toString(), cMsg, cCallback);
-        BehaviorSubject<RxContext> behaviorSubject = BehaviorSubject.create(rxContext);
+        BehaviorSubject<RxContext> behaviorSubject = BehaviorSubject.create();
 
         Future f = WORKER_EXECUTOR_SERVICE.submit(() -> {
             try {
