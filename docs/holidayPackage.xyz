@@ -96,7 +96,6 @@ resource bookPackage (message m) {
                 return c3;
             }
         }
-                 
 
         log("Retrieving available vehicles from Partners");
         message[] c2 = join{ getCar, any }
