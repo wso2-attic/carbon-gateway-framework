@@ -7,7 +7,8 @@ constant endpoint carRentalEP = new URL (..); // can be overriden from outside b
 constant int port = 8290
 
 @Description "Return flight details"
-@Trigger EndpointTrigger(travelPortalListener, "/flights?depart={dateDepart}&return={dateReturn}&from={from}&to={to}", "GET")
+@Path "/flights?depart={dateDepart}&return={dateReturn}&from={from}&to={to}" 
+@Methos "GET"
 resource flights (message m) {
 	message c = datamap("request.jschema", "getFlights.jschema", "getFlightsMapping.js", m);
 	int sid = sendTo(airlineEP, c);
