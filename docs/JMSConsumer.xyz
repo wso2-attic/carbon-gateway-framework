@@ -1,0 +1,11 @@
+package com.sample
+
+integration MessageConsumer {
+    endpoint jmsEndpoint = new JMSEndpoint("jms://initialContext=org.wso2.andes.jndi.PropertiesFileInitialContextFa………");
+
+    @Description "JMS Message Consumer"
+    @Trigger EndpointTrigger(jmsEndpoint, "NewsType = ’Sports’ OR NewsType = ’Opinion’", "myQueue")
+    resource consumer (message m) {
+        log(m)
+    }
+}

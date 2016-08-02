@@ -1,0 +1,12 @@
+package com.sample
+
+integration Transformer {
+    endpoint listener = new HTTPListener(8290);
+
+    @Description "Message transformer"
+    @Trigger EndpointTrigger(listener, "POST", "/transform")
+    resource transform (message m) {
+        message r = datamap("request.jschema", "response.jschema", "mapping.js", m);
+        return r;
+    }
+}

@@ -1,0 +1,18 @@
+@Description "GetFlights Sample"
+@Path "/flights"
+package com.classic.travel
+
+integration getFlights {
+    int port = 8290;
+    endpoint travelPortalListener = new HTTPListener($port);
+    endpoint airlineEP = new URLEndpoint("http://localhost:8080/airlineEP/");
+
+    @Description "Return flight details"
+    @Trigger EndpointTrigger(travelPortalListener, "GET", "/flights?depart={dateDepart}&return={dateReturn}&from={from}&to={to}")
+    resource flights (message m) {
+        message c = datamap("request.jschema", "getFlights.jschema", "getFlightsMapping.js", m);
+        int sid = sendTo(airlineEP, c);
+        r = receiveFrom(airlineEP, sid);
+        return r;
+    }
+}

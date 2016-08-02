@@ -1,0 +1,16 @@
+package com.sample
+
+@Description "Pass through messages received"
+integration PassThrough {
+    endpoint listener = new HTTPListener(8290);
+    endpoint stockEP = new URLEndpoint("http://localhost:8080/exchange/");
+
+    @Description "Return flight details"
+    @Trigger EndpointTrigger(listener, "GET, POST, PUT", "/passthrough")
+    resource passthrough (message m) {
+        int sid = sendTo(stockEP, m);
+        message r = receiveFrom(stockEP, sid);
+        return r;
+    }
+}
+

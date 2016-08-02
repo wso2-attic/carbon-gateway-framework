@@ -1,0 +1,16 @@
+package com.sample
+
+integration Iterate {
+    endpoint listener = new HTTPListener(8290);
+    endpoint stockEP = new URLEndpoint("http://localhost:8080/exchange/");
+
+    @Description "Iteration sample, log stock quotes"
+    @Trigger EndpointTrigger(listener, "POST", "/iterate")
+    resource iterate (message m) {
+        foreach (message stock : eval("$.request.stocks", m)){
+            int sid = sendTo(stockEP, stock);
+            message response = receiveFrom(stockEP, sid);
+            log(response)
+        }
+    }
+}
