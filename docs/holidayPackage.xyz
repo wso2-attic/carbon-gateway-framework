@@ -17,7 +17,8 @@ resource flights (message m) {
 }
 
 @Description "Return hotel details"
-@Trigger EndpointTrigger(travelPortalListener, "GET", "/hotels?from={dateFrom}&to={dateTo}&location={location}")
+@Path "/hotels?from={dateFrom}&to={dateTo}&location={location}"
+@Methods "GET"
 resource hotels (message m) {
     message c = datamap("request.jschema", "getHotels.jschema", "getHotelsMapping.js", m);
     int sid = sendTo(hotelEP, c);
@@ -26,7 +27,8 @@ resource hotels (message m) {
 }
 
 @Description "Return car rental info"
-@Trigger EndpointTrigger(travelPortalListener, "GET", "/rentals?from={dateFrom}&to={dateTo}&type={type}")
+@Path "/rentals?from={dateFrom}&to={dateTo}&type={type}"
+@Method "GET"
 resource cars (message m) {
     message c = datamap("request.jschema","getRentalCars.jschema", "getRentalCarsMapping.js", m);
     int sid = sendTo(carRentalEP, c);
@@ -35,7 +37,8 @@ resource cars (message m) {
 }
  
 @Description "Book holiday package; flight, hotel & rental car"
-@Trigger EndpointTrigger(travelPortalListener, "POST", "/book?from={dateFrom}&to={dateTo}")
+@Path"/book?from={dateFrom}&to={dateTo}"
+@Method "POST"
 resource bookPackage (message m) {
     string location = eval("$.request.holiday.location", m);
     booked, flightBookingRef = bookAirline($location, $dateFrom, $dateTo, $airlineEP, m);
