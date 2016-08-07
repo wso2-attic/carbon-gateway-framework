@@ -1,16 +1,17 @@
+@Description "Iterates through the message"
 package com.sample
 
-integration Iterate {
-    endpoint listener = new HTTPListener(8290);
-    endpoint stockEP = new URLEndpoint("http://localhost:8080/exchange/");
+constant endpoint airlineEP = “http://localhost:8080/exchange/”;
+constant int port = 8290;
 
-    @Description "Iteration sample, log stock quotes"
-    @Trigger EndpointTrigger(listener, "POST", "/iterate")
-    resource iterate (message m) {
-        foreach (message stock : eval("$.request.stocks", m)){
-            int sid = sendTo(stockEP, stock);
-            message response = receiveFrom(stockEP, sid);
-            log(response)
-        }
+@Description "Iteration sample, log stock quotes"
+@Path "/iterate"
+@Method "POST"
+resource iterate (message m) {
+    foreach (message stock : eval("$.request.stocks", m)){
+        int sid = sendTo(stockEP, stock);
+        message response = receiveFrom(stockEP, sid);
+        log(response)
     }
 }
+
