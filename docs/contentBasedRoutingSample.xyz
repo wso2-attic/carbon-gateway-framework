@@ -1,24 +1,26 @@
+@Description "Route based on message content"
 package com.sample
 
-integration ContentBasedRouter {
+// endpoint cbrListener = new HTTPListener(8290);
+// endpoint nyseEP = new URLEndpoint("http://localhost:8080/exchange/nyse/");
+// endpoint nasdaqEP = new URLEndpoint("http://localhost:8081/exchange/nasdaq/");
 
-    endpoint cbrListener = new HTTPListener(8290);
-    endpoint nyseEP = new URLEndpoint("http://localhost:8080/exchange/nyse/");
-    endpoint nasdaqEP = new URLEndpoint("http://localhost:8081/exchange/nasdaq/");
-
-    @Description "Route based on message content"
-    @Trigger EndpointTrigger(cbrListener, "POST", "/cbr")
-    resource cbr (message m) {
-        int sid;
-        message r;
-        if (eval("$.stock.quote.exchange", m) == "NYSE"){
-            sid = sendTo(nyseEP, m);
-            r = receiveFrom(nyseEP, sid);
-        } else {
-            sid = sendTo(nasdaqEP, m);
-            r = receiveFrom(nasdaqEP, sid);
-        }
-
-        return r;
+constant endpoint nyseEP = “http://localhost:8080/exchange/nyse/”;
+constant endpoint nasdaqEP = “http://localhost:8081/exchange/nasdaq/”;
+constant int port = 8290;
+   
+@Path "/cbr"
+@Method "POST"
+resource cbr (message m) {
+    int sid;
+    message r;
+    if (eval("$.stock.quote.exchange", m) == "NYSE"){
+        sid = sendTo(nyseEP, m);
+        r = receiveFrom(nyseEP, sid);
+    } else {
+        sid = sendTo(nasdaqEP, m);
+        r = receiveFrom(nasdaqEP, sid);
     }
+
+    return r;
 }
