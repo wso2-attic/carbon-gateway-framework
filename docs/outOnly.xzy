@@ -1,13 +1,16 @@
+@Description "Out only scenario"
 package com.sample
 
-integration OutOnly {
+constant int port = 8290;
+Constant endpoint queueEndpoint = new JMSEndpoint("jms:/queue?initialContext=org.wso2.andes.jndi.PropertiesFileInitialContextFac………");
 
-    endpoint listener = new HTTPListener(8290);
-    endpoint queueEndpoint = new JMSEndpoint("jms:/queue?initialContext=org.wso2.andes.jndi.PropertiesFileInitialContextFac………");
+// endpoint listener = new HTTPListener(8290);
+// endpoint queueEndpoint = new JMSEndpoint("jms:/queue?initialContext=org.wso2.andes.jndi.PropertiesFileInitialContextFac………");
 
-    @Description "Out only"
-    @Trigger EndpointTrigger(listener, "POST", "/queue")
-    resource outonly (message m) {
-        sendTo(queueEndpoint, m);
-    }
+@Description "Out only"
+@Path "/queue"
+@Method "POST"
+resource outonly (message m) {
+    sendTo(queueEndpoint, m);
 }
+
