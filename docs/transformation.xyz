@@ -1,12 +1,12 @@
+@Description "Transforms the ibound message"
 package com.sample
 
-integration Transformer {
-    endpoint listener = new HTTPListener(8290);
+constant int port = 8290;
 
-    @Description "Message transformer"
-    @Trigger EndpointTrigger(listener, "POST", "/transform")
-    resource transform (message m) {
-        message r = datamap("request.jschema", "response.jschema", "mapping.js", m);
-        return r;
-    }
+@Description "Message transformer"
+@Path "/transform"
+@Method "POST"
+resource transform (message m) {
+    message r = datamap("request.jschema", "response.jschema", "mapping.js", m);
+    return r;
 }
