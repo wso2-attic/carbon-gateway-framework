@@ -6,6 +6,27 @@ constant endpoint hotelEP = “http://expedia.com/blah”;
 constant endpoint carRentalEP = new URL (..); // can be overriden from outside by setting com.classic.travel.carRentalEP
 constant int port = 8290
 
+message x;
+
+// if payload is JSON already
+JSON jm = JSON.bind (x.payload);
+JSON jm = JSON.bind (x.payload, “{\”type\” : \”string\” …}”);
+JSON jm = JSON.bind (x.payload, “json-schema-type-name”, “JSON schema file”);
+
+// if payload is XML already
+XML xm = XML.bind (x.payload);
+…
+
+// JSON accessors
+int i = jm.get (“a.b.c”);
+JSON j = jm.get (“a.b[1].gg”);
+jm.set (“a.b.c”, i);
+jm.set (“a.b[1].gg”, j);
+
+// XML accessors
+int i = xm.get (“/a/b[3]/@foo”);
+XML x = xm.get (“/a/b”);
+
 @Description "Return flight details"
 @Path "/flights?depart={dateDepart}&return={dateReturn}&from={from}&to={to}" 
 @Methos "GET"
