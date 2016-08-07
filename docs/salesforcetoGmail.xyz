@@ -1,3 +1,4 @@
+@Description "Notify Salesforce account create to Gmail users"
 package com.classic.travel
 import org.wso2.connectors.gmail.*;
 import org.wso2.connectors.salesforce.*;
