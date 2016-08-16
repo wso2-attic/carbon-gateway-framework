@@ -178,5 +178,10 @@ public class WUMLListenerTest {
         @Override
         public void setName(String name) {
         }
+
+        @Override
+        public String getUri() {
+            return null;
+        }
     }
 }
