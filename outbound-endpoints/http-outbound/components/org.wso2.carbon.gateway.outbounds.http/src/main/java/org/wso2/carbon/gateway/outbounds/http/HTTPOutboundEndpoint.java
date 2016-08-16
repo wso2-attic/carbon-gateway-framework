@@ -79,9 +79,4 @@ public class HTTPOutboundEndpoint extends AbstractOutboundEndpoint {
     public void setParameters(ParameterHolder parameters) {
         uri = parameters.getParameter("host").getValue();
     }
-
-    @Override
-    public String getUri() {
-        return this.uri;
-    }
 }
