@@ -19,7 +19,7 @@
 package org.wso2.carbon.gateway.core.config;
 
 
-import org.wso2.carbon.gateway.core.flow.Pipeline;
+import org.wso2.carbon.gateway.core.flow.Resource;
 import org.wso2.carbon.gateway.core.flow.contentaware.BaseTypeConverterRegistry;
 import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConverterRegistry;
 import org.wso2.carbon.gateway.core.inbound.InboundEPDeployer;
@@ -35,38 +35,36 @@ import java.util.Map;
 /**
  * This is the central place where all the configurations are stored at the runtime
  */
-public class ConfigRegistry {
+public class IntegrationConfigRegistry {
 
 
-    private static ConfigRegistry configRegistry = new ConfigRegistry();
+    private static IntegrationConfigRegistry configRegistry = new IntegrationConfigRegistry();
 
     private Map<String, InboundEndpoint> inboundEndpoints = new HashMap<>();
 
-    private Map<String, Pipeline> pipelines = new HashMap<>();
+    private Map<String, Resource> resources = new HashMap<>();
 
     private Map<String, OutboundEndpoint> outBoundEndpointMap = new HashMap<>();
 
     private List<ConfigRegistryObserver> observers = new ArrayList<>();
 
-    private Map<String, GWConfigHolder> configurations = new HashMap<>();
+    private Map<String, Integration> configurations = new HashMap<>();
 
-    private Map<String, IntegrationConfigHolder> intConfigs = new HashMap<>();
-
-    public static ConfigRegistry getInstance() {
+    public static IntegrationConfigRegistry getInstance() {
         return configRegistry;
     }
 
-    private ConfigRegistry() {
+    private IntegrationConfigRegistry() {
     }
 
     /**
-     * Add a Gateway Artifact Configuration to the Registry
+     * Add an Integration Configuration to the Registry
      *
-     * @param configHolder a Gateway Artifact
+     * @param integration an Integration object
      */
-    public void addGWConfig(GWConfigHolder configHolder) {
-        configurations.put(configHolder.getName(), configHolder);
-        updateArtifacts(configHolder);
+    public void addIntegrationConfig(Integration integration) {
+        configurations.put(integration.getName(), integration);
+        updateArtifacts(integration);
     }
 
     /**
@@ -74,78 +72,49 @@ public class ConfigRegistry {
      *
      * @param configHolder a Gateway Artifact
      */
-    public void removeGWConfig(GWConfigHolder configHolder) {
+    public void removeIntegrationConfig(Integration configHolder) {
         configurations.remove(configHolder.getName());
         unDeployArtifacts(configHolder);
     }
 
-    /**
-     * Add a Integration Configuration to the Registry
-     *
-     * @param configHolder a Gateway Artifact
-     */
-    public void addGWConfig(IntegrationConfigHolder configHolder) {
-        intConfigs.put(configHolder.getName(), configHolder);
-        //TODO remove GWConfigHolder and replace all methods to use IntegrationConfigHolder instead.
-        //updateArtifacts(configHolder);
-    }
-
-    /**
-     * Remove a Gateway Artifact configuration
-     *
-     * @param configHolder a Gateway Artifact
-     */
-    public void removeGWConfig(IntegrationConfigHolder configHolder) {
-        configurations.remove(configHolder.getName());
-        //TODO remove GWConfigHolder and replace all methods to use IntegrationConfigHolder instead.
-        //unDeployArtifacts(configHolder);
-    }
-
-
-    public GWConfigHolder getGWConfig(String name) {
+    public Integration getIntegrationConfig(String name) {
         return configurations.get(name);
     }
 
-    public IntegrationConfigHolder getIntegrationConfig(String name) {
-        return intConfigs.get(name);
-    }
-
-    private void updateArtifacts(GWConfigHolder config) {
+    private void updateArtifacts(Integration config) {
 
         //For Inbound Endpoint
-        InboundEndpoint inboundEndpoint = config.getInboundEndpoint();
-        if (inboundEndpoint != null) {
-            registerInboundEndpoint(inboundEndpoint);
+        for (InboundEndpoint inbound : config.getInbounds().values()) {
+            registerInboundEndpoint(inbound);
         }
 
         //For Pipelines
-        for (Pipeline pipeline : config.getPipelines().values()) {
-            registerPipeline(pipeline);
+        for (Resource resource : config.getResources().values()) {
+            registerPipeline(resource);
         }
 
         //For Outbound Endpoints
-        for (OutboundEndpoint outboundEndpoint : config.getOutboundEndpoints().values()) {
-            registerOutboundEndpoint(outboundEndpoint);
+        for (OutboundEndpoint outbound : config.getOutbounds().values()) {
+            registerOutboundEndpoint(outbound);
         }
 
 
     }
 
-    private void unDeployArtifacts(GWConfigHolder configHolder) {
+    private void unDeployArtifacts(Integration configHolder) {
         //For Inbound Endpoint
-        InboundEndpoint inboundEndpoint = configHolder.getInboundEndpoint();
-        if (inboundEndpoint != null) {
-            unregisterInboundEndpoint(inboundEndpoint);
+        for (InboundEndpoint inbound : configHolder.getInbounds().values()) {
+            unregisterInboundEndpoint(inbound);
         }
 
         //For Pipelines
-        for (Pipeline pipeline : configHolder.getPipelines().values()) {
-            unregisterPipeline(pipeline);
+        for (Resource resource : configHolder.getResources().values()) {
+            unregisterPipeline(resource);
         }
 
         //For Outbound Endpoints
-        for (OutboundEndpoint outboundEndpoint : configHolder.getOutboundEndpoints().values()) {
-            unregisterOutboundEndpoint(outboundEndpoint);
+        for (OutboundEndpoint outbound : configHolder.getOutbounds().values()) {
+            unregisterOutboundEndpoint(outbound);
         }
 
     }
@@ -191,16 +160,16 @@ public class ConfigRegistry {
         observers.remove(observer);
     }
 
-    public void registerPipeline(Pipeline pipeline) {
-        pipelines.put(pipeline.getName(), pipeline);
+    public void registerPipeline(Resource resource) {
+        resources.put(resource.getName(), resource);
     }
 
-    public void unregisterPipeline(Pipeline pipeline) {
-        pipelines.remove(pipeline.getName());
+    public void unregisterPipeline(Resource resource) {
+        resources.remove(resource.getName());
     }
 
-    public Pipeline getPipeline(String name) {
-        return pipelines.get(name);
+    public Resource getResource(String name) {
+        return resources.get(name);
     }
 
     public OutboundEndpoint getOutboundEndpoint(String key) {

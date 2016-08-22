@@ -95,6 +95,10 @@
             <artifactId>axiom-dom</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.netflix.rxjava</groupId>
+            <artifactId>rxjava-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
