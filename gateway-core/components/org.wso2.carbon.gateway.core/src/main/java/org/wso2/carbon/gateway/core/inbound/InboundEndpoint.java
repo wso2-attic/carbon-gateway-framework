@@ -17,15 +17,15 @@
  */
 package org.wso2.carbon.gateway.core.inbound;
 
-import org.wso2.carbon.gateway.core.config.ConfigRegistry;
-import org.wso2.carbon.gateway.core.config.GWConfigHolder;
+import org.wso2.carbon.gateway.core.config.ConfigConstants;
+import org.wso2.carbon.gateway.core.config.Integration;
+import org.wso2.carbon.gateway.core.config.IntegrationConfigRegistry;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
-import org.wso2.carbon.gateway.core.flow.Group;
+import org.wso2.carbon.gateway.core.flow.Resource;
+import org.wso2.carbon.gateway.core.flow.triggers.EndpointTrigger;
 import org.wso2.carbon.gateway.core.util.VariableUtil;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
-
-import java.util.Collection;
 
 /**
  * Base for InboundEndpoints. All Inbound Endpoint types must extend this.
@@ -34,32 +34,26 @@ public abstract class InboundEndpoint {
 
     private String name;
 
+    private String configName;
+
     private String pipeline;
 
-    private String gwConfigName;
+//    private String gwConfigName;
 
     public String getName() {
         return name;
     }
 
-    public String getGWConfigName() {
-        return gwConfigName;
-    }
-
-    public String getPipeline() {
-        return pipeline;
-    }
-
-    public void setPipeline(String pipeline) {
-        this.pipeline = pipeline;
+    public String getConfigName() {
+        return configName;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setGWConfigName(String gwConfigName) {
-        this.gwConfigName = gwConfigName;
+    public void setConfigName(String configName) {
+        this.configName = configName;
     }
 
     /**
@@ -79,28 +73,46 @@ public abstract class InboundEndpoint {
      */
     public boolean receive(CarbonMessage cMsg, CarbonCallback callback) {
 
-        GWConfigHolder configHolder = ConfigRegistry.getInstance().getGWConfig(getGWConfigName());
-        VariableUtil.pushGlobalVariableStack(cMsg, configHolder.getGlobalConstants());
+        Integration iConfig = IntegrationConfigRegistry.getInstance().getIntegrationConfig(configName);
+        VariableUtil.pushGlobalVariableStack(cMsg, iConfig.getConstants());
 
-        String pipelineName = pipeline;
+        Resource resource = null;
 
-        // For service groups, if any
-        if (configHolder.hasGroups()) {
-            Collection<Group> groups = configHolder.getGroups();
+        for (Resource r : IntegrationConfigRegistry.getInstance().getIntegrationConfig(configName)
+                .getResources().values()) {
 
-            for (Group group : groups) {
-                if (group.canProcess(cMsg)) {
-                    pipelineName = group.getPipeline();
-                    break;
-                }
+            EndpointTrigger t = (EndpointTrigger) r.getAnnotation(ConfigConstants.AN_TRIGGER).getValue();
+            if (t.matches(cMsg)) {
+                resource = r;
+                break;
             }
+
         }
 
-        return ConfigRegistry.getInstance().getPipeline(pipelineName).receive(cMsg, callback);
+        if (resource != null) {
+            return resource.receive(cMsg, callback);
+        }
+
+        return false;
     }
 
     public abstract String getProtocol();
 
     public abstract void setParameters(ParameterHolder parameters);
 
+    public void setPipeline(String pipeline) {
+        this.pipeline = pipeline;
+    }
+
+    public String getPipeline() {
+        return pipeline;
+    }
+
+    public String getGWConfigName() {
+        return name;
+    }
+
+    public void setGWConfigName(String name) {
+        // do nothing
+    }
 }
