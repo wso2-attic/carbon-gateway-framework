@@ -1,16 +1,15 @@
-@Description "GetFlights Sample"
+@Path ("/flights?depart={dateDepart}&return={dateReturn}&from={from}&to={to}")
+@Source (protocol="http", host=“localhost", port=8080)
+@Api (description = “GetFlights Sample”)
 package com.classic.travel
 
 constant endpoint airlineEP = “http://localhost:8080/airlineEP/”;
-constant int port = 8290;
 
-@Description "Return flight details"
-@Path "/flights?depart={dateDepart}&return={dateReturn}&from={from}&to={to}"
-@Method "GET"
+@GET
+@ApiOperation (value = “Return flight details”)
 resource flights (message m) {
-    message c = datamap("request.jschema", "getFlights.jschema", "getFlightsMapping.js", m);
-    int sid = sendTo(airlineEP, c);
-    r = receiveFrom(airlineEP, sid);
-    return r;
+   message c = datamap("getFlightsMapping.js", m);
+   r = invoke(airlineEP, c);
+   reply r;
 }
 
