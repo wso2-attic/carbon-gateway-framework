@@ -1,16 +1,13 @@
-@Description "Out only scenario"
+@Path ("/queue")
+@Source (protocol="http", host=“localhost", port=8080)
+@Api (description = “Out only scenario”)
 package com.sample
 
-constant int port = 8290;
-Constant endpoint queueEndpoint = new JMSEndpoint("jms:/queue?initialContext=org.wso2.andes.jndi.PropertiesFileInitialContextFac………");
+constant endpoint queueEndpoint = new JMSEndpoint("jms:/queue?initialContext=org.wso2.andes.jndi.PropertiesFileInitialContextFac………");
 
-// endpoint listener = new HTTPListener(8290);
-// endpoint queueEndpoint = new JMSEndpoint("jms:/queue?initialContext=org.wso2.andes.jndi.PropertiesFileInitialContextFac………");
-
-@Description "Out only"
-@Path "/queue"
-@Method "POST"
+@POST
+@ApiOperation (value = “Out only”)
 resource outonly (message m) {
-    sendTo(queueEndpoint, m);
+   sendTo(queueEndpoint, m);
 }
 

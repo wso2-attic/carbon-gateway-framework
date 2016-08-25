@@ -1,17 +1,17 @@
-@Description "Iterates through the message"
+@Path ("/iterate")
+@Source (protocol="http", host=“localhost", port=8080)
+@Api (description = “Iterates through the message”)
 package com.sample
 
 constant endpoint airlineEP = “http://localhost:8080/exchange/”;
-constant int port = 8290;
 
-@Description "Iteration sample, log stock quotes"
-@Path "/iterate"
-@Method "POST"
+@POST
+@ApiOperation (value = “Out only”)
 resource iterate (message m) {
-    foreach (message stock : eval("$.request.stocks", m)){
-        int sid = sendTo(stockEP, stock);
-        message response = receiveFrom(stockEP, sid);
-        log(response)
-    }
+   foreach (message stock : eval("$.request.stocks", m)){
+      int sid = sendTo(stockEP, stock);
+      message response = receiveFrom(stockEP, sid);
+      log(response);
+   }
 }
 

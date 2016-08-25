@@ -2,13 +2,11 @@
 package com.classic.travel
 
 @Description "Book airline and return confirmation and booking reference"
-function bookAirline (string location, date dateFrom, date dateTo, destination airlineEP, message m) (boolean, string) {
+function bookAirline (string location, date dateFrom, date dateTo, destination airlineEP, message m) (boolean, string) throws exception {
+
     log("Checking flight availability to " + $location + " from " + $dateFrom + " to " + $dateTo)
-
-    message c1 = datamap("holiday-package.jscema", "check-flight.jschema", "holiday-package-to-check-flight.js", m);
-    int sid = sendTo(airlineEP, c1);
-    message r = receiveFrom(airlineEP, sid);
-
+    message c1 = datamap("holiday-package-to-check-flight.js", m);
+    message r = invoke(airlineEP, c1);
     available = eval(eval("$.response.flight.confirmation", r) == "confirmed");
     bookingReference = eval("$.response.flight.reference", r);
 
