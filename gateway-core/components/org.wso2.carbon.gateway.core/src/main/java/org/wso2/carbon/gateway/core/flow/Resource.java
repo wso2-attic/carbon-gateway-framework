@@ -25,6 +25,7 @@ import java.util.UUID;
  * Object model representing a single resource.
  */
 public class Resource {
+    // TODO: Does this need an interface
     private static final Logger log = LoggerFactory.getLogger(Resource.class);
 
     /**

@@ -23,6 +23,5 @@ package org.wso2.carbon.gateway.core.flow;
  * An interface to identify FlowControllable artifacts
  */
 public interface Invoker extends Mediator {
-
-
+    // TODO: Do we need this.
 }
