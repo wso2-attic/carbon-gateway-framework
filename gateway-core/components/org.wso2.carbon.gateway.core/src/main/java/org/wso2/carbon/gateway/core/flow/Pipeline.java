@@ -31,6 +31,7 @@ import org.wso2.carbon.messaging.CarbonMessage;
  * A Class representing collection of Mediators
  */
 public class Pipeline {
+    // TODO: Do we need this anymore
 
     private String name;
 
