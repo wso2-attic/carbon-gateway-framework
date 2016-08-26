@@ -22,7 +22,7 @@ package org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filt
  * An Enum class that contains Filtering Scopes
  */
 public enum Scope {
-
+    // TODO: I think we need to capitalize all of them.
     HEADER,
     MessageBody,
     MessageHeader
