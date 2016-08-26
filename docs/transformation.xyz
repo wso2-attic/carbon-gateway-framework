@@ -1,12 +1,11 @@
-@Description "Transforms the ibound message"
+@Path ("/transform")
+@Source (protocol="http", host=“localhost", port=8080)
+@Api (description = “Transforms the inbound message”)
 package com.sample
 
-constant int port = 8290;
-
-@Description "Message transformer"
-@Path "/transform"
-@Method "POST"
+@POST
+@ApiOperation (value = “Message transformer”)
 resource transform (message m) {
-    message r = datamap("request.jschema", "response.jschema", "mapping.js", m);
-    return r;
+   message r = datamap("mapping.js", m);
+   reply r;
 }
