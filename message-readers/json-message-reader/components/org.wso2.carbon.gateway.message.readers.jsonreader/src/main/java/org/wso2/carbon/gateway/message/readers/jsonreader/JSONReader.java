@@ -31,7 +31,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * A class that responsible for provide the  JSON inputStream.
+ * A class that responsible for providing the JSON inputStream.
  */
 public class JSONReader extends AbstractReader {
 
