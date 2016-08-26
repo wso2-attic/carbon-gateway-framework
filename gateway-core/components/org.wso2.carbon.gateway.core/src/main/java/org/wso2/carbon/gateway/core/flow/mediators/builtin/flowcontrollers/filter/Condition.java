@@ -25,17 +25,14 @@ import java.util.regex.Pattern;
  */
 public class Condition {
 
-
     private Source source;
 
     private Pattern pattern;
-
 
     public Condition(Source source, Pattern pattern) {
         this.source = source;
         this.pattern = pattern;
     }
-
 
     public Source getSource() {
         return source;
