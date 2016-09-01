@@ -21,7 +21,6 @@ package org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filt
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.Source;
 import org.wso2.carbon.messaging.CarbonMessage;
 
-import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -31,14 +30,9 @@ public class Evaluator {
 
 
     public static boolean isHeaderMatched(CarbonMessage carbonMessage, Source source, Pattern pattern) {
-
-        Map<String, String> map = carbonMessage.getHeaders();
-
-        if (map.containsKey(source.getKey())) {
-            return pattern.matcher(map.get(source.getKey())).matches();
+        if (carbonMessage.getHeaders().contains(source.getKey())) {
+            return pattern.matcher(carbonMessage.getHeaders().get(source.getKey())).matches();
         }
         return false;
     }
-
-
 }
