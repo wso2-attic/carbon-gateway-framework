@@ -1,4 +1,4 @@
-package org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter;
+package org.wso2.carbon.gateway.core.exception;
 
 /**
  * This is just a custom exception
