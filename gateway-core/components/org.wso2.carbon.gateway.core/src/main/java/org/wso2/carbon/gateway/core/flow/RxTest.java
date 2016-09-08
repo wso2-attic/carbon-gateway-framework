@@ -5,8 +5,8 @@ import org.wso2.carbon.gateway.core.config.ConfigRegistry;
 import org.wso2.carbon.gateway.core.config.IntegrationConfigHolder;
 import org.wso2.carbon.gateway.core.config.Parameter;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
-import org.wso2.carbon.gateway.core.flow.mediators.builtin.invokers.ParallelMediator;
-import org.wso2.carbon.gateway.core.flow.mediators.builtin.invokers.ReceiveMediator;
+import org.wso2.carbon.gateway.core.flow.mediators.builtin.invokers.Fork;
+import org.wso2.carbon.gateway.core.flow.mediators.builtin.invokers.Join;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.manipulators.SleepMediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.manipulators.log.LogMediator;
 import org.wso2.carbon.messaging.CarbonMessage;
@@ -33,8 +33,8 @@ public class RxTest {
     private LogMediator carsLog;
     private LogMediator hotelsLog;
 
-    private ParallelMediator parallelMediator;
-    private ReceiveMediator receiveMediator;
+    private Fork parallelMediator;
+    private Join receiveMediator;
 
     private SleepMediator carsSleep;
     private SleepMediator hotelsSleep;
@@ -137,10 +137,10 @@ public class RxTest {
         // Parallel Mediator
         String[] workerList = {"cars", "hotels"};
         List<String> workers = Arrays.asList(workerList);
-        parallelMediator = new ParallelMediator("RxTest", workers);
+        parallelMediator = new Fork("RxTest", workers);
 
         // Receive Mediator
-        receiveMediator = new ReceiveMediator("RxTest", workers, true);
+        receiveMediator = new Join("RxTest", workers, true);
 
         resource.getDefaultWorker().addMediator(defaultWorkerStartLog);
         resource.getDefaultWorker().addMediator(parallelMediator);

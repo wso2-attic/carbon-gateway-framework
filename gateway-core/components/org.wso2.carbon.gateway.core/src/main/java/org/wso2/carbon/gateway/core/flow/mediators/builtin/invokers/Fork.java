@@ -22,17 +22,17 @@ import java.util.UUID;
 /**
  * Controls parallel flows
  */
-public class ParallelMediator extends AbstractMediator implements Invoker {
-    private static final Logger log = LoggerFactory.getLogger(ParallelMediator.class);
+public class Fork extends AbstractMediator implements Invoker {
+    private static final Logger log = LoggerFactory.getLogger(Fork.class);
 
     private String parentIntegration;
     private List<String> workers = new ArrayList<>();
 
-    public ParallelMediator(String integration) {
+    public Fork(String integration) {
         parentIntegration = integration;
     }
 
-    public ParallelMediator(String integration, List workers) {
+    public Fork(String integration, List workers) {
         parentIntegration = integration;
         this.workers = workers;
     }
@@ -50,7 +50,7 @@ public class ParallelMediator extends AbstractMediator implements Invoker {
     @Override
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
         if (log.isDebugEnabled()) {
-            log.debug("Executing ParallelMediator");
+            log.debug("Executing Fork");
         }
         workers.stream()
                 .forEach(w -> {

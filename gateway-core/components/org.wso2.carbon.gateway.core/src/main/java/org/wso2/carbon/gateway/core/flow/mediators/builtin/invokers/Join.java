@@ -21,18 +21,18 @@ import java.util.Map;
 /**
  * Receive from Worker
  */
-public class ReceiveMediator extends AbstractMediator implements Invoker {
-    private static final Logger log = LoggerFactory.getLogger(ReceiveMediator.class);
+public class Join extends AbstractMediator implements Invoker {
+    private static final Logger log = LoggerFactory.getLogger(Join.class);
 
     private String parentIntegration;
     private List<String> workers = new ArrayList<>();
     private boolean or = false;
 
-    public ReceiveMediator(String integration) {
+    public Join(String integration) {
         parentIntegration = integration;
     }
 
-    public ReceiveMediator(String integration, List workers, boolean or) {
+    public Join(String integration, List workers, boolean or) {
         parentIntegration = integration;
         this.workers = workers;
         this.or = or;
@@ -52,7 +52,7 @@ public class ReceiveMediator extends AbstractMediator implements Invoker {
     @Override
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
         if (log.isDebugEnabled()) {
-            log.debug("Executing ReceiveMediator");
+            log.debug("Executing Join");
         }
 
         Map<String, Observable> observableMap = (Map<String, Observable>) carbonMessage.getProperty("OBSERVABLES_MAP");
@@ -63,7 +63,7 @@ public class ReceiveMediator extends AbstractMediator implements Invoker {
         }
 
         if (or) {
-            log.debug("Executing ReceiveMediator OR");
+            log.debug("Executing Join OR");
 
             List<Observable<RxContext>> oList = new ArrayList<>();
 
@@ -83,7 +83,7 @@ public class ReceiveMediator extends AbstractMediator implements Invoker {
             });
 
         } else {
-            log.debug("Executing ReceiveMediator non OR");
+            log.debug("Executing Join non OR");
 
             Map.Entry<String, Observable> entry = observableMap.entrySet().iterator().next();
             if (entry.getValue() != null) {
@@ -100,7 +100,7 @@ public class ReceiveMediator extends AbstractMediator implements Invoker {
             }
         }
 
-        log.debug("Executing ReceiveMediator done!");
+        log.debug("Executing Join done!");
 
         return false;
     }
