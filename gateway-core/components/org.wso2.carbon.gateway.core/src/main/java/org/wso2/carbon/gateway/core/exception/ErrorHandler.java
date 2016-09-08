@@ -37,6 +37,7 @@ import java.util.Map;
  * A FaultHandler class for engine
  */
 public class ErrorHandler implements FaultHandler {
+    // TODO: Remove this class once the new implementation is finalized.
 
     private Logger logger = LoggerFactory.getLogger(ErrorHandler.class);
 

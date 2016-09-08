@@ -13,6 +13,8 @@ public class ChildExceptionHandler implements ExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(ChildExceptionHandler.class);
 
+    // Contains the sequence of mediators that need to executed
+    // in order to handle the exception.
     private MediatorCollection childMediatorList = new MediatorCollection();
 
     public boolean handleException(CarbonMessage carbonMessage, CarbonCallback callback) {
