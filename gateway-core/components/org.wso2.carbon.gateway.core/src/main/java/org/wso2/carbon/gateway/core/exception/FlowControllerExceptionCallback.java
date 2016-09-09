@@ -59,8 +59,19 @@ public class FlowControllerExceptionCallback implements CarbonCallback {
             }
         }
 
-        // If no child handler, use the default exception handler
-        new DefaultExceptionHandler().handleException(carbonMessage, parentCallback);
+        // Traverse and find the top most callback coming from FlowControllerExceptionCallback
+        while (true) {
+            if (parentCallback instanceof FlowControllerExceptionCallback) {
+                parentCallback.done(carbonMessage);
+                break;
+            } else if (parentCallback instanceof FlowControllerCallback) {
+                parentCallback = ((FlowControllerCallback) parentCallback).getParentCallback();
+            } else {
+                // If no child handler, use the default exception handler
+                new DefaultExceptionHandler().handleException(carbonMessage, parentCallback);
+                break;
+            }
+        }
     }
 
     public Mediator getMediator() {
