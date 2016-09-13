@@ -60,7 +60,7 @@ public class WUMLSyntaxTest {
             WUMLParser parser = new WUMLParser(tokenStream);
             SyntaxErrorListener errorListener = new SyntaxErrorListener();
             parser.addErrorListener(errorListener);
-            ParseTree tree = parser.script();
+            ParseTree tree = parser.sourceFile();
             return errorListener;
 
         } catch (Exception e) {

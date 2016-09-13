@@ -1,34 +1,22 @@
-@startuml
+@Path ("/stock")
+@Source (protocol="http", host="localhost", port=8080)
+@Api (tags = {"stock_info","stock_update"}, description = "Rest api for do operations on admin", produces = MediaType.APPLICATION_JSON)
+package com.sample;
 
-participant StocksInbound : InboundEndpoint(protocol("http"),port("8290"),context("/stocks"))
+constant endpoint stockEP = new HTTPEndPoint("http://localhost:8080/exchange/");
 
-participant StocksPipeline : Pipeline("Stocks_Flow")
-
-participant NYSEOutbound : OutboundEndpoint(protocol("http"),host("http://localhost:8080/stockquote/all"))
-
-participant NASDAQOutbound : OutboundEndpoint(protocol("http"),host("http://localhost:8081/stockquote/all"))
-
-StocksInbound -> StocksPipeline : "client request"
-
-StocksPipeline::log(level("CUSTOM"),category("INFO"),property(key("XXX"),value("Before filter statement")))
-
-if with condition(source("$header.exchange"),pattern("nyse"))
-StocksPipeline::log(level("CUSTOM"),category("INFO"),property(key("XXX"),value("Filter condition is true")))
-
-    StocksPipeline -> NYSEOutbound : "Request to New York Stock Exchange"
-    NYSEOutbound -> StocksPipeline : "StockQuotes from New York Stock Exchange"
-
-else
-StocksPipeline::log(level("CUSTOM"),category("INFO"),property(key("XXX"),value("Filter condition is false")))
-
-    StocksPipeline -> NASDAQOutbound : "Request to NASDAQ"
-    NASDAQOutbound -> StocksPipeline : "StockQuotes from NASDAQ"
-end
-
-StocksPipeline::log(level("CUSTOM"),category("INFO"),property(key("XXX"),value("After filter statement")))
-
-
-StocksPipeline -> StocksInbound : "Final Response"
-
-
-@enduml
+@GET
+@PUT
+@POST
+@Path ("/passthrough")
+resource passthrough (message m) {
+    message response;
+    try {
+        response = invoke(stockEP, m);
+    } catch (exception e) {
+        response = new Message();
+        response.setHeader(HTTPStatusCode, 500);
+        response.setPayload(TypeJSON, "{\"error\":\"backend failed\"}");
+    }
+    reply response;
+}

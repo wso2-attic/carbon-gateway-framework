@@ -74,7 +74,7 @@ public class WUMLListenerTest {
             // Passing the tokens to the parser to create the parse trea.
             parser = new WUMLParser(tokens);
             parser.addParseListener(wumlBaseListener);
-            parser.script();
+            parser.sourceFile();
 
             WUMLConfigurationBuilder.IntegrationFlow integrationFlow = wumlBaseListener.getIntegrationFlow();
             GWConfigHolder configHolder = integrationFlow.getGWConfigHolder();
