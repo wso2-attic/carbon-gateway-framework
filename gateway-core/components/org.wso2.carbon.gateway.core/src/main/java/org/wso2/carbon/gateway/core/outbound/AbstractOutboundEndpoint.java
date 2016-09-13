@@ -52,7 +52,7 @@ public abstract class AbstractOutboundEndpoint implements OutboundEndpoint {
                 carbonMessage.setEndOfMsgAdded(true);
                 carbonMessage.getHeaders().remove(Constants.HTTP_CONTENT_LENGTH);
                 carbonMessage.getHeaders()
-                        .put(Constants.HTTP_CONTENT_LENGTH, String.valueOf(carbonMessage.getFullMessageLength()));
+                        .set(Constants.HTTP_CONTENT_LENGTH, String.valueOf(carbonMessage.getFullMessageLength()));
 
             } else {
                 LOGGER.error("Message is already built but cannot find the MessageDataSource");

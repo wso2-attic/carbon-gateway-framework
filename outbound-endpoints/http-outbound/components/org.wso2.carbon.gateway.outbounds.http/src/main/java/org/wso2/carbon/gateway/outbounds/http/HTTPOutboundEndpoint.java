@@ -56,9 +56,9 @@ public class HTTPOutboundEndpoint extends AbstractOutboundEndpoint {
         cMsg.setProperty(Constants.TO, urlPath);
 
         if (port != 80) {
-            cMsg.getHeaders().put(Constants.HOST, host + ":" + port);
+            cMsg.getHeaders().set(Constants.HOST, host + ":" + port);
         } else {
-            cMsg.getHeaders().put(Constants.HOST, host);
+            cMsg.getHeaders().set(Constants.HOST, host);
         }
     }
 
