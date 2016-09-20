@@ -28,7 +28,7 @@ packageDef
     ;
 
 path
-    :AT 'Path'  LPAREN  StringLiteral RPAREN
+    :   AT 'Path'  LPAREN  StringLiteral RPAREN
     ;
 
 source
@@ -49,7 +49,7 @@ getMethod
     ;
 
 postMethod
-    :'@' 'POST' ( '('  ')' )?
+    :   '@' 'POST' ( '('  ')' )?
     ;
 
 putMethod
@@ -57,15 +57,15 @@ putMethod
     ;
 
 deleteMethod
-    :'@' 'DELETE' ( '(' ')' )?
+    :   '@' 'DELETE' ( '(' ')' )?
     ;
 
 headMethod
-    :'@' 'HEAD' ( '(' ')' )?
+    :   '@' 'HEAD' ( '(' ')' )?
     ;
 
 prodAnt
-    : '@' 'Produces' ( '(' elementValue ? ')' )?
+    :   '@' 'Produces' ( '(' elementValue ? ')' )?
     ;
 
 conAnt
@@ -85,8 +85,8 @@ elementValuePairs
     ;
 
 sourceElementValuePairs
-        :   protoclo (',' host)?  (','  port)?
-        ;
+    :   protoclo (',' host)?  (','  port)?
+    ;
 
 apiElementValuePairs
     :  tags? ','  descripton? ',' producer
