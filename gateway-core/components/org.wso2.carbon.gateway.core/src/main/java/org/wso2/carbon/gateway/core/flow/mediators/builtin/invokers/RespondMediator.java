@@ -19,7 +19,7 @@
 package org.wso2.carbon.gateway.core.flow.mediators.builtin.invokers;
 
 import org.wso2.carbon.gateway.core.flow.AbstractMediator;
-import org.wso2.carbon.gateway.core.flow.FlowControllerCallback;
+import org.wso2.carbon.gateway.core.flow.FlowControllerMediateCallback;
 import org.wso2.carbon.gateway.core.flow.Invoker;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
@@ -41,8 +41,8 @@ public class RespondMediator extends AbstractMediator implements Invoker {
         CarbonCallback parentCallback = carbonCallback;
 
         // Traverse and find the top most callback coming from transport level
-        while (parentCallback instanceof FlowControllerCallback) {
-            parentCallback = ((FlowControllerCallback) parentCallback).getParentCallback();
+        while (parentCallback instanceof FlowControllerMediateCallback) {
+            parentCallback = ((FlowControllerMediateCallback) parentCallback).getParentCallback();
         }
 
         parentCallback.done(carbonMessage);

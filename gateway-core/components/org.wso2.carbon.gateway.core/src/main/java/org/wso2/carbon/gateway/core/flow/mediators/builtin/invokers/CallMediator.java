@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.config.ConfigRegistry;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.flow.AbstractMediator;
-import org.wso2.carbon.gateway.core.flow.FlowControllerCallback;
+import org.wso2.carbon.gateway.core.flow.FlowControllerMediateCallback;
 import org.wso2.carbon.gateway.core.flow.Invoker;
 import org.wso2.carbon.gateway.core.outbound.OutboundEndpoint;
 import org.wso2.carbon.gateway.core.util.VariableUtil;
@@ -76,7 +76,7 @@ public class CallMediator extends AbstractMediator implements Invoker {
             }
         }
 
-        CarbonCallback callback = new FlowControllerCallback(carbonCallback, this,
+        CarbonCallback callback = new FlowControllerMediateCallback(carbonCallback, this,
                 VariableUtil.getVariableStack(carbonMessage));
 
         endpoint.receive(carbonMessage, callback);

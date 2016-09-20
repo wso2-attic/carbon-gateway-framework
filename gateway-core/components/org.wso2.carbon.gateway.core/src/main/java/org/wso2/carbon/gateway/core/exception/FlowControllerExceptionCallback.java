@@ -3,17 +3,19 @@ package org.wso2.carbon.gateway.core.exception;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.flow.FlowControllerCallback;
+import org.wso2.carbon.gateway.core.flow.FlowControllerMediateCallback;
 import org.wso2.carbon.gateway.core.flow.Mediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.TryBlockMediator;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.exceptions.NelException;
 
 import java.util.Stack;
 
 /**
  * Callback related to Exception handling Mediators
  */
-public class FlowControllerExceptionCallback implements CarbonCallback {
+public class FlowControllerExceptionCallback implements FlowControllerCallback {
 
     /* Incoming callback */
     CarbonCallback parentCallback;
@@ -21,60 +23,84 @@ public class FlowControllerExceptionCallback implements CarbonCallback {
     /* Flow Controller Mediator */
     Mediator mediator;
 
+    DefaultExceptionHandler defaultExceptionHandler;
+
 //    Stack<Map<String, Object>> variableStack;
 
-    private static final Logger log = LoggerFactory.getLogger(FlowControllerCallback.class);
+    private static final Logger log = LoggerFactory.getLogger(FlowControllerMediateCallback.class);
 
-    public FlowControllerExceptionCallback(CarbonCallback parentCallback, Mediator mediator, Stack variableStack) {
+    public FlowControllerExceptionCallback(CarbonCallback parentCallback, Mediator mediator,
+                                           Stack variableStack, DefaultExceptionHandler defaultExceptionHandler) {
         this.parentCallback = parentCallback;
         this.mediator = mediator;
+        this.defaultExceptionHandler = defaultExceptionHandler;
 //        this.variableStack = variableStack;
     }
 
     @Override
     public void done(CarbonMessage carbonMessage) {
 
-        CustomException customException = (CustomException) carbonMessage.getProperty("Exception");
+        if (canProcess(carbonMessage)) {
 
-        // Child exception handler
-        while (((TryBlockMediator) getMediator()).hasExceptionHandler()) {
-            ChildExceptionHandler exHandler = ((TryBlockMediator) getMediator()).popHandler();
+            NelException customException = carbonMessage.getNelException();
+            // Child exception handler
+            while (((TryBlockMediator) getMediator()).hasExceptionHandler()) {
+                ChildExceptionHandler exHandler = ((TryBlockMediator) getMediator()).popHandler();
 
-            if (exHandler.canHandle().isInstance(customException)) {
-                exHandler.handleException(carbonMessage, parentCallback);
+                if (exHandler.canHandle(customException)) {
+                    exHandler.handleException(carbonMessage, parentCallback);
 
-                if (mediator.hasNext()) {
-                    // If Mediator has a sibling after this
-                    try {
-                        mediator.next(carbonMessage, parentCallback);
-                    } catch (Exception e) {
-                        log.error("Error while mediating from Callback", e);
+                    if (mediator.hasNext()) {
+                        // If Mediator has a sibling after this
+                        try {
+                            mediator.next(carbonMessage, parentCallback);
+                        } catch (Exception e) {
+                            log.error("Error while mediating from Callback", e);
+                        }
+                    } else if (parentCallback instanceof FlowControllerMediateCallback) {
+                        //If no siblings handover message to the requester
+                        parentCallback.done(carbonMessage);
                     }
-                } else if (parentCallback instanceof FlowControllerCallback) {
-                    //If no siblings handover message to the requester
-                    parentCallback.done(carbonMessage);
+
+                    return;
                 }
-
-                return;
             }
-        }
 
-        // Traverse and find the top most callback coming from FlowControllerExceptionCallback
-        while (true) {
             if (parentCallback instanceof FlowControllerExceptionCallback) {
                 parentCallback.done(carbonMessage);
-                break;
-            } else if (parentCallback instanceof FlowControllerCallback) {
-                parentCallback = ((FlowControllerCallback) parentCallback).getParentCallback();
             } else {
                 // If no child handler, use the default exception handler
+                this.defaultExceptionHandler.handleException(carbonMessage, parentCallback);
+            }
+
+            // Traverse and find the top most callback coming from FlowControllerExceptionCallback
+//            while (true) {
+//                if (parentCallback instanceof FlowControllerExceptionCallback) {
+//                    parentCallback.done(carbonMessage);
+//                    break;
+//                } else if (parentCallback instanceof FlowControllerMediateCallback) {
+//                    parentCallback = ((FlowControllerMediateCallback) parentCallback).getParentCallback();
+//                } else {
+//                    // If no child handler, use the default exception handler
+//                    new DefaultExceptionHandler().handleException(carbonMessage, parentCallback);
+//                    break;
+//                }
+//            }
+        } else {
+            if (parentCallback instanceof FlowControllerCallback) {
+                parentCallback.done(carbonMessage);
+            } else {
                 new DefaultExceptionHandler().handleException(carbonMessage, parentCallback);
-                break;
             }
         }
     }
 
     public Mediator getMediator() {
         return mediator;
+    }
+
+    @Override
+    public boolean canProcess(CarbonMessage carbonMessage) {
+        return carbonMessage.isFaulty();
     }
 }

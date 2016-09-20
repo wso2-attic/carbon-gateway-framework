@@ -21,7 +21,7 @@ package org.wso2.carbon.gateway.core.exception;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.Constants;
-import org.wso2.carbon.gateway.core.flow.FlowControllerCallback;
+import org.wso2.carbon.gateway.core.flow.FlowControllerMediateCallback;
 import org.wso2.carbon.gateway.core.flow.MediatorCollection;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.invokers.RespondMediator;
 import org.wso2.carbon.messaging.CarbonCallback;
@@ -89,8 +89,8 @@ public class ErrorHandler implements FaultHandler {
     }
 
     private CarbonCallback getSuperParentCallback(CarbonCallback carbonCallback) {
-        while (carbonCallback instanceof FlowControllerCallback) {
-            carbonCallback = ((FlowControllerCallback) carbonCallback).getParentCallback();
+        while (carbonCallback instanceof FlowControllerMediateCallback) {
+            carbonCallback = ((FlowControllerMediateCallback) carbonCallback).getParentCallback();
         }
         return carbonCallback;
     }

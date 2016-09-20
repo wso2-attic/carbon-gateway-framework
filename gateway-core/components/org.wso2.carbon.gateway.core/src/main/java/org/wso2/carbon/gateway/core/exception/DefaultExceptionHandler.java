@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.exceptions.NelException;
 
 /**
  * Default exception handler.
@@ -15,11 +16,11 @@ public class DefaultExceptionHandler implements ExceptionHandler {
     @Override
     public boolean handleException(CarbonMessage carbonMessage, CarbonCallback callback) {
         log.error("Executing the default fault handler");
-        return false;
+        return true;
     }
 
     @Override
-    public Class canHandle() {
-        return null;
+    public boolean canHandle(NelException nelException) {
+        return true;
     }
 }

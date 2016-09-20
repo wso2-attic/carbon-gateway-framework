@@ -2,6 +2,7 @@ package org.wso2.carbon.gateway.core.exception;
 
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.exceptions.NelException;
 
 /**
  * Exception handler
@@ -20,5 +21,5 @@ public interface ExceptionHandler {
      * This method returns the type of the error that can be handle by the error handler implementation.
      * @return the error type.
      */
-    public Class canHandle();
+    public boolean canHandle(NelException nelException);
 }

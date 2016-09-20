@@ -5,11 +5,12 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.flow.MediatorCollection;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.exceptions.NelException;
 
 /**
  * Exception handlers.
  */
-public class ChildExceptionHandler implements ExceptionHandler {
+public abstract class ChildExceptionHandler implements ExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(ChildExceptionHandler.class);
 
@@ -26,7 +27,5 @@ public class ChildExceptionHandler implements ExceptionHandler {
         }
     }
 
-    public Class canHandle() {
-        return CustomException.class;
-    }
+    public abstract boolean canHandle(NelException nelexception);
 }

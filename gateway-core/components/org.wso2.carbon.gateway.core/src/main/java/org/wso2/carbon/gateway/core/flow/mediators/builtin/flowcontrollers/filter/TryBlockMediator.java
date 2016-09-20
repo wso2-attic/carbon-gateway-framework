@@ -3,6 +3,7 @@ package org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filt
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.exception.ChildExceptionHandler;
+import org.wso2.carbon.gateway.core.exception.DefaultExceptionHandler;
 import org.wso2.carbon.gateway.core.exception.FlowControllerExceptionCallback;
 import org.wso2.carbon.gateway.core.flow.AbstractFlowController;
 import org.wso2.carbon.gateway.core.flow.MediatorCollection;
@@ -31,11 +32,15 @@ public class TryBlockMediator extends AbstractFlowController {
     }
 
     public boolean hasExceptionHandler () {
-        return exHandlers.isEmpty();
+        return !exHandlers.isEmpty();
     }
 
     public ChildExceptionHandler popHandler() {
         return exHandlers.pop();
+    }
+
+    public boolean addHandler(ChildExceptionHandler childExceptionHandler) {
+        return exHandlers.add(childExceptionHandler);
     }
 
     @Override
@@ -48,7 +53,7 @@ public class TryBlockMediator extends AbstractFlowController {
 
         childThenMediatorList.getFirstMediator().
                 receive(carbonMessage, new FlowControllerExceptionCallback(carbonCallback, this,
-                        VariableUtil.getVariableStack(carbonMessage)));
+                        VariableUtil.getVariableStack(carbonMessage), new DefaultExceptionHandler()));
 
         return true;
     }

@@ -21,7 +21,7 @@ package org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filt
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.flow.AbstractFlowController;
-import org.wso2.carbon.gateway.core.flow.FlowControllerCallback;
+import org.wso2.carbon.gateway.core.flow.FlowControllerMediateCallback;
 import org.wso2.carbon.gateway.core.flow.Mediator;
 import org.wso2.carbon.gateway.core.flow.MediatorCollection;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.evaluator.Evaluator;
@@ -94,11 +94,11 @@ public class FilterMediator extends AbstractFlowController {
 
             if (Evaluator.isHeaderMatched(carbonMessage, source, pattern)) {
                 childThenMediatorList.getFirstMediator().
-                           receive(carbonMessage, new FlowControllerCallback(carbonCallback, this,
+                           receive(carbonMessage, new FlowControllerMediateCallback(carbonCallback, this,
                                    VariableUtil.getVariableStack(carbonMessage)));
             } else {
                 childOtherwiseMediatorList.getFirstMediator().
-                           receive(carbonMessage, new FlowControllerCallback(carbonCallback, this,
+                           receive(carbonMessage, new FlowControllerMediateCallback(carbonCallback, this,
                                    VariableUtil.getVariableStack(carbonMessage)));
             }
         }
