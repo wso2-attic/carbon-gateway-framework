@@ -1,39 +1,22 @@
-@startuml
+@Path ("/stock")
+@Source (protocol="http", host="localhost", port=8080)
+@Api (tags = {"stock_info","stock_update"}, description = "Rest api for do operations on admin", produces = MediaType.APPLICATION_JSON)
+package com.sample;
 
-//This is a sample inbound endpoint
-participant sampleHTTPinbound : InboundEndpoint(protocol("http"),port("8290"),context("/stocks"))
+constant endpoint stockEP = new HTTPEndPoint("http://localhost:8080/exchange/");
 
-participant samplePipeline : Pipeline("message_flow_1")
-
-participant sampleOutbound1 : OutboundEndpoint(protocol("http"),host("http://localhost:8080/stockquote/all"))
-
-participant sampleOutbound2 : OutboundEndpoint(protocol("http"),host("http://localhost:8081/stockquote/all"))
-
-sampleHTTPinbound -> samplePipeline : "client request"
-
-samplePipeline::log(level("CUSTOM"),category("INFO"),property(key("XXX"),value("before filter statement")))
-
-if with condition(source("$header.exchange"),pattern("nyse"))
-    var String logStatement = "I am a local variable with name 'logStatement' inside filter mediator"
-    $logStatement = "Assigned"
-samplePipeline::log(level("CUSTOM"),category("INFO"),property(key("XXX"),value("Filter true is true")))
-
-samplePipeline::log(level("CUSTOM"),category("INFO"),property(key("XXX"),value("$logStatement")))
-
-    samplePipeline -> sampleOutbound1 : "Validate policy with service 1"
-    sampleOutbound1 -> samplePipeline : "Validate response from service 1"
-
-else
-samplePipeline::log(level("CUSTOM"),category("INFO"),property(key("XXX"),value("Filter condition  is false")))
-
-    samplePipeline -> sampleOutbound2 : "Validate policy with service 2"
-    sampleOutbound2 -> samplePipeline : "Validate response from service 2"
-end
-
-samplePipeline::log(level("CUSTOM"),category("INFO"),property(key("XXX"),value("after filter statement")))
-
-
-samplePipeline -> sampleHTTPinbound : "Final Response"
-
-
-@enduml
+@GET
+@PUT
+@POST
+@Path ("/passthrough")
+resource passthrough (message m) {
+    message response;
+    try {
+        response = invoke(stockEP, m);
+    } catch (exception e) {
+        response = new Message();
+        response.setHeader(HTTPStatusCode, 500);
+        response.setPayload(TypeJSON, "{\"error\":\"backend failed\"}");
+    }
+    reply response;
+}

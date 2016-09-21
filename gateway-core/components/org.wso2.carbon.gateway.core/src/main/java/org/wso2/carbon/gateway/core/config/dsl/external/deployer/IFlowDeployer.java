@@ -179,7 +179,7 @@ public class IFlowDeployer implements Deployer {
             WUMLBaseListenerImpl wumlBaseListener = new WUMLBaseListenerImpl();
 
             parser.addParseListener(wumlBaseListener);
-            parser.script();
+            parser.sourceFile();
 
             WUMLConfigurationBuilder.IntegrationFlow integrationFlow = wumlBaseListener.getIntegrationFlow();
             GWConfigHolder configHolder = integrationFlow.getGWConfigHolder();

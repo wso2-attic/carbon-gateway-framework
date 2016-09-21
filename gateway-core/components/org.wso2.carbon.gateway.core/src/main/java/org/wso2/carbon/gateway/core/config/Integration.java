@@ -6,6 +6,7 @@ import org.wso2.carbon.gateway.core.config.annotations.IAnnotation;
 import org.wso2.carbon.gateway.core.config.annotations.common.Description;
 import org.wso2.carbon.gateway.core.config.annotations.integration.Path;
 import org.wso2.carbon.gateway.core.config.annotations.integration.Security;
+import org.wso2.carbon.gateway.core.config.annotations.integration.Source;
 import org.wso2.carbon.gateway.core.flow.Resource;
 import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
 import org.wso2.carbon.gateway.core.outbound.OutboundEndpoint;
@@ -39,6 +40,7 @@ public class Integration {
         annotations.put(ConfigConstants.AN_BASE_PATH, new Path());
         annotations.put(ConfigConstants.AN_SECURITY, new Security());
         annotations.put(ConfigConstants.AN_DESCRIPTION, new Description());
+        annotations.put(ConfigConstants.AN_SOURCE, new Source());
     }
 
     public String getName() {

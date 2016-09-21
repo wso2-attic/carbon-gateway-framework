@@ -20,6 +20,7 @@ public class ConfigConstants {
      */
     public static final String AN_BASE_PATH = "@Path";
     public static final String AN_SECURITY = "@Security";
+    public static final String AN_SOURCE = "@Source";
 
     /**
      * Resource Annotations
