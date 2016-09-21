@@ -77,7 +77,15 @@ antApiOperation
     ;
 
 antApiResponses
-    :   '@' 'ApiResponses' ( '(' ( elementValuePairs | elementValue )? ')' )?
+    :   '@' 'ApiResponses' '(' ( antApiResponseSet )? ')'
+    ;
+
+antApiResponseSet
+    :   antApiResponse (',' antApiResponse)*
+    ;
+
+antApiResponse
+    :   '@' 'ApiResponse' '(' ( elementValuePairs | elementValue )? ')'
     ;
 
 elementValuePairs
@@ -89,7 +97,7 @@ sourceElementValuePairs
     ;
 
 apiElementValuePairs
-    :  tags? ','  descripton? ',' producer
+    :  (tags ',')?  (descripton ',')? producer
     ;
 
 protoclo
@@ -130,6 +138,7 @@ resource
         prodAnt?
         conAnt ?
         antApiOperation?
+        antApiResponses?
         resourcePath
         resourceDeclaration
     ;
@@ -194,7 +203,7 @@ statementExpression
     ;
 
 parExpression
-    :   '(' expression ')'
+    :   '(' expression ( ( GT | LT | EQUAL | LE | GE | NOTEQUAL | AND | OR ) expression )? ')'
     ;
 
 expressionList
@@ -228,9 +237,10 @@ variableDeclaratorId
 
 expression
     :   primary
-    |  'new' Identifier '(' methodParams? ')'
+//    |  'new' Identifier '(' methodParams? ')'
     |  Identifier '.' Identifier '(' methodParams? ')'
     |  Identifier '(' methodParams? ')'
+    |  'new' classType '(' methodParams? ')'
 //    |   expression ('++' | '--')
 //    |   ('+'|'-'|'++'|'--') expression
 //    |   ('~'|'!') expression
@@ -277,7 +287,7 @@ literal
  ;
 
 methodParams
-    :    ((literal | Identifier) (',' (literal | Identifier))*)?
+    :    ((literal | Identifier ('.' Identifier)*) ((',' (literal | Identifier))*))?
     ;
 
 type
