@@ -319,7 +319,6 @@
                             <configuration>
                                 <listener>true</listener>
                                 <visitor>false</visitor>
-                                <encoding>${file.encoding}</encoding>
                             </configuration>
                         </execution>
                     </executions>

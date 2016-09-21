@@ -289,11 +289,6 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     }
 
     @Override
-    public void exitConditionDef(WUMLParser.ConditionDefContext ctx) {
-        super.exitConditionDef(ctx);
-    }
-
-    @Override
     public void exitRoutingStatement(WUMLParser.RoutingStatementContext ctx) {
         super.exitRoutingStatement(ctx);
     }
@@ -326,19 +321,8 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
     @Override
     public void exitConditionStatement(WUMLParser.ConditionStatementContext ctx) {
-        String sourceDefinition = StringParserUtil.getValueWithinDoubleQuotes(ctx.conditionDef().SOURCEDEF().getText());
-        Source source = new Source(sourceDefinition);
-        String conditionValue = null;
-
-        for (TerminalNode terminalNode : ctx.conditionDef().PARAMX()) {
-            String keyValue = terminalNode.getSymbol().getText();
-            String key = keyValue.substring(1, keyValue.indexOf("("));
-            String value = keyValue.substring(keyValue.indexOf("\"") + 1, keyValue.lastIndexOf("\""));
-
-            if ("pattern".equals(key)) {
-                conditionValue = value;
-            }
-        }
+        Source source = new Source(ctx.IDENTIFIER(0).getText());
+        String conditionValue = ctx.IDENTIFIER(1).getText();
 
         Condition condition = new Condition(source, Pattern.compile(conditionValue));
 
