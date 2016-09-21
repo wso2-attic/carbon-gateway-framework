@@ -112,4 +112,8 @@ public class Integration {
     public void addResource(Resource resource) {
         resources.put(resource.getName(), resource);
     }
+
+    public void addAnnotation(String annotationName, Annotation annotation) {
+        annotations.put(annotationName, annotation);
+    }
 }
