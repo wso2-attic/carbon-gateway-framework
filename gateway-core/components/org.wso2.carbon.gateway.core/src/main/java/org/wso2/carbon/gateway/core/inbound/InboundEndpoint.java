@@ -17,12 +17,12 @@
  */
 package org.wso2.carbon.gateway.core.inbound;
 
-import org.wso2.carbon.gateway.core.config.ConfigConstants;
+//import org.wso2.carbon.gateway.core.config.ConfigConstants;
 import org.wso2.carbon.gateway.core.config.Integration;
 import org.wso2.carbon.gateway.core.config.IntegrationConfigRegistry;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.flow.Resource;
-import org.wso2.carbon.gateway.core.flow.triggers.EndpointTrigger;
+//import org.wso2.carbon.gateway.core.flow.triggers.EndpointTrigger;
 import org.wso2.carbon.gateway.core.util.VariableUtil;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
@@ -81,8 +81,8 @@ public abstract class InboundEndpoint {
         for (Resource r : IntegrationConfigRegistry.getInstance().getIntegrationConfig(configName)
                 .getResources().values()) {
 
-            EndpointTrigger t = (EndpointTrigger) r.getAnnotation(ConfigConstants.AN_TRIGGER).getValue();
-            if (t.matches(cMsg)) {
+//            EndpointTrigger t = (EndpointTrigger) r.getAnnotation(ConfigConstants.AN_TRIGGER).getValue();
+            if (r.matches(cMsg)) {
                 resource = r;
                 break;
             }

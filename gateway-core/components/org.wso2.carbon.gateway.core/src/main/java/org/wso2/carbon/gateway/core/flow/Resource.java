@@ -2,6 +2,7 @@ package org.wso2.carbon.gateway.core.flow;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.gateway.core.config.AnnotationNotSupportedException;
 import org.wso2.carbon.gateway.core.config.ConfigConstants;
 import org.wso2.carbon.gateway.core.config.annotations.Annotation;
@@ -12,6 +13,7 @@ import org.wso2.carbon.gateway.core.flow.templates.uri.URITemplate;
 import org.wso2.carbon.gateway.core.flow.triggers.EndpointTrigger;
 import org.wso2.carbon.gateway.core.flow.triggers.HTTPEndpointTrigger;
 import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
+import org.wso2.carbon.gateway.core.util.VariableUtil;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 import rx.Observable;
@@ -35,6 +37,7 @@ public class Resource {
     private Map<String, Annotation> annotations = new HashMap<>();
     private EndpointTrigger trigger;
     private Worker defaultWorker;
+    private URITemplate path;
 
     public Resource(String name) {
         this.name = name;
@@ -45,6 +48,7 @@ public class Resource {
                     EndpointTrigger trigger) {
         this.name = name;
         this.trigger = trigger;
+        this.path = uriTemplate;
         defaultWorker = new Worker(name);
         annotations.put(ConfigConstants.AN_DESCRIPTION, new Description());
         annotations.put(ConfigConstants.AN_TRIGGER, new Trigger(getTriggerInstance(source, condition, uriTemplate)));
@@ -100,5 +104,30 @@ public class Resource {
             default:
                 return new HTTPEndpointTrigger(source, condition, uriTemplate);
         }
+    }
+
+    public boolean matches(CarbonMessage cMsg) {
+        if (!isTemplateMatching(cMsg)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isTemplateMatching(CarbonMessage cMsg) {
+        String subGroupPath = (String) cMsg.getProperty(Constants.SERVICE_SUB_GROUP_PATH);
+        Map<String, String> uriVars = new HashMap<>();
+        boolean r = path.matches(subGroupPath, uriVars);
+
+        if (r) {
+            addVariables(cMsg, uriVars);
+        }
+
+        return r;
+    }
+
+    private void addVariables(CarbonMessage cMsg, Map<String, String> uriVars) {
+        uriVars.forEach((k, v) ->
+                VariableUtil.addGlobalVariable(cMsg, k, VariableUtil.createVariable(Constants.TYPES.STRING, v)));
     }
 }
