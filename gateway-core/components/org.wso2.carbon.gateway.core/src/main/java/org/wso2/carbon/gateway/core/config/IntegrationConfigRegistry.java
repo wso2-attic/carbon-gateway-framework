@@ -18,13 +18,13 @@
 
 package org.wso2.carbon.gateway.core.config;
 
-
 import org.wso2.carbon.gateway.core.flow.Resource;
 import org.wso2.carbon.gateway.core.flow.contentaware.BaseTypeConverterRegistry;
 import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConverterRegistry;
 import org.wso2.carbon.gateway.core.inbound.InboundEPDeployer;
 import org.wso2.carbon.gateway.core.inbound.InboundEPProviderRegistry;
 import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
+import org.wso2.carbon.gateway.core.inbound.Provider;
 import org.wso2.carbon.gateway.core.outbound.OutboundEndpoint;
 
 import java.util.ArrayList;
@@ -36,7 +36,6 @@ import java.util.Map;
  * This is the central place where all the configurations are stored at the runtime
  */
 public class IntegrationConfigRegistry {
-
 
     private static IntegrationConfigRegistry configRegistry = new IntegrationConfigRegistry();
 
@@ -50,11 +49,13 @@ public class IntegrationConfigRegistry {
 
     private Map<String, Integration> configurations = new HashMap<>();
 
-    public static IntegrationConfigRegistry getInstance() {
-        return configRegistry;
+    private IntegrationConfigRegistry() {
+        Provider provider = InboundEPProviderRegistry.getInstance().getProvider("http");
+        observers.add((ConfigRegistryObserver) provider.getInboundEndpointDispatcher());
     }
 
-    private IntegrationConfigRegistry() {
+    public static IntegrationConfigRegistry getInstance() {
+        return configRegistry;
     }
 
     /**
@@ -97,7 +98,6 @@ public class IntegrationConfigRegistry {
         for (OutboundEndpoint outbound : config.getOutbounds().values()) {
             registerOutboundEndpoint(outbound);
         }
-
 
     }
 

@@ -15,33 +15,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package org.wso2.carbon.gateway.core.outbound;
-
-import org.wso2.carbon.gateway.core.config.ParameterHolder;
-import org.wso2.carbon.messaging.CarbonCallback;
-import org.wso2.carbon.messaging.CarbonMessage;
+package org.wso2.carbon.gateway.core.config.annotations;
 
 /**
- * Outbound Endpoint Interface
+ * IAnnotation for simple Boolean value annotations.
  */
-public interface OutboundEndpoint {
+public class BooleanAnnotation extends Annotation<Boolean> {
 
-    int getTimeOut();
+    public BooleanAnnotation(String name) {
+        super(name);
+    }
 
-    void setTimeOut(int timeOut);
-
-    String getName();
-
-    boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback)
-            throws Exception;
-
-    void setParameters(ParameterHolder parameters);
-
-    void setName(String name);
-
-    void setUri(String uri);
-
-    String getUri();
+    public BooleanAnnotation(String name, Boolean value) {
+        super(name, value);
+    }
 
 }

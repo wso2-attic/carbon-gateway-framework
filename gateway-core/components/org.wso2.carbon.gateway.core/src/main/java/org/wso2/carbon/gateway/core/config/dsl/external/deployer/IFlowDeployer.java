@@ -35,12 +35,10 @@ import org.wso2.carbon.deployment.engine.Deployer;
 import org.wso2.carbon.deployment.engine.exception.CarbonDeploymentException;
 import org.wso2.carbon.gateway.core.config.ConfigRegistry;
 import org.wso2.carbon.gateway.core.config.GWConfigHolder;
-import org.wso2.carbon.gateway.core.config.dsl.external.WUMLConfigurationBuilder;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.WUMLBaseListenerImpl;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLLexer;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLParser;
 import org.wso2.carbon.gateway.core.inbound.ProviderRegistry;
-
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,19 +55,14 @@ import java.util.Map;
 @Component(
         name = "org.wso2.carbon.gateway.core.config.dsl.external.deployer.IFlowDeployer",
         immediate = true,
-        service = Deployer.class
-)
+        service = Deployer.class)
 public class IFlowDeployer implements Deployer {
 
-    private ArtifactType artifactType;
-
-    private URL directoryLocation;
-
-    private Map<String, GWConfigHolder> artifactMap = new HashMap<>();
-
-    private static final Logger logger = LoggerFactory.getLogger(IFlowDeployer.class);
-
     public static final String EXTERNAL_DSL_CONFIGS_DIRECTORY = "integration-flows";
+    private static final Logger logger = LoggerFactory.getLogger(IFlowDeployer.class);
+    private ArtifactType artifactType;
+    private URL directoryLocation;
+    private Map<String, GWConfigHolder> artifactMap = new HashMap<>();
 
     @Activate
     protected void activate(BundleContext bundleContext) {
@@ -82,8 +75,7 @@ public class IFlowDeployer implements Deployer {
             service = ProviderRegistry.class,
             cardinality = ReferenceCardinality.MANDATORY,
             policy = ReferencePolicy.DYNAMIC,
-            unbind = "removeInboundProviderRegistry"
-    )
+            unbind = "removeInboundProviderRegistry")
     protected void addInboundProviderRegistry(ProviderRegistry registry) {
     }
 
@@ -95,14 +87,11 @@ public class IFlowDeployer implements Deployer {
             service = org.wso2.carbon.gateway.core.outbound.ProviderRegistry.class,
             cardinality = ReferenceCardinality.MANDATORY,
             policy = ReferencePolicy.DYNAMIC,
-            unbind = "removeOutboundProviderRegistry"
-    )
-    protected void addOutboundProviderRegistry(
-            org.wso2.carbon.gateway.core.outbound.ProviderRegistry registry) {
+            unbind = "removeOutboundProviderRegistry")
+    protected void addOutboundProviderRegistry(org.wso2.carbon.gateway.core.outbound.ProviderRegistry registry) {
     }
 
-    protected void removeOutboundProviderRegistry(
-            org.wso2.carbon.gateway.core.outbound.ProviderRegistry registry) {
+    protected void removeOutboundProviderRegistry(org.wso2.carbon.gateway.core.outbound.ProviderRegistry registry) {
     }
 
     @Reference(
@@ -110,14 +99,11 @@ public class IFlowDeployer implements Deployer {
             service = org.wso2.carbon.gateway.core.flow.ProviderRegistry.class,
             cardinality = ReferenceCardinality.MANDATORY,
             policy = ReferencePolicy.DYNAMIC,
-            unbind = "removeMediatorProviderRegistry"
-    )
-    protected void addMediatorProviderRegistry(
-            org.wso2.carbon.gateway.core.flow.ProviderRegistry registry) {
+            unbind = "removeMediatorProviderRegistry")
+    protected void addMediatorProviderRegistry(org.wso2.carbon.gateway.core.flow.ProviderRegistry registry) {
     }
 
-    protected void removeMediatorProviderRegistry(
-            org.wso2.carbon.gateway.core.flow.ProviderRegistry registry) {
+    protected void removeMediatorProviderRegistry(org.wso2.carbon.gateway.core.flow.ProviderRegistry registry) {
     }
 
     @Override
@@ -180,13 +166,14 @@ public class IFlowDeployer implements Deployer {
 
             parser.addParseListener(wumlBaseListener);
             parser.sourceFile();
-
-            WUMLConfigurationBuilder.IntegrationFlow integrationFlow = wumlBaseListener.getIntegrationFlow();
-            GWConfigHolder configHolder = integrationFlow.getGWConfigHolder();
-            if (configHolder != null) {
-                artifactMap.put(file.getName(), configHolder);
-                ConfigRegistry.getInstance().addGWConfig(configHolder);
-            }
+            //
+            //            WUMLConfigurationBuilder.IntegrationFlow integrationFlow = wumlBaseListener.
+            // getIntegrationFlow();
+            //            GWConfigHolder configHolder = integrationFlow.getGWConfigHolder();
+            //            if (configHolder != null) {
+            //                artifactMap.put(file.getName(), configHolder);
+            //                ConfigRegistry.getInstance().addGWConfig(configHolder);
+            //            }
 
         } catch (IOException e) {
             logger.error("Error while creating Cheetah object model", e);

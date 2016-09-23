@@ -8,11 +8,12 @@ import org.wso2.carbon.gateway.core.config.ConfigConstants;
 import org.wso2.carbon.gateway.core.config.annotations.Annotation;
 import org.wso2.carbon.gateway.core.config.annotations.IAnnotation;
 import org.wso2.carbon.gateway.core.config.annotations.common.Description;
-import org.wso2.carbon.gateway.core.config.annotations.resource.Trigger;
+import org.wso2.carbon.gateway.core.config.annotations.integration.Path;
+import org.wso2.carbon.gateway.core.config.annotations.resource.http.methods.Delete;
+import org.wso2.carbon.gateway.core.config.annotations.resource.http.methods.Get;
+import org.wso2.carbon.gateway.core.config.annotations.resource.http.methods.Post;
+import org.wso2.carbon.gateway.core.config.annotations.resource.http.methods.Put;
 import org.wso2.carbon.gateway.core.flow.templates.uri.URITemplate;
-import org.wso2.carbon.gateway.core.flow.triggers.EndpointTrigger;
-import org.wso2.carbon.gateway.core.flow.triggers.HTTPEndpointTrigger;
-import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
 import org.wso2.carbon.gateway.core.util.VariableUtil;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
@@ -35,7 +36,6 @@ public class Resource {
      */
     private String name;
     private Map<String, Annotation> annotations = new HashMap<>();
-    private EndpointTrigger trigger;
     private Worker defaultWorker;
     private URITemplate path;
 
@@ -44,14 +44,18 @@ public class Resource {
         defaultWorker = new Worker(name);
     }
 
-    public Resource(String name, InboundEndpoint source, String condition, URITemplate uriTemplate,
-                    EndpointTrigger trigger) {
+    public Resource(String name, URITemplate uriTemplate) {
         this.name = name;
-        this.trigger = trigger;
         this.path = uriTemplate;
         defaultWorker = new Worker(name);
+        /* Predefined annotations */
         annotations.put(ConfigConstants.AN_DESCRIPTION, new Description());
-        annotations.put(ConfigConstants.AN_TRIGGER, new Trigger(getTriggerInstance(source, condition, uriTemplate)));
+        annotations.put(ConfigConstants.GET_ANNOTATION, new Get());
+        annotations.put(ConfigConstants.PUT_ANNOTATION, new Put());
+        annotations.put(ConfigConstants.POST_ANNOTATION, new Post());
+        annotations.put(ConfigConstants.DELETE_ANNOTATION, new Delete());
+        annotations.put(ConfigConstants.AN_BASE_PATH, new Path());
+
     }
 
     public String getName() {
@@ -68,9 +72,8 @@ public class Resource {
         Map<String, Observable> observableMap = new LinkedHashMap<>();
         carbonMessage.setProperty("OBSERVABLES", observableMap);
 
-        defaultWorker.submit(UUID.randomUUID(), carbonMessage, carbonCallback)
-                .subscribe(r -> log.info("Resource subscribe event " +
-                        ((RxContext) r).getId())); // we don't need subscriber to return here?
+        defaultWorker.submit(UUID.randomUUID(), carbonMessage, carbonCallback).subscribe(r -> log.info(
+                "Resource subscribe event " + ((RxContext) r).getId())); // we don't need subscriber to return here?
 
         return true;
     }
@@ -95,16 +98,16 @@ public class Resource {
         return defaultWorker;
     }
 
-    private EndpointTrigger getTriggerInstance(InboundEndpoint source, String condition, URITemplate uriTemplate) {
-        String protocol = source.getProtocol();
-
-        switch (protocol) {
-            case "HTTP":
-                return new HTTPEndpointTrigger(source, condition, uriTemplate);
-            default:
-                return new HTTPEndpointTrigger(source, condition, uriTemplate);
-        }
-    }
+    //   private EndpointTrigger getTriggerInstance(InboundEndpoint source, String condition, URITemplate uriTemplate) {
+    //        String protocol = source.getProtocol();
+    //
+    //        switch (protocol) {
+    //        case "HTTP":
+    //            return new HTTPEndpointTrigger(source, condition, uriTemplate);
+    //        default:
+    //            return new HTTPEndpointTrigger(source, condition, uriTemplate);
+    //        }
+    //    }
 
     public boolean matches(CarbonMessage cMsg) {
         if (!isTemplateMatching(cMsg)) {
@@ -127,7 +130,7 @@ public class Resource {
     }
 
     private void addVariables(CarbonMessage cMsg, Map<String, String> uriVars) {
-        uriVars.forEach((k, v) ->
-                VariableUtil.addGlobalVariable(cMsg, k, VariableUtil.createVariable(Constants.TYPES.STRING, v)));
+        uriVars.forEach((k, v) -> VariableUtil
+                .addGlobalVariable(cMsg, k, VariableUtil.createVariable(Constants.TYPES.STRING, v)));
     }
 }

@@ -260,6 +260,11 @@
                 <artifactId>powermock-module-junit4</artifactId>
                 <version>${powermock.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.com.netflix.rxjava</groupId>
+                <artifactId>rxJava</artifactId>
+                <version>${org.wso2.rx.java.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -398,6 +403,7 @@
 
         <commons.io.version>2.0</commons.io.version>
         <rx.java.version>0.20.7</rx.java.version>
+        <org.wso2.rx.java.version>0.20.7.wso2v1</org.wso2.rx.java.version>
     </properties>
 
     <modules>

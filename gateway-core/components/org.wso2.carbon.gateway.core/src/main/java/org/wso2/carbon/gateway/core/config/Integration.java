@@ -116,4 +116,8 @@ public class Integration {
     public void addAnnotation(String annotationName, Annotation annotation) {
         annotations.put(annotationName, annotation);
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

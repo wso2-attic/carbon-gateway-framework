@@ -27,6 +27,14 @@ public class ConfigConstants {
      */
     public static final String AN_TRIGGER = "@Trigger";
 
+    public static final String GET_ANNOTATION = "@GET";
+
+    public static final String PUT_ANNOTATION = "@PUT";
+
+    public static final String POST_ANNOTATION = "@POST";
+
+    public static final String DELETE_ANNOTATION = "@DELETE";
+
 
 
     // End Annotations

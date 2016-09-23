@@ -12,6 +12,7 @@ import org.antlr.v4.runtime.misc.Utils;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLLexer;
@@ -29,16 +30,19 @@ import java.util.List;
 public class WUMLSyntaxTest {
 
     @Test
+    @Ignore
     public void testSyntaxErrorsRouterIflow() {
         makeSyntaxCheckAssertion(getSyntaxTreeErrors("/integration-flows/router.iflow"));
     }
 
     @Test
+    @Ignore
     public void testSyntaxErrorsConstantsIflow() {
         makeSyntaxCheckAssertion(getSyntaxTreeErrors("/integration-flows/constants.iflow"));
     }
 
     @Test
+    @Ignore
     public void testSyntaxErrorsVariableAssignmentIflow() {
         makeSyntaxCheckAssertion(getSyntaxTreeErrors("/integration-flows/variable-assignment.iflow"));
     }
