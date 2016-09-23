@@ -259,11 +259,11 @@
                 <groupId>org.powermock</groupId>
                 <artifactId>powermock-module-junit4</artifactId>
                 <version>${powermock.version}</version>
-<!--=======-->
-                <!--<groupId>org.wso2.com.netflix.rxjava</groupId>-->
-                <!--<artifactId>rxJava</artifactId>-->
-                <!--<version>${org.wso2.rx.java.version}</version>-->
-<!--&gt;>>>>>> Fixing a complete passthrough scenario - Step 1-->
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.com.netflix.rxjava</groupId>
+                <artifactId>rxJava</artifactId>
+                <version>${org.wso2.rx.java.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

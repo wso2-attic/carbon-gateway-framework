@@ -94,6 +94,11 @@
             <groupId>org.apache.ws.commons.axiom</groupId>
             <artifactId>axiom-dom</artifactId>
         </dependency>
+        <!-- Orbit rxJava Dependency until its added -->
+        <!--<dependency>-->
+            <!--<groupId>org.wso2.com.netflix.rxjava</groupId>-->
+            <!--<artifactId>rxJava</artifactId>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>com.netflix.rxjava</groupId>
             <artifactId>rxjava-core</artifactId>
@@ -149,8 +154,8 @@
             javax.xml.*;version=0.0.0,
             org.jaxen.*;version="${jaxen.version}",
             org.wso2.carbon.messaging.*;version="${carbon.messaging.package.import.version.range}",
-            org.wso2.carbon.deployment.engine.*;version="${carbon.deployment.export.version}",
-            rx.*; version="0.0.0"
+            org.wso2.carbon.deployment.engine.*;version="${carbon.deployment.export.version}"
+            <!--rx.*; version="0.0.0"-->
         </import.package>
         <carbon.component>
             startup.listener;componentName="mediator-provider";

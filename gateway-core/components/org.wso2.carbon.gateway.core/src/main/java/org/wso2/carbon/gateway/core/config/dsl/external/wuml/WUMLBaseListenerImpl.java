@@ -373,11 +373,9 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         /* Processing blocks inside the resource */
         for (WUMLParser.BlockStatementContext blockStatement : ctx.resourceDeclaration().block().blockStatement()) {
             if (blockStatement.getChild(0) instanceof WUMLParser.LocalVariableDeclarationStatementContext) {
-                log.info("one");
             } else if (blockStatement.getChild(0) instanceof WUMLParser.StatementExpressionContext) {
                 WUMLParser.StatementExpressionContext statementExpression =
                         (WUMLParser.StatementExpressionContext) blockStatement.getChild(0);
-                log.info("two");
                 if ("reply".equals(statementExpression.getChild(0).getText())) {
                     if ("invoke".equals(statementExpression.getChild(1).getChild(0).getText())) {
                         //add the call mediator
