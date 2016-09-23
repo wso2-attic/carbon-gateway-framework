@@ -83,6 +83,10 @@
             <groupId>jaxen</groupId>
             <artifactId>jaxen</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.netflix.rxjava</groupId>
+            <artifactId>rxjava-core</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -139,6 +143,10 @@
                                 <bundle>
                                     <symbolicName>org.wso2.carbon.deployment.engine</symbolicName>
                                     <version>${carbon.deployment.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>com.netflix.rxjava.core</symbolicName>
+                                    <version>${rx.java.version}</version>
                                 </bundle>
                             </bundles>
                         </configuration>

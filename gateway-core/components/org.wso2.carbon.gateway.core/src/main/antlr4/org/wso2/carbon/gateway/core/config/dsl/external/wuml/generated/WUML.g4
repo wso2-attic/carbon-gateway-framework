@@ -197,7 +197,7 @@ statement
     ;
 
 statementExpression
-     :  'reply' Identifier
+     :  'reply' ( Identifier | expression )
      |  expression
      |  Identifier '=' expression
     ;

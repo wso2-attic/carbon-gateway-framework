@@ -26,12 +26,24 @@ import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.gateway.core.config.ConfigConstants;
 import org.wso2.carbon.gateway.core.config.Integration;
 import org.wso2.carbon.gateway.core.config.IntegrationConfigRegistry;
+import org.wso2.carbon.gateway.core.config.Parameter;
+import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.config.dsl.external.StringParserUtil;
 import org.wso2.carbon.gateway.core.config.dsl.external.WUMLConfigurationBuilder;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLBaseListener;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLParser;
+import org.wso2.carbon.gateway.core.flow.Mediator;
+import org.wso2.carbon.gateway.core.flow.MediatorProviderRegistry;
+import org.wso2.carbon.gateway.core.flow.Resource;
+import org.wso2.carbon.gateway.core.flow.templates.uri.URITemplate;
+import org.wso2.carbon.gateway.core.flow.templates.uri.URITemplateException;
+import org.wso2.carbon.gateway.core.inbound.InboundEPProviderRegistry;
+import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
+import org.wso2.carbon.gateway.core.outbound.OutboundEPProviderRegistry;
+import org.wso2.carbon.gateway.core.outbound.OutboundEndpoint;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -88,6 +100,9 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
     @Override
     public void exitPackageDef(WUMLParser.PackageDefContext ctx) {
+        //String packageName = ctx.qualifiedName().getText();
+        /* Updating the integration name to its fully qualified name */
+        //integration.setName(packageName + "." + integration.getName());
     }
 
     @Override
@@ -96,8 +111,8 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
     @Override
     public void exitPath(WUMLParser.PathContext ctx) {
-        integration.getAnnotation(ConfigConstants.AN_BASE_PATH).setValue(
-                StringParserUtil.getValueWithinDoubleQuotes(ctx.StringLiteral().getText()));
+        integration.getAnnotation(ConfigConstants.AN_BASE_PATH)
+                .setValue(StringParserUtil.getValueWithinDoubleQuotes(ctx.StringLiteral().getText()));
     }
 
     @Override
@@ -107,11 +122,28 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     @Override
     public void exitSource(WUMLParser.SourceContext ctx) {
         Map<String, String> valueMap = new HashMap<>();
-        valueMap.put("host", ctx.sourceElementValuePairs().host().StringLiteral().getText());
-        valueMap.put("port", ctx.sourceElementValuePairs().port().IntegerLiteral().getText());
-        valueMap.put("protocol", ctx.sourceElementValuePairs().protoclo().StringLiteral().getText());
+        ParameterHolder parameterHolder = new ParameterHolder();
+
+        String host = StringParserUtil
+                .getValueWithinDoubleQuotes(ctx.sourceElementValuePairs().host().StringLiteral().getText());
+        String port = ctx.sourceElementValuePairs().port().IntegerLiteral().getText();
+        String protocol = StringParserUtil
+                .getValueWithinDoubleQuotes(ctx.sourceElementValuePairs().protoclo().StringLiteral().getText());
+
+        valueMap.put(Constants.HOST, host);
+        valueMap.put(Constants.PORT, port);
+        valueMap.put(Constants.PROTOCOL, protocol);
         integration.getAnnotation(ConfigConstants.AN_SOURCE).setValue(valueMap);
 
+        parameterHolder.addParameter(new Parameter(Constants.HOST, host));
+        parameterHolder.addParameter(new Parameter(Constants.PORT, port));
+        parameterHolder.addParameter(new Parameter(Constants.CONTEXT,
+                integration.getAnnotation(ConfigConstants.AN_BASE_PATH).getValue().toString()));
+
+        InboundEndpoint inboundEndpoint = InboundEPProviderRegistry.getInstance().getProvider(protocol)
+                .getInboundEndpoint();
+        inboundEndpoint.setParameters(parameterHolder);
+        integration.addInbound(inboundEndpoint);
     }
 
     @Override
@@ -289,8 +321,17 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     @Override
     public void exitConstant(WUMLParser.ConstantContext ctx) {
         String type = (ctx.classType() != null) ? ctx.classType().getText() : ctx.type().getText();
-        integration.addConstant(Constants.TYPES.valueOf(type)
-                , ctx.variableDeclaratorId().getText(), ctx.StringLiteral().getText());
+        /* Extracting endpoints as constants */
+        if (Constants.ENDPOINT.equals(type)) {
+            String endpointType = ctx.Identifier().getText();
+
+            OutboundEndpoint outboundEndpoint = OutboundEPProviderRegistry.getInstance().getProvider(
+                    endpointType.replace(Constants.ENDPOINT_GRAMMAR_KEYWORD, Constants.EMPTY_STRING)
+                            .toLowerCase(Locale.ENGLISH)).getEndpoint();
+            outboundEndpoint.setName(ctx.variableDeclaratorId().getText());
+            outboundEndpoint.setUri(StringParserUtil.getValueWithinDoubleQuotes(ctx.StringLiteral().getText()));
+            integration.getOutbounds().put(ctx.variableDeclaratorId().getText(), outboundEndpoint);
+        }
     }
 
     @Override
@@ -299,6 +340,64 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
     @Override
     public void exitResource(WUMLParser.ResourceContext ctx) {
+
+        String path = StringParserUtil.getValueWithinDoubleQuotes(ctx.resourcePath().StringLiteral().getText());
+
+        URITemplate uriTemplate = null;
+
+        try {
+            uriTemplate = new URITemplate(path);
+        } catch (URITemplateException e) {
+            log.error("Unable to create URI template for :" + path);
+        }
+
+        /* Extracting the resource name */
+        Resource resource = new Resource(
+                ((WUMLParser.ResourceContext) ctx).resourceDeclaration().Identifier().get(0).getText(), uriTemplate);
+
+        /* Updating annotations */
+        if (!ctx.httpMethods().getMethod().isEmpty()) {
+            resource.getAnnotations().get(ConfigConstants.GET_ANNOTATION).setValue(Boolean.TRUE);
+        }
+        if (!ctx.httpMethods().putMethod().isEmpty()) {
+            resource.getAnnotations().get(ConfigConstants.PUT_ANNOTATION).setValue(Boolean.TRUE);
+        }
+        if (!ctx.httpMethods().postMethod().isEmpty()) {
+            resource.getAnnotations().get(ConfigConstants.POST_ANNOTATION).setValue(Boolean.TRUE);
+        }
+        if (!ctx.httpMethods().deleteMethod().isEmpty()) {
+            resource.getAnnotations().get(ConfigConstants.DELETE_ANNOTATION).setValue(Boolean.TRUE);
+        }
+        resource.getAnnotations().get(ConfigConstants.AN_BASE_PATH).setValue(path);
+
+        /* Processing blocks inside the resource */
+        for (WUMLParser.BlockStatementContext blockStatement : ctx.resourceDeclaration().block().blockStatement()) {
+            if (blockStatement.getChild(0) instanceof WUMLParser.LocalVariableDeclarationStatementContext) {
+                log.info("one");
+            } else if (blockStatement.getChild(0) instanceof WUMLParser.StatementExpressionContext) {
+                WUMLParser.StatementExpressionContext statementExpression =
+                        (WUMLParser.StatementExpressionContext) blockStatement.getChild(0);
+                log.info("two");
+                if ("reply".equals(statementExpression.getChild(0).getText())) {
+                    if ("invoke".equals(statementExpression.getChild(1).getChild(0).getText())) {
+                        //add the call mediator
+                        Mediator callMediator = MediatorProviderRegistry.getInstance().getMediator("call");
+
+                        ParameterHolder parameterHolder = new ParameterHolder();
+                        parameterHolder.addParameter(new Parameter("endpointKey", statementExpression.getChild(1)
+                                .getChild(2).getChild(0).getText()));
+
+                        callMediator.setParameters(parameterHolder);
+
+                        resource.getDefaultWorker().addMediator(callMediator);
+
+                    }
+                }
+
+            }
+        }
+
+        integration.getResources().put(resource.getName(), resource);
     }
 
     @Override
@@ -525,8 +624,7 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
-    public void enterLocalVariableDeclarationStatement(
-            WUMLParser.LocalVariableDeclarationStatementContext ctx) {
+    public void enterLocalVariableDeclarationStatement(WUMLParser.LocalVariableDeclarationStatementContext ctx) {
     }
 
     /**
@@ -535,8 +633,7 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
-    public void exitLocalVariableDeclarationStatement(
-            WUMLParser.LocalVariableDeclarationStatementContext ctx) {
+    public void exitLocalVariableDeclarationStatement(WUMLParser.LocalVariableDeclarationStatementContext ctx) {
     }
 
     /**
@@ -736,4 +833,5 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     @Override
     public void visitErrorNode(ErrorNode node) {
     }
+
 }

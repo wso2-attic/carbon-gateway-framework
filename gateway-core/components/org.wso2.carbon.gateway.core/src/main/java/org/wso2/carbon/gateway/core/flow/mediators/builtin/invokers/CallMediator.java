@@ -20,7 +20,7 @@ package org.wso2.carbon.gateway.core.flow.mediators.builtin.invokers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.gateway.core.config.ConfigRegistry;
+import org.wso2.carbon.gateway.core.config.IntegrationConfigRegistry;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.flow.AbstractMediator;
 import org.wso2.carbon.gateway.core.flow.FlowControllerMediateCallback;
@@ -35,12 +35,9 @@ import org.wso2.carbon.messaging.CarbonMessage;
  */
 public class CallMediator extends AbstractMediator implements Invoker {
 
-
-    private String outboundEPKey;
-
-    private OutboundEndpoint outboundEndpoint;
-
     private static final Logger log = LoggerFactory.getLogger(CallMediator.class);
+    private String outboundEPKey;
+    private OutboundEndpoint outboundEndpoint;
 
     public CallMediator() {
     }
@@ -63,12 +60,11 @@ public class CallMediator extends AbstractMediator implements Invoker {
     }
 
     @Override
-    public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback)
-            throws Exception {
+    public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
 
         OutboundEndpoint endpoint = outboundEndpoint;
         if (endpoint == null) {
-            endpoint = ConfigRegistry.getInstance().getOutboundEndpoint(outboundEPKey);
+            endpoint = IntegrationConfigRegistry.getInstance().getOutboundEndpoint(outboundEPKey);
 
             if (endpoint == null) {
                 log.error("Outbound Endpoint : " + outboundEPKey + "not found ");
@@ -82,6 +78,5 @@ public class CallMediator extends AbstractMediator implements Invoker {
         endpoint.receive(carbonMessage, callback);
         return false;
     }
-
 
 }

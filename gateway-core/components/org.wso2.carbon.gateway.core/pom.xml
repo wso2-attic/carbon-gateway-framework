@@ -149,7 +149,8 @@
             javax.xml.*;version=0.0.0,
             org.jaxen.*;version="${jaxen.version}",
             org.wso2.carbon.messaging.*;version="${carbon.messaging.package.import.version.range}",
-            org.wso2.carbon.deployment.engine.*;version="${carbon.deployment.export.version}"
+            org.wso2.carbon.deployment.engine.*;version="${carbon.deployment.export.version}",
+            rx.*; version="0.0.0"
         </import.package>
         <carbon.component>
             startup.listener;componentName="mediator-provider";
