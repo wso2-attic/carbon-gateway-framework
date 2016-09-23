@@ -15,7 +15,7 @@ import org.wso2.carbon.messaging.CarbonMessage;
 import static org.mockito.Mockito.times;
 
 /**
- * This test-case test the functionality of
+ * This test-case test the functionality of MessageProcessor implementation
  */
 
 @RunWith(PowerMockRunner.class)
@@ -24,6 +24,7 @@ public class MessageProcessorTest {
 
     @Test
     public void receiveTest() throws Exception {
+        // Mock all the required objects
         CarbonMessage carbonMessage = Mockito.mock(CarbonMessage.class);
         CarbonCallback carbonCallback = Mockito.mock(CarbonCallback.class);
 
@@ -40,6 +41,7 @@ public class MessageProcessorTest {
         MessageProcessor messageProcessor = new MessageProcessor();
         messageProcessor.receive(carbonMessage, carbonCallback);
 
+        // Assert whether receive method invokes the dispatcher at the end
         Mockito.verify(dispatcher, times(1)).dispatch(carbonMessage, carbonCallback);
     }
 }
