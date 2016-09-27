@@ -83,6 +83,10 @@
             <groupId>jaxen</groupId>
             <artifactId>jaxen</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.io.reactivex</groupId>
+            <artifactId>rxjava</artifactId>
+        </dependency>
         <!--rxJava Orbit dependency, commented until it gets updated -->
         <!--<dependency>-->
             <!--<groupId>org.wso2.com.netflix.rxjava</groupId>-->
@@ -146,10 +150,10 @@
                                     <version>${carbon.deployment.version}</version>
                                 </bundle>
                                 <!--rxJava Orbit bundle, commented until it gets updated -->
-                                <!--<bundle>-->
-                                    <!--<symbolicName>rxJava</symbolicName>-->
-                                    <!--<version>${org.wso2.rx.java.version}</version>-->
-                                <!--</bundle>-->
+                                <bundle>
+                                    <symbolicName>rxjava</symbolicName>
+                                    <version>${rx.java.version}</version>
+                                </bundle>
                             </bundles>
                         </configuration>
                     </execution>

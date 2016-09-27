@@ -241,8 +241,8 @@
                 <version>${commons.io.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.netflix.rxjava</groupId>
-                <artifactId>rxjava-core</artifactId>
+                <groupId>org.wso2.orbit.io.reactivex</groupId>
+                <artifactId>rxjava</artifactId>
                 <version>${rx.java.version}</version>
             </dependency>
             <dependency>
@@ -400,9 +400,10 @@
         <net.minidev.version>2.2</net.minidev.version>
         <carbon.deployment.version>5.0.0</carbon.deployment.version>
         <carbon.deployment.export.version>5.0.0</carbon.deployment.export.version>
+        <rxjava.export.version>1.2.0.wso2v1</rxjava.export.version>
 
         <commons.io.version>2.0</commons.io.version>
-        <rx.java.version>0.20.7</rx.java.version>
+        <rx.java.version>1.2.0.wso2v1</rx.java.version>
         <org.wso2.rx.java.version>0.20.7.wso2v1</org.wso2.rx.java.version>
     </properties>
 

@@ -100,8 +100,8 @@
             <!--<artifactId>rxJava</artifactId>-->
         <!--</dependency>-->
         <dependency>
-            <groupId>com.netflix.rxjava</groupId>
-            <artifactId>rxjava-core</artifactId>
+            <groupId>org.wso2.orbit.io.reactivex</groupId>
+            <artifactId>rxjava</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -154,8 +154,8 @@
             javax.xml.*;version=0.0.0,
             org.jaxen.*;version="${jaxen.version}",
             org.wso2.carbon.messaging.*;version="${carbon.messaging.package.import.version.range}",
-            org.wso2.carbon.deployment.engine.*;version="${carbon.deployment.export.version}"
-            <!--rx.*; version="0.0.0"-->
+            org.wso2.carbon.deployment.engine.*;version="${carbon.deployment.export.version}",
+            rx.*; version="${rxjava.export.version}"
         </import.package>
         <carbon.component>
             startup.listener;componentName="mediator-provider";
