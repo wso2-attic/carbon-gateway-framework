@@ -35,6 +35,9 @@ import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLParse
 import org.wso2.carbon.gateway.core.flow.Mediator;
 import org.wso2.carbon.gateway.core.flow.MediatorProviderRegistry;
 import org.wso2.carbon.gateway.core.flow.Resource;
+import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.Condition;
+import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.FilterMediator;
+import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.Source;
 import org.wso2.carbon.gateway.core.flow.templates.uri.URITemplate;
 import org.wso2.carbon.gateway.core.flow.templates.uri.URITemplateException;
 import org.wso2.carbon.gateway.core.inbound.InboundEPProviderRegistry;
@@ -45,6 +48,7 @@ import org.wso2.carbon.gateway.core.outbound.OutboundEndpoint;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Implementation class of the ANTLR generated listener class
@@ -53,8 +57,15 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     private static final Logger log = LoggerFactory.getLogger(WUMLBaseListenerImpl.class);
     private Integration integration;
     private Resource currentResource;
+    // Temporary reference for the currently processing filter mediator
+    private FilterMediator filterMediator;
+    private Boolean ifBlockOpened;
+    private Boolean elseBlockOpened;
+
 
     public WUMLBaseListenerImpl() {
+        this.ifBlockOpened = false;
+        this.elseBlockOpened = false;
     }
 
     public WUMLConfigurationBuilder.IntegrationFlow getIntegrationFlow() {
@@ -435,34 +446,7 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
-    public void enterIfBlock(WUMLParser.IfBlockContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void exitIfBlock(WUMLParser.IfBlockContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
     public void enterParExpression(WUMLParser.ParExpressionContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void exitParExpression(WUMLParser.ParExpressionContext ctx) {
     }
 
     /**
@@ -627,11 +611,6 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     public void visitErrorNode(ErrorNode node) {
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
     @Override public void exitInvokeMediatorCall(WUMLParser.InvokeMediatorCallContext ctx) {
         /*  Implementation is done to directly call the backend and respond.
             Only supports when "return invoke(EP, message)"
@@ -646,24 +625,14 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
         callMediator.setParameters(parameterHolder);
 
-        this.currentResource.getDefaultWorker().addMediator(callMediator);
+        dropMediatorFilterAware(callMediator);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
     @Override public void exitResourceName(WUMLParser.ResourceNameContext ctx) {
         /* Creating the resource */
         this.currentResource = new Resource(ctx.Identifier().getText());
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
     @Override public void exitLogMediatorCall(WUMLParser.LogMediatorCallContext ctx) {
         Mediator logMediator = MediatorProviderRegistry.getInstance().getMediator(Constants.LOG_MEDIATOR);
         ParameterHolder parameterHolder = new ParameterHolder();
@@ -677,7 +646,75 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         }
 
         logMediator.setParameters(parameterHolder);
-        this.currentResource.getDefaultWorker().addMediator(logMediator);
+        dropMediatorFilterAware(logMediator);
+    }
+
+    /**
+     * Filter Mediator Handling
+     *
+     */
+    @Override public void enterIfElseBlock(WUMLParser.IfElseBlockContext ctx) {
+    }
+
+    @Override public void exitParExpression(WUMLParser.ParExpressionContext ctx) {
+        log.info("Create a filter mediator");
+        //Condition condition = new Condition(source, Pattern.compile(conditionValue));
+        // For expressions with pattern "exp1" == "exp2"
+        if (ctx.EQUAL() != null) {
+            //List expressions = ((WUMLParser.ParExpressionContext) ctx).expression();
+            // Works only for formats: "eval("$p1.p2")=="abc""
+            String sourceDefinition = StringParserUtil.getValueWithinDoubleQuotes(
+                    ((WUMLParser.ParExpressionContext) ctx).expression().get(0).evalExpression().StringLiteral()
+                            .getText());
+            Source source = new Source(sourceDefinition);
+            String conditionValue = StringParserUtil.getValueWithinDoubleQuotes(
+                    ((WUMLParser.ParExpressionContext) ctx).expression().get(1).literal().StringLiteral().getText());
+
+            Condition condition = new Condition(source, Pattern.compile(conditionValue));
+
+            filterMediator = new FilterMediator(condition);
+        }
+    }
+
+    @Override public void exitIfElseBlock(WUMLParser.IfElseBlockContext ctx) {
+        log.info("Add mediator filter mediator to mediator pipeline");
+        this.elseBlockOpened = false;
+        this.ifBlockOpened = false;
+        dropMediatorFilterAware(filterMediator);
+    }
+
+    @Override public void enterIfBlock(WUMLParser.IfBlockContext ctx) {
+        this.elseBlockOpened = false;
+        this.ifBlockOpened = true;
+    }
+
+    @Override public void exitIfBlock(WUMLParser.IfBlockContext ctx) {
+        this.ifBlockOpened = false;
+    }
+
+    @Override public void enterElseBlock(WUMLParser.ElseBlockContext ctx) {
+        this.ifBlockOpened = false;
+        this.elseBlockOpened = true;
+    }
+
+    @Override public void exitElseBlock(WUMLParser.ElseBlockContext ctx) { }
+
+
+    /**
+     * Use correct mediation flow to place the mediator when filter mediator is present
+     *
+     * @param mediator
+     */
+    private void dropMediatorFilterAware(Mediator mediator) {
+        if (ifBlockOpened) {
+            filterMediator.addThenMediator(mediator);
+
+        } else if (elseBlockOpened) {
+            filterMediator.addOtherwiseMediator(mediator);
+
+        } else {
+            this.currentResource.getDefaultWorker().addMediator(mediator);
+        }
     }
 
 }
