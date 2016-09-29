@@ -110,4 +110,13 @@ public class Constants {
 
     public static final String CONTEXT = "context";
 
+    /* Mediator parameters  */
+
+    public static final String LOG_MEDIATOR = "log";
+
+    public static final String LEVEL = "level";
+
+    public static final String LEVEL_FULL = "full";
+
+    public static final String LEVEL_CUSTOM = "custom";
 }
