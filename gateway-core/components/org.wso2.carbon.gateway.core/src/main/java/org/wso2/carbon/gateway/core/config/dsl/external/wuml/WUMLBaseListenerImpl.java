@@ -52,6 +52,7 @@ import java.util.Map;
 public class WUMLBaseListenerImpl extends WUMLBaseListener {
     private static final Logger log = LoggerFactory.getLogger(WUMLBaseListenerImpl.class);
     private Integration integration;
+    private Resource currentResource;
 
     public WUMLBaseListenerImpl() {
     }
@@ -128,7 +129,7 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
                 .getValueWithinDoubleQuotes(ctx.sourceElementValuePairs().host().StringLiteral().getText());
         String port = ctx.sourceElementValuePairs().port().IntegerLiteral().getText();
         String protocol = StringParserUtil
-                .getValueWithinDoubleQuotes(ctx.sourceElementValuePairs().protoclo().StringLiteral().getText());
+                .getValueWithinDoubleQuotes(ctx.sourceElementValuePairs().protocol().StringLiteral().getText());
 
         valueMap.put(Constants.HOST, host);
         valueMap.put(Constants.PORT, port);
@@ -259,11 +260,11 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     }
 
     @Override
-    public void enterProtoclo(WUMLParser.ProtocloContext ctx) {
+    public void enterProtocol(WUMLParser.ProtocolContext ctx) {
     }
 
     @Override
-    public void exitProtoclo(WUMLParser.ProtocloContext ctx) {
+    public void exitProtocol(WUMLParser.ProtocolContext ctx) {
     }
 
     @Override
@@ -323,14 +324,14 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         String type = (ctx.classType() != null) ? ctx.classType().getText() : ctx.type().getText();
         /* Extracting endpoints as constants */
         if (Constants.ENDPOINT.equals(type)) {
-            String endpointType = ctx.Identifier().getText();
+            String endpointType = ctx.getChild(5).getText();
 
             OutboundEndpoint outboundEndpoint = OutboundEPProviderRegistry.getInstance().getProvider(
                     endpointType.replace(Constants.ENDPOINT_GRAMMAR_KEYWORD, Constants.EMPTY_STRING)
                             .toLowerCase(Locale.ENGLISH)).getEndpoint();
-            outboundEndpoint.setName(ctx.variableDeclaratorId().getText());
-            outboundEndpoint.setUri(StringParserUtil.getValueWithinDoubleQuotes(ctx.StringLiteral().getText()));
-            integration.getOutbounds().put(ctx.variableDeclaratorId().getText(), outboundEndpoint);
+            outboundEndpoint.setName(ctx.Identifier().get(0).getText());
+         outboundEndpoint.setUri(StringParserUtil.getValueWithinDoubleQuotes(ctx.StringLiteral().getText()));
+            integration.getOutbounds().put(ctx.Identifier().get(0).getText(), outboundEndpoint);
         }
     }
 
@@ -351,51 +352,25 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
             log.error("Unable to create URI template for :" + path);
         }
 
-        /* Extracting the resource name */
-        Resource resource = new Resource(
-                ((WUMLParser.ResourceContext) ctx).resourceDeclaration().Identifier().get(0).getText(), uriTemplate);
+
+        this.currentResource.setUritemplate(uriTemplate);
 
         /* Updating annotations */
         if (!ctx.httpMethods().getMethod().isEmpty()) {
-            resource.getAnnotations().get(ConfigConstants.GET_ANNOTATION).setValue(Boolean.TRUE);
+            this.currentResource.getAnnotations().get(ConfigConstants.GET_ANNOTATION).setValue(Boolean.TRUE);
         }
         if (!ctx.httpMethods().putMethod().isEmpty()) {
-            resource.getAnnotations().get(ConfigConstants.PUT_ANNOTATION).setValue(Boolean.TRUE);
+            this.currentResource.getAnnotations().get(ConfigConstants.PUT_ANNOTATION).setValue(Boolean.TRUE);
         }
         if (!ctx.httpMethods().postMethod().isEmpty()) {
-            resource.getAnnotations().get(ConfigConstants.POST_ANNOTATION).setValue(Boolean.TRUE);
+            this.currentResource.getAnnotations().get(ConfigConstants.POST_ANNOTATION).setValue(Boolean.TRUE);
         }
         if (!ctx.httpMethods().deleteMethod().isEmpty()) {
-            resource.getAnnotations().get(ConfigConstants.DELETE_ANNOTATION).setValue(Boolean.TRUE);
+            this.currentResource.getAnnotations().get(ConfigConstants.DELETE_ANNOTATION).setValue(Boolean.TRUE);
         }
-        resource.getAnnotations().get(ConfigConstants.AN_BASE_PATH).setValue(path);
+        this.currentResource.getAnnotations().get(ConfigConstants.AN_BASE_PATH).setValue(path);
 
-        /* Processing blocks inside the resource */
-        for (WUMLParser.BlockStatementContext blockStatement : ctx.resourceDeclaration().block().blockStatement()) {
-            if (blockStatement.getChild(0) instanceof WUMLParser.LocalVariableDeclarationStatementContext) {
-            } else if (blockStatement.getChild(0) instanceof WUMLParser.StatementExpressionContext) {
-                WUMLParser.StatementExpressionContext statementExpression =
-                        (WUMLParser.StatementExpressionContext) blockStatement.getChild(0);
-                if ("reply".equals(statementExpression.getChild(0).getText())) {
-                    if ("invoke".equals(statementExpression.getChild(1).getChild(0).getText())) {
-                        //add the call mediator
-                        Mediator callMediator = MediatorProviderRegistry.getInstance().getMediator("call");
-
-                        ParameterHolder parameterHolder = new ParameterHolder();
-                        parameterHolder.addParameter(new Parameter("endpointKey", statementExpression.getChild(1)
-                                .getChild(2).getChild(0).getText()));
-
-                        callMediator.setParameters(parameterHolder);
-
-                        resource.getDefaultWorker().addMediator(callMediator);
-
-                    }
-                }
-
-            }
-        }
-
-        integration.getResources().put(resource.getName(), resource);
+        integration.getResources().put(this.currentResource.getName(), this.currentResource);
     }
 
     @Override
@@ -460,24 +435,6 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
-    public void enterTryBlock(WUMLParser.TryBlockContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void exitTryBlock(WUMLParser.TryBlockContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
     public void enterIfBlock(WUMLParser.IfBlockContext ctx) {
     }
 
@@ -488,42 +445,6 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
      */
     @Override
     public void exitIfBlock(WUMLParser.IfBlockContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void enterStatement(WUMLParser.StatementContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void exitStatement(WUMLParser.StatementContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void enterStatementExpression(WUMLParser.StatementExpressionContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void exitStatementExpression(WUMLParser.StatementExpressionContext ctx) {
     }
 
     /**
@@ -550,24 +471,6 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
-    public void enterExpressionList(WUMLParser.ExpressionListContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void exitExpressionList(WUMLParser.ExpressionListContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
     public void enterCatchClause(WUMLParser.CatchClauseContext ctx) {
     }
 
@@ -578,42 +481,6 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
      */
     @Override
     public void exitCatchClause(WUMLParser.CatchClauseContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void enterCatchType(WUMLParser.CatchTypeContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void exitCatchType(WUMLParser.CatchTypeContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void enterFinallyBlock(WUMLParser.FinallyBlockContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void exitFinallyBlock(WUMLParser.FinallyBlockContext ctx) {
     }
 
     /**
@@ -640,42 +507,6 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
-    public void enterVariableDeclarator(WUMLParser.VariableDeclaratorContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void exitVariableDeclarator(WUMLParser.VariableDeclaratorContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void enterVariableDeclaratorId(WUMLParser.VariableDeclaratorIdContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void exitVariableDeclaratorId(WUMLParser.VariableDeclaratorIdContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
     public void enterExpression(WUMLParser.ExpressionContext ctx) {
     }
 
@@ -694,24 +525,6 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
-    public void enterPrimary(WUMLParser.PrimaryContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void exitPrimary(WUMLParser.PrimaryContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
     public void enterLiteral(WUMLParser.LiteralContext ctx) {
     }
 
@@ -722,24 +535,6 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
      */
     @Override
     public void exitLiteral(WUMLParser.LiteralContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void enterMethodParams(WUMLParser.MethodParamsContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void exitMethodParams(WUMLParser.MethodParamsContext ctx) {
     }
 
     /**
@@ -830,6 +625,38 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
      */
     @Override
     public void visitErrorNode(ErrorNode node) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override public void exitInvokeMediatorCall(WUMLParser.InvokeMediatorCallContext ctx) {
+        /*  Implementation is done to directly call the backend and respond.
+            Only supports when "return invoke(EP, message)"
+            "message m = invoke(EP, message)" not supported
+         */
+
+        //Add the call mediator
+        Mediator callMediator = MediatorProviderRegistry.getInstance().getMediator("call");
+
+        ParameterHolder parameterHolder = new ParameterHolder();
+        parameterHolder.addParameter(new Parameter("endpointKey", ctx.Identifier().get(0).getText()));
+
+        callMediator.setParameters(parameterHolder);
+
+        this.currentResource.getDefaultWorker().addMediator(callMediator);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override public void exitResourceName(WUMLParser.ResourceNameContext ctx) {
+        /* Creating the resource */
+        this.currentResource = new Resource(ctx.Identifier().getText());
     }
 
 }
