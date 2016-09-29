@@ -42,6 +42,13 @@ public class Resource {
     public Resource(String name) {
         this.name = name;
         defaultWorker = new Worker(name);
+        /* Predefined annotations */
+        annotations.put(ConfigConstants.AN_DESCRIPTION, new Description());
+        annotations.put(ConfigConstants.GET_ANNOTATION, new Get());
+        annotations.put(ConfigConstants.PUT_ANNOTATION, new Put());
+        annotations.put(ConfigConstants.POST_ANNOTATION, new Post());
+        annotations.put(ConfigConstants.DELETE_ANNOTATION, new Delete());
+        annotations.put(ConfigConstants.AN_BASE_PATH, new Path());
     }
 
     public Resource(String name, URITemplate uriTemplate) {
@@ -56,6 +63,10 @@ public class Resource {
         annotations.put(ConfigConstants.DELETE_ANNOTATION, new Delete());
         annotations.put(ConfigConstants.AN_BASE_PATH, new Path());
 
+    }
+
+    public void setUritemplate (URITemplate path) {
+        this.path = path;
     }
 
     public String getName() {

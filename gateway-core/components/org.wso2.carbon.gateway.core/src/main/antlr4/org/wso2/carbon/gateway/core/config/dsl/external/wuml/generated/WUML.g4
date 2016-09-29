@@ -93,14 +93,14 @@ elementValuePairs
     ;
 
 sourceElementValuePairs
-    :   protoclo (',' host)?  (','  port)?
+    :   protocol (',' host)?  (','  port)?
     ;
 
 apiElementValuePairs
     :  (tags ',')?  (descripton ',')? producer
     ;
 
-protoclo
+protocol
     :   'protocol' '=' StringLiteral
     ;
 
@@ -129,10 +129,21 @@ producer
     ;
 
 constant
-    :   CONSTANT type variableDeclaratorId  '=' literal ';'
-    |   CONSTANT classType variableDeclaratorId  '=' 'new' Identifier '(' (StringLiteral)? ')' ';'
+    :   CONSTANT type Identifier  '=' literal ';'
+    |   CONSTANT classType Identifier  '=' 'new' Identifier '(' (StringLiteral)? ')' ';'
     ;
 
+
+elementValuePair
+    :   Identifier '=' elementValue
+    ;
+
+elementValue
+    :   StringLiteral
+    |   IntegerLiteral
+;
+
+// Resource Level
 resource
     :   httpMethods
         prodAnt?
@@ -156,125 +167,135 @@ qualifiedName
     ;
 
 resourceDeclaration
-    :   'resource' Identifier '(' 'message' Identifier ')'
-        block
+    :   'resource' resourceName '(' 'message' Identifier ')' block
     ;
 
-elementValuePair
-    :   Identifier '=' elementValue
+resourceName
+    :   Identifier
     ;
 
-elementValue
-    :   StringLiteral
-    |   IntegerLiteral
-;
-
+// block is anything that starts with '{' and and ends with '}'
 block
     :   '{' blockStatement* '}'
     ;
 
+//Anything that contains inside a block
 blockStatement
-    :   localVariableDeclarationStatement
-    |   tryBlock
-    |   ifBlock
-    |   statementExpression ';'
+    :   localVariableDeclarationStatement   //  eg: int i;
+    |   localVaribaleInitializationStatement    // eg: string endpoint = "my_endpoint";
+    |   localVaribaleAssignmentStatement    //  eg: i =45;
+    |   messageModificationStatement    //  eg: response.setHeader(HTTP.StatusCode, 500);
+    |   returnStatement //  eg: reply response;
+    |   logMediatorStatement // log("my_message");
+    |   tryCatchBlock
+    |   ifElseBlock
     ;
 
-tryBlock
-    :   'try' block (catchClause+ finallyBlock? | finallyBlock)
+// try catch definition
+tryCatchBlock
+    :   tryClause   catchClause
+    ;
+
+tryClause
+    :   'try' block
+    ;
+
+catchClause
+    :   'catch' '(' 'exception' Identifier ')' block
+    ;
+
+// if else definition
+ifElseBlock
+    :   ifBlock ( elseBlock )?
     ;
 
 ifBlock
-    :   'if' parExpression statement ('else' statement)?
+    :   'if' parExpression block
     ;
 
-statement
-    :   block
-    |   ifBlock
-    |   tryBlock
-    |   ';'
-    |   statementExpression
+elseBlock
+    :   'else'  block
     ;
 
-statementExpression
-     :  'reply' ( Identifier | expression )
-     |  expression
-     |  Identifier '=' expression
+// local varibale handling statements
+localVariableDeclarationStatement
+    :   (type|classType)    Identifier  ';'
     ;
 
+localVaribaleInitializationStatement
+    :   type    Identifier  '='   literal ';'
+    |   newTypeObjectCreation
+    |   classType mediatorCall ';' // calling a mediator that will return a message
+    ;
+
+localVaribaleAssignmentStatement
+    :   Identifier  '='   literal ';'
+    |   newTypeObjectCreation ';'
+    |   mediatorCall ';'
+    ;
+
+logMediatorStatement
+    :   logMediatorCall ';'
+    ;
+
+ // this is only used when "message m = new message ();" called
+newTypeObjectCreation
+    : classType? Identifier '=' 'new' classType '('   ')'   ';'
+    ;
+
+//mediator calls (TODO: Add custom mediator support here)
+mediatorCall
+    :  Identifier '='
+    (   invokeMediatorCall
+    |   sendToMediatorCall
+    |   dataMapMediatorCall
+    |   receiveFromMediatorCall
+    )
+    ;
+
+invokeMediatorCall
+    :   'invoke' '(' Identifier ',' Identifier ')'
+    ;
+
+sendToMediatorCall
+    :   'sendTo' '(' Identifier ',' Identifier ')'
+    ;
+
+dataMapMediatorCall
+    :   'datamap' '(' literal ',' Identifier ')'
+    ;
+
+receiveFromMediatorCall
+    :   'receiveFrom' '(' Identifier ',' Identifier ')'
+    ;
+
+logMediatorCall
+    :   'log' '(' Identifier ')'
+    |   'log' '(' literal ')'
+    ;
+
+// Message Modification statements
+messageModificationStatement
+    :   Identifier  '.' Identifier '('  messagePropertyName ','  literal ')' ';'
+    ;
+
+//return (reply) Statement specification
+returnStatement
+    :   'reply' (Identifier | invokeMediatorCall)? ';'
+    ;
+
+// expression, which will be used to build the parExpression used inside if condition
 parExpression
     :   '(' expression ( ( GT | LT | EQUAL | LE | GE | NOTEQUAL | AND | OR ) expression )? ')'
     ;
 
-expressionList
-    :   expression (',' expression)*
-    ;
-
-catchClause
-    :   'catch' '(' catchType Identifier ')' block
-    ;
-
-catchType
-    :   qualifiedName ('|' qualifiedName)*
-    ;
-
-finallyBlock
-    :   'finally' block
-    ;
-
-
-localVariableDeclarationStatement
-    :(type | classType) variableDeclarator ';'
-    ;
-
-variableDeclarator
-      :   variableDeclaratorId ('=' expression)?
-      ;
-
-variableDeclaratorId
-      :   Identifier
-      ;
-
 expression
-    :   primary
-//    |  'new' Identifier '(' methodParams? ')'
-    |  Identifier '.' Identifier '(' methodParams? ')'
-    |  Identifier '(' methodParams? ')'
-    |  'new' classType '(' methodParams? ')'
-//    |   expression ('++' | '--')
-//    |   ('+'|'-'|'++'|'--') expression
-//    |   ('~'|'!') expression
-//    |   expression ('*'|'/'|'%') expression
-//    |   expression ('+'|'-') expression
-//    |   expression ('<' '<' | '>' '>' '>' | '>' '>') expression
-//    |   expression ('<=' | '>=' | '>' | '<') expression
-//    |   expression ('==' | '!=') expression
-//    |   expression '&' expression
-//    |   expression '^' expression
-//    |   expression '|' expression
-//    |   expression '&&' expression
-//    |   expression '||' expression
-//    |   expression '?' expression ':' expression
-//    |   <assoc=right> expression
-//        (   '='
-//        |   '+='
-//        |   '-='
-//        |   '*='
-//        |   '/='
-//        |   '&='
-//        |   '|='
-//        |   '^='
-//        |   '>>='
-//        |   '>>>='
-//        |   '<<='
-//        |   '%='
-//        )
-//        expression
+    :   evalExpression
+    |   literal
     ;
 
-primary
-    :   '(' expression ')'
-    |  literal
+evalExpression
+    :   'eval' '(' StringLiteral ','    Identifier ')'
     ;
 
 literal
@@ -286,9 +307,10 @@ literal
       |   'null'
  ;
 
-methodParams
-    :    ((literal | Identifier ('.' Identifier)*) ((',' (literal | Identifier))*))?
-    ;
+mediaType
+      : 'MediaType.APPLICATION_JSON'
+      | 'MediaType.APPLICATION_XML'
+;
 
 type
       :   'boolean'
@@ -306,11 +328,9 @@ classType
       |   'message'
       ;
 
-mediaType
-      : 'MediaType.APPLICATION_JSON'
-      | 'MediaType.APPLICATION_XML'
-;
-
+messagePropertyName
+    :   Identifier ('.' Identifier)*
+    ;
 
 // LEXER
 
@@ -375,6 +395,7 @@ IntegerLiteral
     |   HexIntegerLiteral
     |   OctalIntegerLiteral
     |   BinaryIntegerLiteral
+    |   VaribaleLiteral
     ;
 
 fragment
@@ -503,6 +524,7 @@ BinaryDigitOrUnderscore
 FloatingPointLiteral
     :   DecimalFloatingPointLiteral
     |   HexadecimalFloatingPointLiteral
+    |   VaribaleLiteral
     ;
 
 fragment
@@ -564,6 +586,7 @@ BinaryExponentIndicator
 BooleanLiteral
     :   'true'
     |   'false'
+    |   VaribaleLiteral
     ;
 
 // §3.10.4 Character Literals
@@ -581,6 +604,7 @@ SingleCharacter
 
 StringLiteral
     :   '"' StringCharacters? '"'
+    |   VaribaleLiteral
     ;
 fragment
 StringCharacters
@@ -673,6 +697,12 @@ RSHIFT_ASSIGN   : '>>=';
 URSHIFT_ASSIGN  : '>>>=';
 
 
+// WSO2 NEL Addition***********************************************
+fragment
+VaribaleLiteral
+    :   '$' Identifier
+    ;
+//*****************************************************************
 
 // §3.8 Identifiers (must appear after all keywords in the grammar)
 
