@@ -57,15 +57,17 @@ import java.util.regex.Pattern;
 public class WUMLBaseListenerImpl extends WUMLBaseListener {
     private static final Logger log = LoggerFactory.getLogger(WUMLBaseListenerImpl.class);
     private Integration integration;
+    private String integrationName;
     private Resource currentResource;
     // Temporary reference for the currently processing filter mediator
     private FilterMediator filterMediator;
     private Boolean ifBlockOpened;
     private Boolean elseBlockOpened;
 
-    public WUMLBaseListenerImpl() {
+    public WUMLBaseListenerImpl(String fileName) {
         this.ifBlockOpened = false;
         this.elseBlockOpened = false;
+        this.integrationName = fileName;
     }
 
     public WUMLConfigurationBuilder.IntegrationFlow getIntegrationFlow() {
@@ -74,7 +76,7 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
     @Override
     public void enterSourceFile(WUMLParser.SourceFileContext ctx) {
-        integration = new Integration("name");
+        integration = new Integration(integrationName);
     }
 
     @Override
