@@ -2,6 +2,7 @@ package org.wso2.carbon.gateway.core.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.gateway.core.flow.Mediator;
 import org.wso2.carbon.gateway.core.flow.MediatorCollection;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
@@ -25,6 +26,10 @@ public abstract class ChildExceptionHandler implements ExceptionHandler {
             log.error("Failed to handle exception", e);
             return false;
         }
+    }
+
+    public void addChildMediator(Mediator mediator) {
+        childMediatorList.addMediator(mediator);
     }
 
     public abstract boolean canHandle(NelException nelexception);

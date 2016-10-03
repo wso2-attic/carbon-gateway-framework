@@ -59,6 +59,7 @@ import java.util.Map;
 public class IFlowDeployer implements Deployer {
 
     public static final String EXTERNAL_DSL_CONFIGS_DIRECTORY = "integration-flows";
+    private static final String FILE_EXTENSION = ".xyz";
     private static final Logger logger = LoggerFactory.getLogger(IFlowDeployer.class);
     private ArtifactType artifactType;
     private URL directoryLocation;
@@ -162,7 +163,8 @@ public class IFlowDeployer implements Deployer {
             WUMLParser parser = new WUMLParser(tokens);
 
             // Adding the listener to facilitate walking through parse tree.
-            WUMLBaseListenerImpl wumlBaseListener = new WUMLBaseListenerImpl();
+            WUMLBaseListenerImpl wumlBaseListener = new WUMLBaseListenerImpl(
+                    file.getName().replace(FILE_EXTENSION, ""));
 
             parser.addParseListener(wumlBaseListener);
             parser.sourceFile();
@@ -175,7 +177,7 @@ public class IFlowDeployer implements Deployer {
             //                ConfigRegistry.getInstance().addGWConfig(configHolder);
             //            }
 
-        } catch (IOException e) {
+        }  catch (IOException e) {
             logger.error("Error while creating Cheetah object model", e);
         } finally {
             if (inputStream != null) {
