@@ -3,13 +3,11 @@ package org.wso2.carbon.gateway.core.flow.triggers;
 import org.osgi.framework.BundleContext;
 
 import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
 
 /**
  * Service Component for EndpointTriggerProvider
@@ -18,14 +16,14 @@ import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
  * service so that others can consume it.
  *
  */
-@Component(
-        name = "org.wso2.carbon.gateway.core.flow.triggers.EndpointTriggerServiceComponent",
-        immediate = true,
-        property = {
-                "componentName=trigger-provider"
-        }
-)
-public class EndpointTriggerServiceComponent implements RequiredCapabilityListener {
+//@Component(
+//        name = "org.wso2.carbon.gateway.core.flow.triggers.EndpointTriggerServiceComponent",
+//        immediate = true,
+//        property = {
+//                "componentName=trigger-provider"
+//        }
+//)
+public class EndpointTriggerServiceComponent {
 
     private static final Logger logger =
             LoggerFactory.getLogger(EndpointTriggerServiceComponent.class);
@@ -44,7 +42,7 @@ public class EndpointTriggerServiceComponent implements RequiredCapabilityListen
         }
     }
 
-    @Override
+//    @Override
     public void onAllRequiredCapabilitiesAvailable() {
         if (logger.isDebugEnabled()) {
             logger.debug("All Trigger Providers available");
