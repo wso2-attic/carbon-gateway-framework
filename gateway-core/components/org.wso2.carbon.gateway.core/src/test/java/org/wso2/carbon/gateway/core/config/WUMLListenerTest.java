@@ -57,7 +57,7 @@ public class WUMLListenerTest {
     private boolean parseIflow(String iFlowResource) {
         WUMLLexer lexer;
         WUMLParser parser;
-        WUMLBaseListenerImpl wumlBaseListener = new WUMLBaseListenerImpl();
+        WUMLBaseListenerImpl wumlBaseListener = new WUMLBaseListenerImpl("Test1");
 
         InputStream inputStream = null;
         File file = null;
