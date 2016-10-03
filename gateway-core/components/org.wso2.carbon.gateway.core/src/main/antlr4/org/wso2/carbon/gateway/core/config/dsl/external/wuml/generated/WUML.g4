@@ -183,12 +183,12 @@ block
 blockStatement
     :   localVariableDeclarationStatement   //  eg: int i;
     |   localVaribaleInitializationStatement    // eg: string endpoint = "my_endpoint";
-    |   localVaribaleAssignmentStatement    //  eg: i =45;
+    |   localVaribaleAssignmentStatement    //  eg: i =45; msgModification mediators also falls under this
     |   messageModificationStatement    //  eg: response.setHeader(HTTP.StatusCode, 500);
     |   returnStatement //  eg: reply response;
-    |   logMediatorStatement // log("my_message");
-    |   tryCatchBlock
-    |   ifElseBlock
+    |   logMediatorStatement // readonly mediator : log("my_message");
+    |   tryCatchBlock   // flowControl Mediator
+    |   ifElseBlock // flowControl Mediator
     ;
 
 // try catch definition

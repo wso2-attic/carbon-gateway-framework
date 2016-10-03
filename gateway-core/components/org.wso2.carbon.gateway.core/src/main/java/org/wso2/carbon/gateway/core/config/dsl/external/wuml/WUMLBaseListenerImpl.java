@@ -725,29 +725,33 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override public void exitExceptionHandler(WUMLParser.ExceptionHandlerContext ctx) {
-        String exceptionType = ((java.util.ArrayList) ((WUMLParser.ExceptionTypeContext) ctx.children.get(0)).children)
-                .get(0).toString();
 
-        ChildExceptionHandler childExceptionHandler = null;
+        if (ctx.getChild(0) != null && ctx.getChild(0).getChild(0) != null) {
 
-        switch (exceptionType) {
-        case Constants.CONN_CLOSED_EX:
-            childExceptionHandler = new ConnectionClosedExceptionHandler();
-            break;
-        case Constants.CONN_FAILED_EX:
-            childExceptionHandler = new ConnectionFailedExceptionHandler();
-            break;
-        case Constants.CONN_TIMEOUT_EX:
-            childExceptionHandler = new ConnectionTimeoutExceptionHandler();
-            break;
-        case Constants.DEFAULT_EX:
-            childExceptionHandler = new GeneralExceptionHandler();
-            break;
-        default:
-            break;
+            String exceptionType = ((java.util.ArrayList) ((WUMLParser.ExceptionTypeContext) ctx.children
+                    .get(0)).children).get(0).toString();
+
+            ChildExceptionHandler childExceptionHandler = null;
+
+            switch (exceptionType) {
+            case Constants.CONN_CLOSED_EX:
+                childExceptionHandler = new ConnectionClosedExceptionHandler();
+                break;
+            case Constants.CONN_FAILED_EX:
+                childExceptionHandler = new ConnectionFailedExceptionHandler();
+                break;
+            case Constants.CONN_TIMEOUT_EX:
+                childExceptionHandler = new ConnectionTimeoutExceptionHandler();
+                break;
+            case Constants.DEFAULT_EX:
+                childExceptionHandler = new GeneralExceptionHandler();
+                break;
+            default:
+                break;
+            }
+            ((TryBlockMediator) flowControllerStack.peek()).pushHandler(childExceptionHandler);
+            this.flowControllerMediatorSection.push(FlowControllerMediatorSection.catchBlock);
         }
-        ((TryBlockMediator) flowControllerStack.peek()).pushHandler(childExceptionHandler);
-        this.flowControllerMediatorSection.push(FlowControllerMediatorSection.catchBlock);
     }
     /**
      * {@inheritDoc}
