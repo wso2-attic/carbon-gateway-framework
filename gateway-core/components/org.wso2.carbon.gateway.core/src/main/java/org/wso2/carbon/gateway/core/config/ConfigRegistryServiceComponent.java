@@ -30,24 +30,24 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  * subscribed to the Config Registry
  */
 @Component(
-        name = "ConfigRegistryServiceComponent",
+        name = "IntegrationConfigRegistryServiceComponent",
         immediate = true
 )
 public class ConfigRegistryServiceComponent {
 
     @Reference(
-            name = "ConfigRegistry-Observer-Service",
+            name = "IntegrationConfigRegistry-Observer-Service",
             service = ConfigRegistryObserver.class,
             cardinality = ReferenceCardinality.OPTIONAL,
             policy = ReferencePolicy.DYNAMIC,
             unbind = "removeConfigRegistryObserver"
     )
     protected void addConfigRegistryObserver(ConfigRegistryObserver observer) {
-        ConfigRegistry.getInstance().registerObserver(observer);
+        IntegrationConfigRegistry.getInstance().registerObserver(observer);
     }
 
     protected void removeConfigRegistryObserver(ConfigRegistryObserver observer) {
-        ConfigRegistry.getInstance().unregisterObserver(observer);
+        IntegrationConfigRegistry.getInstance().unregisterObserver(observer);
     }
 
 }

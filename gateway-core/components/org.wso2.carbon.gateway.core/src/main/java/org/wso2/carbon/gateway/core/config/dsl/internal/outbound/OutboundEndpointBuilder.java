@@ -18,35 +18,33 @@
 
 package org.wso2.carbon.gateway.core.config.dsl.internal.outbound;
 
-
-import org.wso2.carbon.gateway.core.config.GWConfigHolder;
-import org.wso2.carbon.gateway.core.outbound.OutboundEndpoint;
-
 /**
  * A Builder class for OutBound Endpoint
  */
 public class OutboundEndpointBuilder {
 
-    private OutboundEndpoint outboundEndpoint;
-    private GWConfigHolder parentConfig;
+    // TODO: Rewrite the code with Integration Object
 
-    public static OutboundEndpointBuilder outboundEndpoint(OutboundEndpoint outboundEndpoint,
-                                                           GWConfigHolder parentConfig) {
-        return new OutboundEndpointBuilder(outboundEndpoint, parentConfig);
-    }
+//    private OutboundEndpoint outboundEndpoint;
+//    private GWConfigHolder parentConfig;
 
-    private OutboundEndpointBuilder(OutboundEndpoint outboundEndpoint, GWConfigHolder parentConfig) {
-        this.parentConfig = parentConfig;
-        this.outboundEndpoint = outboundEndpoint;
-        this.parentConfig.addOutboundEndpoint(outboundEndpoint);
-    }
+//    public static OutboundEndpointBuilder outboundEndpoint(OutboundEndpoint outboundEndpoint,
+//                                                           GWConfigHolder parentConfig) {
+//        return new OutboundEndpointBuilder(outboundEndpoint, parentConfig);
+//    }
+//
+//    private OutboundEndpointBuilder(OutboundEndpoint outboundEndpoint, GWConfigHolder parentConfig) {
+//        this.parentConfig = parentConfig;
+//        this.outboundEndpoint = outboundEndpoint;
+//        this.parentConfig.addOutboundEndpoint(outboundEndpoint);
+//    }
 
-    public OutboundEndpointBuilder timeOut(int timeout) {
-        if (outboundEndpoint != null) {
-            outboundEndpoint.setTimeOut(timeout);
-        }
-        return this;
-    }
+//    public OutboundEndpointBuilder timeOut(int timeout) {
+//        if (outboundEndpoint != null) {
+//            outboundEndpoint.setTimeOut(timeout);
+//        }
+//        return this;
+//    }
 
 
 }

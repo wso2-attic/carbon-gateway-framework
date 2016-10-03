@@ -2,8 +2,6 @@ package org.wso2.carbon.gateway.core.flow.mediators.builtin.invokers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.gateway.core.config.ConfigRegistry;
-import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.flow.AbstractMediator;
 import org.wso2.carbon.gateway.core.flow.Invoker;
 import org.wso2.carbon.gateway.core.flow.Worker;
@@ -13,7 +11,6 @@ import org.wso2.carbon.messaging.MessageUtil;
 import rx.Observable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,22 +22,16 @@ import java.util.UUID;
 public class Fork extends AbstractMediator implements Invoker {
     private static final Logger log = LoggerFactory.getLogger(Fork.class);
 
-    private String parentIntegration;
-    private List<String> workers = new ArrayList<>();
+    private List<Worker> workers = new ArrayList<>();
 
-    public Fork(String integration) {
-        parentIntegration = integration;
-    }
-
-    public Fork(String integration, List workers) {
-        parentIntegration = integration;
+    public Fork(List workers) {
         this.workers = workers;
     }
 
-    public void setParameters(ParameterHolder parameterHolder) {
-        String strWorkers = parameterHolder.getParameter("workers").getValue();
-        workers = Arrays.asList(strWorkers.split("\\s*,\\s*"));
-    }
+//    public void setParameters(ParameterHolder parameterHolder) {
+//        String strWorkers = parameterHolder.getParameter("workers").getValue();
+//        workers = Arrays.asList(strWorkers.split("\\s*,\\s*"));
+//    }
 
     @Override
     public String getName() {
@@ -71,9 +62,8 @@ public class Fork extends AbstractMediator implements Invoker {
         return next(carbonMessage, carbonCallback);
     }
 
-    private Observable createObserver(String worker, CarbonMessage carbonMessage, CarbonCallback carbonCallback) {
+    private Observable createObserver(Worker worker, CarbonMessage carbonMessage, CarbonCallback carbonCallback) {
         log.info("Retrieve worker " + worker);
-        Worker w = ConfigRegistry.getInstance().getIntegrationConfig(parentIntegration).getWorker(worker);
-        return w.submit(UUID.randomUUID(), carbonMessage, carbonCallback);
+        return worker.submit(UUID.randomUUID(), carbonMessage, carbonCallback);
     }
 }

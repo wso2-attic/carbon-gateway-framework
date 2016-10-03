@@ -26,8 +26,6 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.gateway.core.config.ConfigRegistry;
-import org.wso2.carbon.gateway.core.config.GWConfigHolder;
 import org.wso2.carbon.gateway.core.inbound.ProviderRegistry;
 
 import java.util.ArrayList;
@@ -126,12 +124,13 @@ public class DSLLoader {
         if (log.isDebugEnabled()) {
             log.debug("Loading Type 1 Java DSL ..");
         }
+        // TODO: Need to update the code with new IntegrationConfigRegistry object
         // Call the DSL
-        GWConfigHolder configHolder =
-                javaConfigurationBuilder.configure().getConfigHolder();
+//        GWConfigHolder configHolder =
+//                javaConfigurationBuilder.configure().getConfigHolder();
 
         // Register the configuration
-        ConfigRegistry.getInstance().addGWConfig(configHolder);
+//        ConfigRegistry.getInstance().addGWConfig(configHolder);
 
     }
 

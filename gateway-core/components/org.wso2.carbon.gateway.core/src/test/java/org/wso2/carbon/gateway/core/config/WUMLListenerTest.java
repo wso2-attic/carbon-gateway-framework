@@ -77,11 +77,12 @@ public class WUMLListenerTest {
             parser.addParseListener(wumlBaseListener);
             parser.sourceFile();
 
+            // TODO: Need to update the test case with IntegrationConfigRegistry object.
             WUMLConfigurationBuilder.IntegrationFlow integrationFlow = wumlBaseListener.getIntegrationFlow();
-            GWConfigHolder configHolder = integrationFlow.getGWConfigHolder();
-            if (configHolder != null) {
-                ConfigRegistry.getInstance().addGWConfig(configHolder);
-            }
+//            GWConfigHolder configHolder = integrationFlow.getGWConfigHolder();
+//            if (configHolder != null) {
+//                ConfigRegistry.getInstance().addGWConfig(configHolder);
+//            }
 
             return true;
 

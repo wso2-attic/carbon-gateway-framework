@@ -19,7 +19,7 @@ package org.wso2.carbon.gateway.core.flow.contentaware;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.gateway.core.config.ConfigRegistry;
+import org.wso2.carbon.gateway.core.config.IntegrationConfigRegistry;
 import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConverter;
 import org.wso2.carbon.gateway.core.flow.contentaware.exceptions.TypeConversionException;
 import org.wso2.carbon.messaging.CarbonMessage;
@@ -51,7 +51,7 @@ public class ConversionManager {
 
     public CarbonMessage convertTo(CarbonMessage cMsg, String sourceType, String targetType) {
 
-        TypeConverter converter = ConfigRegistry.getInstance().getTypeConverterRegistry()
+        TypeConverter converter = IntegrationConfigRegistry.getInstance().getTypeConverterRegistry()
                 .getTypeConverter(sourceType, targetType);
         DefaultCarbonMessage newCarbonMsg = new DefaultCarbonMessage();
 

@@ -18,40 +18,37 @@
 
 package org.wso2.carbon.gateway.core.config.dsl.internal.inbound;
 
-import org.wso2.carbon.gateway.core.config.GWConfigHolder;
-import org.wso2.carbon.gateway.core.config.dsl.internal.JavaConfigurationBuilder;
-import org.wso2.carbon.gateway.core.config.dsl.internal.flow.PipelineBuilder;
-import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
-
 /**
  * A Builder class for Inbound Endpoint
  */
 public class InboundEPBuilder {
 
-    GWConfigHolder parentConfig;
-    JavaConfigurationBuilder.IntegrationFlow integrationFlow;
+    // TODO: If needed re-write it with Integration object
+
+//    GWConfigHolder parentConfig;
+//    JavaConfigurationBuilder.IntegrationFlow integrationFlow;
 
 
-    public static InboundEPBuilder inboundEndpoint(String name, GWConfigHolder parentConfig,
-                                                   JavaConfigurationBuilder.IntegrationFlow integrationFlow,
-                                                   InboundEndpoint inboundEndpoint) {
-        inboundEndpoint.setName(name);
-        parentConfig.setInboundEndpoint(inboundEndpoint);
+//    public static InboundEPBuilder inboundEndpoint(String name, GWConfigHolder parentConfig,
+//                                                   JavaConfigurationBuilder.IntegrationFlow integrationFlow,
+//                                                   InboundEndpoint inboundEndpoint) {
+//        inboundEndpoint.setName(name);
+//        parentConfig.setInboundEndpoint(inboundEndpoint);
+//
+//        return new InboundEPBuilder(parentConfig, integrationFlow);
+//    }
 
-        return new InboundEPBuilder(parentConfig, integrationFlow);
-    }
+//    private InboundEPBuilder(GWConfigHolder parentConfig,
+//                             JavaConfigurationBuilder.IntegrationFlow integrationFlow) {
+//        this.parentConfig = parentConfig;
+//        this.integrationFlow = integrationFlow;
+//    }
 
-    private InboundEPBuilder(GWConfigHolder parentConfig,
-                             JavaConfigurationBuilder.IntegrationFlow integrationFlow) {
-        this.parentConfig = parentConfig;
-        this.integrationFlow = integrationFlow;
-    }
-
-    public PipelineBuilder pipeline(String pipeline) {
-        if (parentConfig.getInboundEndpoint() != null) {
-            parentConfig.getInboundEndpoint().setPipeline(pipeline);
-        }
-        return integrationFlow.pipeline(pipeline);
-    }
+//    public PipelineBuilder pipeline(String pipeline) {
+//        if (parentConfig.getInboundEndpoint() != null) {
+//            parentConfig.getInboundEndpoint().setPipeline(pipeline);
+//        }
+//        return integrationFlow.pipeline(pipeline);
+//    }
 
 }

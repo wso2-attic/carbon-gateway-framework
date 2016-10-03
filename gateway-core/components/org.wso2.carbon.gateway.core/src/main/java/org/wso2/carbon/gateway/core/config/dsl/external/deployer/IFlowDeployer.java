@@ -33,8 +33,8 @@ import org.wso2.carbon.deployment.engine.Artifact;
 import org.wso2.carbon.deployment.engine.ArtifactType;
 import org.wso2.carbon.deployment.engine.Deployer;
 import org.wso2.carbon.deployment.engine.exception.CarbonDeploymentException;
-import org.wso2.carbon.gateway.core.config.ConfigRegistry;
-import org.wso2.carbon.gateway.core.config.GWConfigHolder;
+import org.wso2.carbon.gateway.core.config.Integration;
+import org.wso2.carbon.gateway.core.config.IntegrationConfigRegistry;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.WUMLBaseListenerImpl;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLLexer;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLParser;
@@ -62,7 +62,7 @@ public class IFlowDeployer implements Deployer {
     private static final Logger logger = LoggerFactory.getLogger(IFlowDeployer.class);
     private ArtifactType artifactType;
     private URL directoryLocation;
-    private Map<String, GWConfigHolder> artifactMap = new HashMap<>();
+    private Map<String, Integration> artifactMap = new HashMap<>();
 
     @Activate
     protected void activate(BundleContext bundleContext) {
@@ -124,8 +124,8 @@ public class IFlowDeployer implements Deployer {
 
     @Override
     public void undeploy(Object o) throws CarbonDeploymentException {
-        GWConfigHolder configHolder = artifactMap.remove((String) o);
-        ConfigRegistry.getInstance().removeGWConfig(configHolder);
+        Integration configHolder = artifactMap.remove((String) o);
+        IntegrationConfigRegistry.getInstance().removeIntegrationConfig(configHolder);
     }
 
     @Override

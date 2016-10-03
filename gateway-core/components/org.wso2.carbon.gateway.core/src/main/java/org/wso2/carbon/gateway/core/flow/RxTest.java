@@ -1,7 +1,6 @@
 package org.wso2.carbon.gateway.core.flow;
 
 
-import org.wso2.carbon.gateway.core.config.ConfigRegistry;
 import org.wso2.carbon.gateway.core.config.IntegrationConfigHolder;
 import org.wso2.carbon.gateway.core.config.Parameter;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
@@ -14,7 +13,7 @@ import org.wso2.carbon.messaging.DefaultCarbonMessage;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -134,10 +133,11 @@ public class RxTest {
         ich.addWorker(cars);
         ich.addWorker(hotels);
 
-        // Parallel Mediator
-        String[] workerList = {"cars", "hotels"};
-        List<String> workers = Arrays.asList(workerList);
-        parallelMediator = new Fork("RxTest", workers);
+        List<Worker> workers = new ArrayList<>();
+        workers.add(cars);
+        workers.add(hotels);
+
+        parallelMediator = new Fork(workers);
 
         // Receive Mediator
         receiveMediator = new Join("RxTest", workers, true);
@@ -156,7 +156,7 @@ public class RxTest {
     public static void main(String[] args) {
         org.apache.log4j.BasicConfigurator.configure();
 
-        ConfigRegistry.getInstance().addGWConfig(ich);
+//        ConfigRegistry.getInstance().addGWConfig(ich);
 
         RxTest test = new RxTest();
         test.run();

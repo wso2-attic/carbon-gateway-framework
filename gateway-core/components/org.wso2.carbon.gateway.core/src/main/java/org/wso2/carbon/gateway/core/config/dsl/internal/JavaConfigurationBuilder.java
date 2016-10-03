@@ -18,14 +18,6 @@
 
 package org.wso2.carbon.gateway.core.config.dsl.internal;
 
-
-import org.wso2.carbon.gateway.core.config.GWConfigHolder;
-import org.wso2.carbon.gateway.core.config.dsl.internal.flow.PipelineBuilder;
-import org.wso2.carbon.gateway.core.config.dsl.internal.inbound.InboundEPBuilder;
-import org.wso2.carbon.gateway.core.config.dsl.internal.outbound.OutboundEndpointBuilder;
-import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
-import org.wso2.carbon.gateway.core.outbound.OutboundEndpoint;
-
 /**
  * A class that used to create entire configuration.Anyone can extend this and overwrite configure method with
  * relevant configuration
@@ -35,39 +27,41 @@ public abstract class JavaConfigurationBuilder {
 
     public abstract IntegrationFlow configure();
 
-    public IntegrationFlow integrationFlow(String name) {
-        return new IntegrationFlow(name);
-    }
+//    public IntegrationFlow integrationFlow(String name) {
+//        return new IntegrationFlow(name);
+//    }
 
     /**
      * ESB Configuration Builder
      */
     public static class IntegrationFlow {
 
-        private GWConfigHolder configHolder;
+        // TODO: This complete code is not needed.
 
-        public IntegrationFlow(String name) {
-            configHolder = new GWConfigHolder(name);
-        }
+//        private GWConfigHolder configHolder;
 
-        public GWConfigHolder getConfigHolder() {
-            return configHolder;
-        }
+//        public IntegrationFlow(String name) {
+//            configHolder = new GWConfigHolder(name);
+//        }
+
+//        public GWConfigHolder getConfigHolder() {
+//            return configHolder;
+//        }
 
         /* For Inbound */
-        public InboundEPBuilder inboundEndpoint(String name, InboundEndpoint inboundEndpoint) {
-            return InboundEPBuilder.inboundEndpoint(name, configHolder, this, inboundEndpoint);
-        }
+//        public InboundEPBuilder inboundEndpoint(String name, InboundEndpoint inboundEndpoint) {
+//            return InboundEPBuilder.inboundEndpoint(name, configHolder, this, inboundEndpoint);
+//        }
 
         /* For Outbound */
-        public OutboundEndpointBuilder outboundEndpoint(OutboundEndpoint outboundEndpoint) {
-            return OutboundEndpointBuilder.outboundEndpoint(outboundEndpoint, configHolder);
-        }
+//        public OutboundEndpointBuilder outboundEndpoint(OutboundEndpoint outboundEndpoint) {
+//            return OutboundEndpointBuilder.outboundEndpoint(outboundEndpoint, configHolder);
+//        }
 
         /* For Pipeline */
-        public PipelineBuilder pipeline(String name) {
-            return PipelineBuilder.pipeline(name, configHolder);
-        }
+//        public PipelineBuilder pipeline(String name) {
+//            return PipelineBuilder.pipeline(name, configHolder);
+//        }
 
     }
 
