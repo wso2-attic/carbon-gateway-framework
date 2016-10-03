@@ -85,8 +85,6 @@ public class InboundEPServiceComponent implements RequiredCapabilityListener {
     )
     protected void addInboundProvider(Provider inboundEndpointProvider) {
         InboundEPProviderRegistry.getInstance().registerInboundEPProvider(inboundEndpointProvider);
-        IntegrationConfigRegistry.getInstance()
-                .registerObserver((ConfigRegistryObserver) inboundEndpointProvider.getInboundEndpointDispatcher());
     }
 
     protected void removeInboundProvider(Provider inboundEndpointProvider) {
