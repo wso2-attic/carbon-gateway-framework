@@ -32,6 +32,11 @@ import org.wso2.carbon.gateway.core.config.dsl.external.StringParserUtil;
 import org.wso2.carbon.gateway.core.config.dsl.external.WUMLConfigurationBuilder;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLBaseListener;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLParser;
+import org.wso2.carbon.gateway.core.exception.ChildExceptionHandler;
+import org.wso2.carbon.gateway.core.exception.ConnectionClosedExceptionHandler;
+import org.wso2.carbon.gateway.core.exception.ConnectionFailedExceptionHandler;
+import org.wso2.carbon.gateway.core.exception.ConnectionTimeoutExceptionHandler;
+import org.wso2.carbon.gateway.core.exception.GeneralExceptionHandler;
 import org.wso2.carbon.gateway.core.flow.AbstractFlowController;
 import org.wso2.carbon.gateway.core.flow.Mediator;
 import org.wso2.carbon.gateway.core.flow.MediatorProviderRegistry;
@@ -39,6 +44,7 @@ import org.wso2.carbon.gateway.core.flow.Resource;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.Condition;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.FilterMediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.Source;
+import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.TryBlockMediator;
 import org.wso2.carbon.gateway.core.flow.templates.uri.URITemplate;
 import org.wso2.carbon.gateway.core.flow.templates.uri.URITemplateException;
 import org.wso2.carbon.gateway.core.inbound.InboundEPProviderRegistry;
@@ -457,24 +463,6 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
-    public void enterCatchClause(WUMLParser.CatchClauseContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void exitCatchClause(WUMLParser.CatchClauseContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
     public void enterLocalVariableDeclarationStatement(WUMLParser.LocalVariableDeclarationStatementContext ctx) {
     }
 
@@ -710,6 +698,75 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         this.flowControllerMediatorSection.pop();
     }
 
+
+    /* Try-catch parsing */
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override public void enterTryClause(WUMLParser.TryClauseContext ctx) {
+        TryBlockMediator tryBlockMediator = new TryBlockMediator();
+        dropMediatorFilterAware(tryBlockMediator);
+        flowControllerStack.push(tryBlockMediator);
+        this.flowControllerMediatorSection.push(FlowControllerMediatorSection.tryBlock);
+    }
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override public void exitTryClause(WUMLParser.TryClauseContext ctx) {
+        this.flowControllerMediatorSection.pop();
+    }
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override public void exitExceptionHandler(WUMLParser.ExceptionHandlerContext ctx) {
+        String exceptionType = ((java.util.ArrayList) ((WUMLParser.ExceptionTypeContext) ctx.children.get(0)).children)
+                .get(0).toString();
+
+        ChildExceptionHandler childExceptionHandler = null;
+
+        switch (exceptionType) {
+        case Constants.CONN_CLOSED_EX:
+            childExceptionHandler = new ConnectionClosedExceptionHandler();
+            break;
+        case Constants.CONN_FAILED_EX:
+            childExceptionHandler = new ConnectionFailedExceptionHandler();
+            break;
+        case Constants.CONN_TIMEOUT_EX:
+            childExceptionHandler = new ConnectionTimeoutExceptionHandler();
+            break;
+        case Constants.DEFAULT_EX:
+            childExceptionHandler = new GeneralExceptionHandler();
+            break;
+        default:
+            break;
+        }
+        ((TryBlockMediator) flowControllerStack.peek()).pushHandler(childExceptionHandler);
+        this.flowControllerMediatorSection.push(FlowControllerMediatorSection.catchBlock);
+    }
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override public void exitCatchClause(WUMLParser.CatchClauseContext ctx) {
+        this.flowControllerMediatorSection.pop();
+    }
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override public void exitTryCatchBlock(WUMLParser.TryCatchBlockContext ctx) {
+        this.flowControllerStack.pop();
+    }
+
+    /* Util methods */
     /**
      * Use correct mediation flow to place the mediator when filter mediator is present
      *
@@ -725,8 +782,10 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
                 ((FilterMediator) flowControllerStack.peek()).addOtherwiseMediator(mediator);
                 break;
             case tryBlock:
+                ((TryBlockMediator) flowControllerStack.peek()).addThenMediator(mediator);
                 break;
             case catchBlock:
+                ((TryBlockMediator) flowControllerStack.peek()).peekExceptionHandlers().addChildMediator(mediator);
                 break;
             }
         } else {

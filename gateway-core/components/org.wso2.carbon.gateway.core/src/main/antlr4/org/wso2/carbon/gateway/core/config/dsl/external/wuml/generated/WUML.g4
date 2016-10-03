@@ -193,7 +193,7 @@ blockStatement
 
 // try catch definition
 tryCatchBlock
-    :   tryClause   catchClause
+    :   tryClause   catchClause+
     ;
 
 tryClause
@@ -201,7 +201,18 @@ tryClause
     ;
 
 catchClause
-    :   'catch' '(' 'exception' Identifier ')' block
+    :   'catch' '(' exceptionHandler ')' block
+    ;
+
+exceptionHandler
+    :   exceptionType   Identifier
+    ;
+
+exceptionType   //Identifier can be added to give custom exception handling
+    : 'ConnectionClosedException'
+    | 'ConnectionFailedException'
+    | 'ConnectionTimeoutException'
+    | 'Exception'  //default exception
     ;
 
 // if else definition

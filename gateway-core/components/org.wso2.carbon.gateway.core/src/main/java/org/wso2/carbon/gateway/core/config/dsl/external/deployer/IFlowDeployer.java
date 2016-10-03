@@ -177,7 +177,7 @@ public class IFlowDeployer implements Deployer {
             //                ConfigRegistry.getInstance().addGWConfig(configHolder);
             //            }
 
-        } catch (IOException e) {
+        }  catch (IOException e) {
             logger.error("Error while creating Cheetah object model", e);
         } finally {
             if (inputStream != null) {
