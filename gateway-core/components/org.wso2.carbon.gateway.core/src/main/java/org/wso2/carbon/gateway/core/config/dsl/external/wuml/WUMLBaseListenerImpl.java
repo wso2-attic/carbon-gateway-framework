@@ -32,6 +32,7 @@ import org.wso2.carbon.gateway.core.config.dsl.external.StringParserUtil;
 import org.wso2.carbon.gateway.core.config.dsl.external.WUMLConfigurationBuilder;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLBaseListener;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLParser;
+import org.wso2.carbon.gateway.core.flow.AbstractFlowController;
 import org.wso2.carbon.gateway.core.flow.Mediator;
 import org.wso2.carbon.gateway.core.flow.MediatorProviderRegistry;
 import org.wso2.carbon.gateway.core.flow.Resource;
@@ -49,6 +50,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Stack;
 import java.util.regex.Pattern;
 
 /**
@@ -60,14 +62,13 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     private String integrationName;
     private Resource currentResource;
     // Temporary reference for the currently processing filter mediator
-    private FilterMediator filterMediator;
-    private Boolean ifBlockOpened;
-    private Boolean elseBlockOpened;
+    private Stack<AbstractFlowController> flowControllerStack;
+    private Stack<FlowControllerMediatorSection> flowControllerMediatorSection;
 
     public WUMLBaseListenerImpl(String fileName) {
-        this.ifBlockOpened = false;
-        this.elseBlockOpened = false;
         this.integrationName = fileName;
+        this.flowControllerStack = new Stack<>();
+        this.flowControllerMediatorSection = new Stack<>();
     }
 
     public WUMLConfigurationBuilder.IntegrationFlow getIntegrationFlow() {
@@ -677,37 +678,36 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
                 Condition condition = new Condition(source, Pattern.compile(conditionValue));
 
-                filterMediator = new FilterMediator(condition);
+                FilterMediator filterMediator = new FilterMediator(condition);
+                dropMediatorFilterAware(filterMediator);
+                flowControllerStack.push(filterMediator);
+                this.flowControllerMediatorSection.push(FlowControllerMediatorSection.ifBlock);
             }
         }
     }
 
     @Override
     public void exitIfElseBlock(WUMLParser.IfElseBlockContext ctx) {
-        this.elseBlockOpened = false;
-        this.ifBlockOpened = false;
-        dropMediatorFilterAware(filterMediator);
+        this.flowControllerStack.pop();
     }
 
     @Override
     public void enterIfBlock(WUMLParser.IfBlockContext ctx) {
-        this.elseBlockOpened = false;
-        this.ifBlockOpened = true;
     }
 
     @Override
     public void exitIfBlock(WUMLParser.IfBlockContext ctx) {
-        this.ifBlockOpened = false;
+        this.flowControllerMediatorSection.pop();
     }
 
     @Override
     public void enterElseBlock(WUMLParser.ElseBlockContext ctx) {
-        this.ifBlockOpened = false;
-        this.elseBlockOpened = true;
+        this.flowControllerMediatorSection.push(FlowControllerMediatorSection.elseBlock);
     }
 
     @Override
     public void exitElseBlock(WUMLParser.ElseBlockContext ctx) {
+        this.flowControllerMediatorSection.pop();
     }
 
     /**
@@ -716,15 +716,26 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
      * @param mediator
      */
     private void dropMediatorFilterAware(Mediator mediator) {
-        if (ifBlockOpened) {
-            filterMediator.addThenMediator(mediator);
-
-        } else if (elseBlockOpened) {
-            filterMediator.addOtherwiseMediator(mediator);
-
+        if (!flowControllerMediatorSection.empty()) {
+            switch (flowControllerMediatorSection.peek()) {
+            case ifBlock:
+                ((FilterMediator) flowControllerStack.peek()).addThenMediator(mediator);
+                break;
+            case elseBlock:
+                ((FilterMediator) flowControllerStack.peek()).addOtherwiseMediator(mediator);
+                break;
+            case tryBlock:
+                break;
+            case catchBlock:
+                break;
+            }
         } else {
             this.currentResource.getDefaultWorker().addMediator(mediator);
         }
+    }
+
+    enum FlowControllerMediatorSection {
+        ifBlock, elseBlock, tryBlock, catchBlock
     }
 
 }
