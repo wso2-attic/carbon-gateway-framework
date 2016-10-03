@@ -26,6 +26,8 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.gateway.core.config.ConfigRegistryObserver;
+import org.wso2.carbon.gateway.core.config.IntegrationConfigRegistry;
 import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
 
 
@@ -83,6 +85,8 @@ public class InboundEPServiceComponent implements RequiredCapabilityListener {
     )
     protected void addInboundProvider(Provider inboundEndpointProvider) {
         InboundEPProviderRegistry.getInstance().registerInboundEPProvider(inboundEndpointProvider);
+        IntegrationConfigRegistry.getInstance()
+                .registerObserver((ConfigRegistryObserver) inboundEndpointProvider.getInboundEndpointDispatcher());
     }
 
     protected void removeInboundProvider(Provider inboundEndpointProvider) {

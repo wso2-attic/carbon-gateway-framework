@@ -26,9 +26,9 @@ public abstract class WUMLConfigurationBuilder {
 
     public abstract IntegrationFlow configure();
 
-//    public IntegrationFlow integrationFlow(String name) {
-//        return new IntegrationFlow(name);
-//    }
+    public IntegrationFlow integrationFlow(String name) {
+        return new IntegrationFlow();
+    }
 
     /**
      * ESB Configuration Builder

@@ -30,13 +30,13 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  * subscribed to the Config Registry
  */
 @Component(
-        name = "IntegrationConfigRegistryServiceComponent",
+        name = "ConfigRegistryServiceComponent",
         immediate = true
 )
 public class ConfigRegistryServiceComponent {
 
     @Reference(
-            name = "IntegrationConfigRegistry-Observer-Service",
+            name = "ConfigRegistry-Observer-Service",
             service = ConfigRegistryObserver.class,
             cardinality = ReferenceCardinality.OPTIONAL,
             policy = ReferencePolicy.DYNAMIC,

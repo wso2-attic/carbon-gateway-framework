@@ -24,7 +24,6 @@ import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.TypeConver
 import org.wso2.carbon.gateway.core.inbound.InboundEPDeployer;
 import org.wso2.carbon.gateway.core.inbound.InboundEPProviderRegistry;
 import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
-import org.wso2.carbon.gateway.core.inbound.Provider;
 import org.wso2.carbon.gateway.core.outbound.OutboundEndpoint;
 
 import java.util.ArrayList;
@@ -50,8 +49,8 @@ public class IntegrationConfigRegistry {
     private Map<String, Integration> configurations = new HashMap<>();
 
     private IntegrationConfigRegistry() {
-        Provider provider = InboundEPProviderRegistry.getInstance().getProvider("http");
-        observers.add((ConfigRegistryObserver) provider.getInboundEndpointDispatcher());
+//        Provider provider = InboundEPProviderRegistry.getInstance().getProvider("http");
+//        observers.add((ConfigRegistryObserver) provider.getInboundEndpointDispatcher());
     }
 
     public static IntegrationConfigRegistry getInstance() {
