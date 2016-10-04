@@ -643,6 +643,30 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     }
 
     /**
+     * Handle custom mediator statements
+     */
+    @Override public void exitCustomMediatorCall(WUMLParser.CustomMediatorCallContext ctx) {
+        /* Proceed only of the configuration is valid */
+        if (ctx.getChildCount() == 7) {
+            String mediatorName = ctx.Identifier().get(0).getText();
+            String messageId = ctx.Identifier().get(1).getText();
+            String configurations = StringParserUtil.getValueWithinDoubleQuotes(ctx.StringLiteral().getText());
+            Mediator mediator = MediatorProviderRegistry.getInstance().getMediator(mediatorName);
+
+            if (mediator != null) {
+                ParameterHolder parameterHolder = new ParameterHolder();
+                parameterHolder.addParameter(new Parameter("parameters", configurations));
+                parameterHolder.addParameter(new Parameter("message", messageId));
+
+                mediator.setParameters(parameterHolder);
+                dropMediatorFilterAware(mediator);
+            } else {
+                log.warn("Mediator with the name :" + mediatorName + "not found.");
+            }
+        }
+    }
+
+    /**
      * Filter Mediator Handling
      */
     @Override

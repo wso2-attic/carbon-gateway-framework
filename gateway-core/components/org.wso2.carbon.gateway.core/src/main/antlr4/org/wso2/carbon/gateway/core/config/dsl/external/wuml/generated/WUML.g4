@@ -186,7 +186,7 @@ blockStatement
     |   localVaribaleAssignmentStatement    //  eg: i =45; msgModification mediators also falls under this
     |   messageModificationStatement    //  eg: response.setHeader(HTTP.StatusCode, 500);
     |   returnStatement //  eg: reply response;
-    |   logMediatorStatement // readonly mediator : log("my_message");
+    |   logMediatorStatement // read only mediator : log("my_message");
     |   tryCatchBlock   // flowControl Mediator
     |   ifElseBlock // flowControl Mediator
     ;
@@ -254,13 +254,14 @@ newTypeObjectCreation
     : classType? Identifier '=' 'new' classType '('   ')'   ';'
     ;
 
-//mediator calls (TODO: Add custom mediator support here)
+//mediator calls
 mediatorCall
     :  Identifier '='
     (   invokeMediatorCall
     |   sendToMediatorCall
     |   dataMapMediatorCall
     |   receiveFromMediatorCall
+    |   customMediatorCall
     )
     ;
 
@@ -278,6 +279,10 @@ dataMapMediatorCall
 
 receiveFromMediatorCall
     :   'receiveFrom' '(' Identifier ',' Identifier ')'
+    ;
+
+customMediatorCall
+    :   Identifier '.mediator' '(' Identifier ( ',' StringLiteral )? ')'
     ;
 
 logMediatorCall
