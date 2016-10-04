@@ -125,7 +125,7 @@ public class IFlowDeployer implements Deployer {
 
     @Override
     public void undeploy(Object o) throws CarbonDeploymentException {
-        Integration configHolder = artifactMap.remove((String) o);
+        Integration configHolder = IntegrationConfigRegistry.getInstance().getIntegrationConfig((String) o);
         IntegrationConfigRegistry.getInstance().removeIntegrationConfig(configHolder);
     }
 
