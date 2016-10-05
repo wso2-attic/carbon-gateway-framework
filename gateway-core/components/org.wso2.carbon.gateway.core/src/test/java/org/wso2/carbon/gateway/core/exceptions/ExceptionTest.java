@@ -45,16 +45,16 @@ public class ExceptionTest {
                 .thenReturn(mock(ConnectionTimeoutException.class));
 
         // try block mediator that cannot handle the exception
-        Mediator tryBlockMediatorCant = mock(TryBlockMediator.class);
-        when(((TryBlockMediator) tryBlockMediatorCant).hasExceptionHandler())
+        Mediator tryBlockMediatorCannot = mock(TryBlockMediator.class);
+        when(((TryBlockMediator) tryBlockMediatorCannot).hasExceptionHandler())
                 .thenReturn(true).thenReturn(false);
-        when(((TryBlockMediator) tryBlockMediatorCant).popHandler()).thenReturn(new CustomExceptionHandler());
+        when(((TryBlockMediator) tryBlockMediatorCannot).popHandler()).thenReturn(new CustomExceptionHandler());
 
         DefaultExceptionHandler defaultExceptionHandler = mock(DefaultExceptionHandler.class);
 
         // chain with can't handle scenario
         CarbonCallback handleException1 = new FlowControllerExceptionCallback(carbonCallback,
-                tryBlockMediatorCant, variableStack, defaultExceptionHandler);
+                tryBlockMediatorCannot, variableStack, defaultExceptionHandler);
         new FlowControllerMediateCallback(handleException1, mediator, variableStack).done(faultyCarbonMessage);
 
         verify(defaultExceptionHandler, times(1)).handleException(
@@ -75,23 +75,23 @@ public class ExceptionTest {
                 .thenReturn(mock(ConnectionTimeoutException.class));
 
         // try block mediator that cannot handle the exception
-        Mediator tryBlockMediatorCant = mock(TryBlockMediator.class);
-        when(((TryBlockMediator) tryBlockMediatorCant).hasExceptionHandler())
+        Mediator tryBlockMediatorCannot = mock(TryBlockMediator.class);
+        when(((TryBlockMediator) tryBlockMediatorCannot).hasExceptionHandler())
                 .thenReturn(true).thenReturn(false);
-        when(((TryBlockMediator) tryBlockMediatorCant).popHandler()).thenReturn(new CustomExceptionHandler());
+        when(((TryBlockMediator) tryBlockMediatorCannot).popHandler()).thenReturn(new CustomExceptionHandler());
 
         // try block mediator that cannot handle the exception
-        Mediator tryBlockMediatorCant1 = mock(TryBlockMediator.class);
-        when(((TryBlockMediator) tryBlockMediatorCant1).hasExceptionHandler())
+        Mediator tryBlockMediatorCannot1 = mock(TryBlockMediator.class);
+        when(((TryBlockMediator) tryBlockMediatorCannot1).hasExceptionHandler())
                 .thenReturn(true).thenReturn(false);
-        when(((TryBlockMediator) tryBlockMediatorCant1).popHandler()).thenReturn(new CustomExceptionHandler());
+        when(((TryBlockMediator) tryBlockMediatorCannot1).popHandler()).thenReturn(new CustomExceptionHandler());
 
         DefaultExceptionHandler defaultExceptionHandler = mock(DefaultExceptionHandler.class);
 
         // chain with can't handle scenario
         CarbonCallback handleException1 = new FlowControllerExceptionCallback(carbonCallback,
-                tryBlockMediatorCant1, variableStack, defaultExceptionHandler);
-        new FlowControllerExceptionCallback(handleException1, tryBlockMediatorCant, variableStack,
+                tryBlockMediatorCannot1, variableStack, defaultExceptionHandler);
+        new FlowControllerExceptionCallback(handleException1, tryBlockMediatorCannot, variableStack,
                 mock(DefaultExceptionHandler.class)).done(faultyCarbonMessage);
 
         verify(defaultExceptionHandler, times(1)).handleException(
