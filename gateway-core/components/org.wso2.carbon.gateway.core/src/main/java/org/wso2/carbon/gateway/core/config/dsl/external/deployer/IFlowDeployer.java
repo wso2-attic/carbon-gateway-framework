@@ -46,8 +46,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+
+import static org.wso2.carbon.gateway.core.Constants.EMPTY_STRING;
 
 /**
  * A class responsible for read the .iflow files and deploy them to the runtime Object model.
@@ -63,7 +63,6 @@ public class IFlowDeployer implements Deployer {
     private static final Logger logger = LoggerFactory.getLogger(IFlowDeployer.class);
     private ArtifactType artifactType;
     private URL directoryLocation;
-    private Map<String, Integration> artifactMap = new HashMap<>();
 
     @Activate
     protected void activate(BundleContext bundleContext) {
@@ -125,12 +124,16 @@ public class IFlowDeployer implements Deployer {
 
     @Override
     public void undeploy(Object o) throws CarbonDeploymentException {
-        Integration configHolder = IntegrationConfigRegistry.getInstance().getIntegrationConfig((String) o);
-        IntegrationConfigRegistry.getInstance().removeIntegrationConfig(configHolder);
+        Integration configHolder = IntegrationConfigRegistry.getInstance()
+                .getIntegrationConfig(((String) o).replace(FILE_EXTENSION, EMPTY_STRING));
+        if (configHolder != null) {
+            IntegrationConfigRegistry.getInstance().removeIntegrationConfig(configHolder);
+        }
     }
 
     @Override
     public Object update(Artifact artifact) throws CarbonDeploymentException {
+        undeploy(artifact.getKey());
         updateESBConfig(artifact);
         return artifact.getFile().getName();
     }
@@ -152,31 +155,26 @@ public class IFlowDeployer implements Deployer {
             File file = artifact.getFile();
             inputStream = new FileInputStream(file);
 
-            CharStream cs = new ANTLRInputStream(inputStream);
+            if (file.getName().endsWith(FILE_EXTENSION)) {
+                String integrationName = file.getName().replace(FILE_EXTENSION, EMPTY_STRING);
 
-            // Passing the input to the lexer to create tokens
-            WUMLLexer lexer = new WUMLLexer(cs);
+                CharStream cs = new ANTLRInputStream(inputStream);
 
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
+                // Passing the input to the lexer to create tokens
+                WUMLLexer lexer = new WUMLLexer(cs);
 
-            // Passing the tokens to the parser to create the parse trea.
-            WUMLParser parser = new WUMLParser(tokens);
+                CommonTokenStream tokens = new CommonTokenStream(lexer);
 
-            // Adding the listener to facilitate walking through parse tree.
-            WUMLBaseListenerImpl wumlBaseListener = new WUMLBaseListenerImpl(
-                    file.getName().replace(FILE_EXTENSION, ""));
+                // Passing the tokens to the parser to create the parse trea.
+                WUMLParser parser = new WUMLParser(tokens);
 
-            parser.addParseListener(wumlBaseListener);
-            parser.sourceFile();
-            //
-            //            WUMLConfigurationBuilder.IntegrationFlow integrationFlow = wumlBaseListener.
-            // getIntegrationFlow();
-            //            GWConfigHolder configHolder = integrationFlow.getGWConfigHolder();
-            //            if (configHolder != null) {
-            //                artifactMap.put(file.getName(), configHolder);
-            //                ConfigRegistry.getInstance().addGWConfig(configHolder);
-            //            }
+                // Adding the listener to facilitate walking through parse tree.
+                WUMLBaseListenerImpl wumlBaseListener = new WUMLBaseListenerImpl(integrationName);
 
+                parser.addParseListener(wumlBaseListener);
+                parser.sourceFile();
+
+            }
         }  catch (IOException e) {
             logger.error("Error while creating Cheetah object model", e);
         } finally {
