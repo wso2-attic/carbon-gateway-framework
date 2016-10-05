@@ -185,9 +185,9 @@
                 <version>${carbon.kernel.version}</version>
             </dependency>
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>${testng.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -405,6 +405,7 @@
         <commons.io.version>2.0</commons.io.version>
         <rx.java.version>1.2.0.wso2v1</rx.java.version>
         <org.wso2.rx.java.version>0.20.7.wso2v1</org.wso2.rx.java.version>
+        <testng.version>6.9.10</testng.version>
     </properties>
 
     <modules>
