@@ -31,6 +31,5 @@ public class ${mediator_name}Builder {
         m.setLogMessage(message);
         return m;
     }
-
 }
 
