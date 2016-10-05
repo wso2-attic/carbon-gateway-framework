@@ -51,9 +51,9 @@ public class ExceptionTest {
         DefaultExceptionHandler defaultExceptionHandler = mock(DefaultExceptionHandler.class);
 
         // chain with can't handle scenario
-        CarbonCallback handleException1 = new FlowControllerExceptionCallback(carbonCallback,
+        CarbonCallback handleException = new FlowControllerExceptionCallback(carbonCallback,
                 tryBlockMediatorCannot, variableStack, defaultExceptionHandler);
-        new FlowControllerMediateCallback(handleException1, mediator, variableStack).done(faultyCarbonMessage);
+        new FlowControllerMediateCallback(handleException, mediator, variableStack).done(faultyCarbonMessage);
 
         verify(defaultExceptionHandler, times(1)).handleException(faultyCarbonMessage, carbonCallback);
     }
