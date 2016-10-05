@@ -1,6 +1,6 @@
 package org.wso2.carbon.gateway.core.exceptions;
 
-import org.junit.Test;
+import org.testng.annotations.Test;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.exception.ConnectionClosedException;
 import org.wso2.carbon.gateway.core.exception.ConnectionTimeoutException;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
  */
 public class ExceptionTest {
 
-    @Test
+    @Test(description = "Test the behaviour when there is no child exception handler")
     public void chainingMediationAndExceptionCallbackTest() {
 
         // Netty Callback
@@ -58,7 +58,7 @@ public class ExceptionTest {
         verify(defaultExceptionHandler, times(1)).handleException(faultyCarbonMessage, carbonCallback);
     }
 
-    @Test
+    @Test(description = "Test weather exception handling works with nested try catch block")
     public void chainingTwoExceptionCallbackTest() {
 
         // Netty Callback
@@ -91,7 +91,7 @@ public class ExceptionTest {
         verify(defaultExceptionHandler, times(1)).handleException(faultyCarbonMessage, carbonCallback);
     }
 
-    @Test
+    @Test(description = "Test the scenario of having a correct child exception handler")
     public void tryBlockTest() {
         CarbonCallback carbonCallback = mock(CarbonCallback.class);
         Stack variableStack = mock(Stack.class);
@@ -119,7 +119,7 @@ public class ExceptionTest {
         verify(conectionTimeoutExceptionHandler, times(1)).handleException(faultyCarbonMessage, carbonCallback);
     }
 
-    @Test
+    @Test(description = "Test weather canHandle method returns correct value")
     public void connectionTimeoutExceptionHandlerTest() {
         ConnectionTimeoutException connectionTimeoutException = mock(ConnectionTimeoutException.class);
         ConnectionTimeoutExceptionHandler exHandler = new ConnectionTimeoutExceptionHandler();
@@ -129,7 +129,7 @@ public class ExceptionTest {
         assertFalse(exHandler.canHandle(connectionClosedException));
     }
 
-    @Test
+    @Test(description = "Test the scenario that includes a mediator after the correct tryblock mediator")
     public void mediatorAfterTryBlockMediatorTest() throws Exception {
         Resource resource = new Resource("TestResource");
 
