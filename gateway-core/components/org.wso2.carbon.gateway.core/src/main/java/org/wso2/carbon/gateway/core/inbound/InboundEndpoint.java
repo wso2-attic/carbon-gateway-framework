@@ -38,8 +38,6 @@ public abstract class InboundEndpoint {
 
     private String pipeline;
 
-//    private String gwConfigName;
-
     public String getName() {
         return name;
     }
@@ -81,7 +79,6 @@ public abstract class InboundEndpoint {
         for (Resource r : IntegrationConfigRegistry.getInstance().getIntegrationConfig(configName)
                 .getResources().values()) {
 
-//            EndpointTrigger t = (EndpointTrigger) r.getAnnotation(ConfigConstants.AN_TRIGGER).getValue();
             if (r.matches(cMsg)) {
                 resource = r;
                 break;

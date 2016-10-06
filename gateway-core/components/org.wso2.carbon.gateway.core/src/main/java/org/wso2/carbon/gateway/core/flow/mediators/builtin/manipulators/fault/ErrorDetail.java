@@ -27,7 +27,6 @@ public class ErrorDetail {
     private String code;
     private String reason;
 
-
     public String getCode() {
         return code;
     }

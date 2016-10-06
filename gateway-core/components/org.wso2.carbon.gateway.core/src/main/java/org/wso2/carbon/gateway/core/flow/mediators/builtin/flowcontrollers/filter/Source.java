@@ -23,13 +23,11 @@ package org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filt
  */
 public class Source {
 
-
     private Scope scope;
 
     private String key;
 
     private String value;
-
 
     public Source(String key, Scope scope) {
         this.scope = scope;
