@@ -145,6 +145,22 @@
                 <type>zip</type>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.gateway.mediators</groupId>
+                <artifactId>org.wso2.carbon.gateway.mediators.datamapper</artifactId>
+                <version>${carbon.gw.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.gateway.mediators</groupId>
+                <artifactId>org.wso2.carbon.gateway.mediators.datamapper.engine</artifactId>
+                <version>${carbon.gw.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.gateway.mediators</groupId>
+                <artifactId>org.wso2.carbon.gateway.mediators.datamapper.feature</artifactId>
+                <version>${carbon.gw.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
                 <version>${osgi.api.version}</version>
@@ -265,6 +281,31 @@
                 <artifactId>org.wso2.carbon.transport.http.netty</artifactId>
                 <version>${carbon.transport.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.json.wso2</groupId>
+                <artifactId>json</artifactId>
+                <version>${orbit.version.json}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${fasterxml.jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${fasterxml.jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${fasterxml.jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.googlecode.json-simple</groupId>
+                <artifactId>json-simple</artifactId>
+                <version>${json.simple.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -313,7 +354,7 @@
                                 <failsOnError>true</failsOnError>
                                 <includeTestSourceDirectory>true</includeTestSourceDirectory>
                                 <!--Exclude generated sources-->
-                                <excludes>**/generated/**/*</excludes>
+                                <excludes>**/generated/**/*,**/datamapper/**/*</excludes>
                             </configuration>
                             <goals>
                                 <goal>check</goal>
@@ -405,6 +446,10 @@
         <commons.io.version>2.0</commons.io.version>
         <rx.java.version>1.2.0.wso2v1</rx.java.version>
         <testng.version>6.9.10</testng.version>
+
+        <orbit.version.json>2.0.0.wso2v1</orbit.version.json>
+        <fasterxml.jackson.version>2.6.1.wso2v1</fasterxml.jackson.version>
+        <json.simple.version>1.1.1</json.simple.version>
     </properties>
 
     <modules>

@@ -63,6 +63,8 @@ public class Constants {
     public static final String MEDIA_TYPE_APPLICATION_ECHO_XML = "application/echo+xml";
     public static final String MEDIA_TYPE_APPLICATION_JSON = "application/json";
     public static final String MEDIA_TYPE_APPLICATION_JWT = "application/jwt";
+    public static final String JSON = "json";
+    public static final String XML = "xml";
 
     public static final String APPLICATION_XML_BUILDER_ALLOW_DTD = "application.xml.builder.allow.DTD";
 
