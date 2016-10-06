@@ -109,17 +109,6 @@ public class Resource {
         return defaultWorker;
     }
 
-    //   private EndpointTrigger getTriggerInstance(InboundEndpoint source, String condition, URITemplate uriTemplate) {
-    //        String protocol = source.getProtocol();
-    //
-    //        switch (protocol) {
-    //        case "HTTP":
-    //            return new HTTPEndpointTrigger(source, condition, uriTemplate);
-    //        default:
-    //            return new HTTPEndpointTrigger(source, condition, uriTemplate);
-    //        }
-    //    }
-
     public boolean matches(CarbonMessage cMsg) {
         if (!isTemplateMatching(cMsg)) {
             return false;

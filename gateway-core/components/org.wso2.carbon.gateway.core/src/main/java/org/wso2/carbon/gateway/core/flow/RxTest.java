@@ -1,7 +1,6 @@
 package org.wso2.carbon.gateway.core.flow;
 
 
-import org.wso2.carbon.gateway.core.config.IntegrationConfigHolder;
 import org.wso2.carbon.gateway.core.config.Parameter;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.invokers.Fork;
@@ -21,8 +20,6 @@ import java.util.List;
  */
 public class RxTest {
 
-    private static IntegrationConfigHolder ich = new IntegrationConfigHolder("RxTest");
-
     private Resource resource;
     private Worker cars;
     private Worker hotels;
@@ -40,7 +37,6 @@ public class RxTest {
 
     public RxTest() {
         resource = new Resource("resource");
-        ich.addWorker(resource.getDefaultWorker());
     }
 
     public void run() {
@@ -128,10 +124,6 @@ public class RxTest {
         hotelMediators.addMediator(hotelsSleep);
         hotelMediators.addMediator(hotelsLogDone);
         hotels = new Worker("hotels", hotelMediators);
-
-        // Add car + hotel worker to IntegrationConfigHolder
-        ich.addWorker(cars);
-        ich.addWorker(hotels);
 
         List<Worker> workers = new ArrayList<>();
         workers.add(cars);
