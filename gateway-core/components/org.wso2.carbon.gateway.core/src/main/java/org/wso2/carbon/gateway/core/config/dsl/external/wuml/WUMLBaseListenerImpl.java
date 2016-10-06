@@ -750,6 +750,8 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
      */
     @Override public void exitExceptionHandler(WUMLParser.ExceptionHandlerContext ctx) {
 
+        /* 0th element in the ctx is the exceptionType tag and 0th element of the of exceptionType tag
+        * is the name of the exception. This conditional statement is applied to avoid user errors. */
         if (ctx.getChild(0) != null && ctx.getChild(0).getChild(0) != null) {
 
             String exceptionType = ((java.util.ArrayList) ((WUMLParser.ExceptionTypeContext) ctx.children
