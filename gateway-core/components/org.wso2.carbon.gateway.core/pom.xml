@@ -94,11 +94,6 @@
             <groupId>org.apache.ws.commons.axiom</groupId>
             <artifactId>axiom-dom</artifactId>
         </dependency>
-        <!-- Orbit rxJava Dependency until its added -->
-        <!--<dependency>-->
-            <!--<groupId>org.wso2.com.netflix.rxjava</groupId>-->
-            <!--<artifactId>rxJava</artifactId>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.wso2.orbit.io.reactivex</groupId>
             <artifactId>rxjava</artifactId>
