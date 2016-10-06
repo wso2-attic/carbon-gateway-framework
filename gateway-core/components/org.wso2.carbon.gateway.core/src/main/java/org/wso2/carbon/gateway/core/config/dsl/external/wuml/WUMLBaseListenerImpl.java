@@ -613,6 +613,7 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
         ParameterHolder parameterHolder = new ParameterHolder();
         parameterHolder.addParameter(new Parameter("endpointKey", ctx.Identifier().get(0).getText()));
+        parameterHolder.addParameter(new Parameter("integrationKey", integrationName));
 
         callMediator.setParameters(parameterHolder);
 
