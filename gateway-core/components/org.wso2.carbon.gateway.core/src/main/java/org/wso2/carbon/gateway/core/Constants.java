@@ -131,4 +131,12 @@ public class Constants {
     public static final String CONN_TIMEOUT_EX = "ConnectionTimeoutException";
 
     public static final String DEFAULT_EX = "Exception";
+    
+    
+    /* DataMapper mediation parameters names */
+    public static final String INPUT_TYPE = "input-type";
+    public static final String OUTPUT_TYPE = "output-type";
+    public static final String INPUT_SCHEMA = "input-schema";
+    public static final String OUTPUT_SCHEMA = "output-schema";
+    public static final String CONFIG = "config";
 }

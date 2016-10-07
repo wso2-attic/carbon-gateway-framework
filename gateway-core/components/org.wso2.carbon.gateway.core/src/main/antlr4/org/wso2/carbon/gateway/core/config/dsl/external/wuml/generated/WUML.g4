@@ -259,7 +259,6 @@ mediatorCall
     :  Identifier '='
     (   invokeMediatorCall
     |   sendToMediatorCall
-    |   dataMapMediatorCall
     |   receiveFromMediatorCall
     |   customMediatorCall
     )
@@ -271,10 +270,6 @@ invokeMediatorCall
 
 sendToMediatorCall
     :   'sendTo' '(' Identifier ',' Identifier ')'
-    ;
-
-dataMapMediatorCall
-    :   'datamap' '(' literal ',' Identifier ')'
     ;
 
 receiveFromMediatorCall

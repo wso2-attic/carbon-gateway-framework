@@ -66,6 +66,7 @@ public class DataMapperMediator extends AbstractMediator {
     @Override
     public void setParameters(ParameterHolder parameterHolder) {
         try {
+            //PENDING: extracting parameters will change after the custom-mediator implementation is complete.
             Map<String, String> parameters = new HashMap<>();
             String paramString = parameterHolder.getParameter("parameters").getValue();
             String[] paramArray = paramString.split(",");
@@ -94,7 +95,7 @@ public class DataMapperMediator extends AbstractMediator {
             } else {
                 handleException("DataMapper mediator : mapping configuration is not specified");
             }
-
+            
             if (parameters.containsKey(Constants.INPUT_SCHEMA)) {
                 inSchemaKey = parameters.get(Constants.INPUT_SCHEMA);
             } else {
@@ -130,12 +131,12 @@ public class DataMapperMediator extends AbstractMediator {
      */
     private CarbonMessage transform(CarbonMessage cMsg) throws Exception {
         try {
-            //FIXME: can't we read this from a config?
+            //TODO: read this from a config
             String dmExecutorPoolSize = "100";
 
             MappingHandler mappingHandler = new MappingHandler(mappingResource, inputType, outputType,
                     dmExecutorPoolSize);
-            
+
             //execute mapping on the input stream
             String outputResult = mappingHandler.doMap(getPayloadStream(cMsg));
 
