@@ -182,8 +182,8 @@ block
 //Anything that contains inside a block
 blockStatement
     :   localVariableDeclarationStatement   //  eg: int i;
-    |   localVaribaleInitializationStatement    // eg: string endpoint = "my_endpoint";
-    |   localVaribaleAssignmentStatement    //  eg: i =45; msgModification mediators also falls under this
+    |   localVariableInitializationStatement    // eg: string endpoint = "my_endpoint";
+    |   localVariableAssignmentStatement    //  eg: i =45; msgModification mediators also falls under this
     |   messageModificationStatement    //  eg: response.setHeader(HTTP.StatusCode, 500);
     |   returnStatement //  eg: reply response;
     |   logMediatorStatement // read only mediator : log("my_message");
@@ -233,13 +233,13 @@ localVariableDeclarationStatement
     :   (type|classType)    Identifier  ';'
     ;
 
-localVaribaleInitializationStatement
+localVariableInitializationStatement
     :   type    Identifier  '='   literal ';'
-    |   newTypeObjectCreation
+    |   classType newTypeObjectCreation ';'
     |   classType mediatorCall ';' // calling a mediator that will return a message
     ;
 
-localVaribaleAssignmentStatement
+localVariableAssignmentStatement
     :   Identifier  '='   literal ';'
     |   newTypeObjectCreation ';'
     |   mediatorCall ';'
@@ -249,9 +249,9 @@ logMediatorStatement
     :   logMediatorCall ';'
     ;
 
- // this is only used when "message m = new message ();" called
+ // this is only used when "m = new message ()" called
 newTypeObjectCreation
-    : classType? Identifier '=' 'new' classType '('   ')'   ';'
+    : Identifier '=' 'new' classType '('   ')'
     ;
 
 //mediator calls
@@ -337,6 +337,7 @@ type
       |   'long'
       |   'float'
       |   'double'
+      |   'string'
       ;
 
 classType

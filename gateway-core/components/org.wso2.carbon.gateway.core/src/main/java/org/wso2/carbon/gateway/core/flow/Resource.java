@@ -17,10 +17,13 @@ import org.wso2.carbon.gateway.core.flow.templates.uri.URITemplate;
 import org.wso2.carbon.gateway.core.util.VariableUtil;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.DefaultCarbonMessage;
 import rx.Observable;
 
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -35,6 +38,7 @@ public class Resource {
      * Metadata holders
      */
     private String name;
+    private String inputParamIdentifier;
     private Map<String, Annotation> annotations = new HashMap<>();
     private Worker defaultWorker;
     private URITemplate path;
@@ -82,6 +86,13 @@ public class Resource {
 
         Map<String, Observable> observableMap = new LinkedHashMap<>();
         carbonMessage.setProperty("OBSERVABLES", observableMap);
+
+        CarbonMessage inputCarbonMessage = new DefaultCarbonMessage();
+        inputCarbonMessage.setHeaders(carbonMessage.getHeaders().getAll());
+        List<ByteBuffer> messageContent = carbonMessage.getCopyOfFullMessageBody();
+        inputCarbonMessage.addMessageBody(aggregateContent(messageContent));
+
+        VariableUtil.addVariable(carbonMessage, inputParamIdentifier, inputCarbonMessage);
 
         defaultWorker.submit(UUID.randomUUID(), carbonMessage, carbonCallback).subscribe(r -> log.info(
                 "Resource subscribe event " + ((RxContext) r).getId())); // we don't need subscriber to return here?
@@ -132,5 +143,19 @@ public class Resource {
     private void addVariables(CarbonMessage cMsg, Map<String, String> uriVars) {
         uriVars.forEach((k, v) -> VariableUtil
                 .addGlobalVariable(cMsg, k, VariableUtil.createVariable(Constants.TYPES.STRING, v)));
+    }
+
+    public void setInputParamIdentifier(String inputParamIdentifier) {
+        this.inputParamIdentifier = inputParamIdentifier;
+    }
+
+    private ByteBuffer aggregateContent(List<ByteBuffer> byteBufferList) {
+        ByteBuffer newByteBuffer = byteBufferList.get(0);
+        if (newByteBuffer != null) {
+            for (int i = 1; i < byteBufferList.size(); i++) {
+                newByteBuffer.put(byteBufferList.get(i));
+            }
+        }
+        return newByteBuffer;
     }
 }

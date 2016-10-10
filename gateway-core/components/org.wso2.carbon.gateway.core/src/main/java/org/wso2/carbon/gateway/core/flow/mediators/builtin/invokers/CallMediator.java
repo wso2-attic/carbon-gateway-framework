@@ -39,6 +39,8 @@ public class CallMediator extends AbstractMediator implements Invoker {
     private static final Logger log = LoggerFactory.getLogger(CallMediator.class);
     private String outboundEPKey;
     private String integration;
+    private String inputMessageParameter;
+    private String outputMessageParameter;
     private OutboundEndpoint outboundEndpoint;
 
     public CallMediator() {
@@ -55,6 +57,7 @@ public class CallMediator extends AbstractMediator implements Invoker {
     public void setParameters(ParameterHolder parameterHolder) {
         outboundEPKey = parameterHolder.getParameter("endpointKey").getValue();
         integration = parameterHolder.getParameter("integrationKey").getValue();
+        inputMessageParameter = parameterHolder.getParameter("inputMessageParameter").getValue();
     }
 
     @Override

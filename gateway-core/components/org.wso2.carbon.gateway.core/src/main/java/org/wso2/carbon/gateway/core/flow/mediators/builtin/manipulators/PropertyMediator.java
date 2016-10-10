@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Stack;
 
 /**
- * Basic implementation of property mediator to assign variables
+ * Basic implementation of property mediator to declare and assign variables
  */
 public class PropertyMediator extends AbstractMediator {
 
@@ -65,19 +65,14 @@ public class PropertyMediator extends AbstractMediator {
             Stack<Map<String, Object>> variableStack =
                     (Stack<Map<String, Object>>) carbonMessage.getProperty(Constants.VARIABLE_STACK);
 
-            Map<String, Object> map;
-
-            if (assignment) {
-                map = (Map) VariableUtil.getMap(carbonMessage, key);
-                if (map == null) {
-                    map = createAndPushMapIfNotExist(variableStack);
-                }
-                type = VariableUtil.getType(VariableUtil.getVariable(carbonMessage, key));
-                variable = VariableUtil.createVariable(type, value);
-            } else {
+            Map<String, Object> map = (Map) VariableUtil.getMap(carbonMessage, key);
+            if (map == null) {
                 map = createAndPushMapIfNotExist(variableStack);
             }
-
+            if (assignment) {
+                type = VariableUtil.getType(VariableUtil.getVariable(carbonMessage, key));
+            }
+            variable = VariableUtil.createVariable(type, value);
             map.put(key, variable);
 
         } else {
@@ -102,12 +97,15 @@ public class PropertyMediator extends AbstractMediator {
 
     public void setParameters(ParameterHolder parameterHolder) {
         key = parameterHolder.getParameter("key").getValue();
-        value = parameterHolder.getParameter("value").getValue();
-        type = VariableUtil.getType(parameterHolder.getParameter("type").getValue());
+        // value is null when variable declaration
+        value = (parameterHolder.getParameter("value") != null) ?
+                parameterHolder.getParameter("value").getValue() :
+                null;
+        // type is null when variable assignment
+        type = (parameterHolder.getParameter("type") != null) ?
+                VariableUtil.getType(parameterHolder.getParameter("type").getValue()) :
+                null;
         assignment = Boolean.valueOf(parameterHolder.getParameter("assignment").getValue());
-        if (assignment == false) {
-            variable = VariableUtil.createVariable(type, value);
-        }
     }
 
 }
