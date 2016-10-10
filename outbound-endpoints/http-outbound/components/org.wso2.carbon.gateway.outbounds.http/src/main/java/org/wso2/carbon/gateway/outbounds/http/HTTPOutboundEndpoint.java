@@ -55,6 +55,11 @@ public class HTTPOutboundEndpoint extends AbstractOutboundEndpoint {
         cMsg.setProperty(Constants.PORT, port);
         cMsg.setProperty(Constants.TO, urlPath);
 
+        //Check for PROTOCOL property and add if not exist
+        if (cMsg.getProperty(Constants.PROTOCOL) == null) {
+            cMsg.setProperty(Constants.PROTOCOL, org.wso2.carbon.transport.http.netty.common.Constants.PROTOCOL_NAME);
+        }
+
         if (port != 80) {
             cMsg.getHeaders().set(Constants.HOST, host + ":" + port);
         } else {
