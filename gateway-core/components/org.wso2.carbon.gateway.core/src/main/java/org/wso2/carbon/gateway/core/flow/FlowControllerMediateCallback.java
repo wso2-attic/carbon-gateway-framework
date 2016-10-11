@@ -60,9 +60,11 @@ public class FlowControllerMediateCallback implements FlowControllerCallback {
                 } catch (Exception e) {
                     log.error("Error while mediating from Callback", e);
                 }
-            } else if (parentCallback != null) {
+            } else if (parentCallback instanceof FlowControllerCallback) {
                 //If no siblings handover message to the requester
                 parentCallback.done(carbonMessage);
+            } else {
+                log.warn("Chain was completed without sending a response to client");
             }
         } else {
             if (parentCallback instanceof FlowControllerCallback) {
