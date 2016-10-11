@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.gateway.core.flow.mediators.builtin.invokers;
 
+import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.flow.AbstractMediator;
 import org.wso2.carbon.gateway.core.flow.FlowControllerMediateCallback;
 import org.wso2.carbon.gateway.core.flow.Invoker;
@@ -28,6 +29,8 @@ import org.wso2.carbon.messaging.CarbonMessage;
  * Mediator responsible for sending the response from pipeline back to client
  */
 public class RespondMediator extends AbstractMediator implements Invoker {
+
+    private String messageId;
 
     @Override
     public String getName() {
@@ -47,5 +50,12 @@ public class RespondMediator extends AbstractMediator implements Invoker {
 
         parentCallback.done(carbonMessage);
         return true;
+    }
+
+    @Override
+    public void setParameters(ParameterHolder parameters) {
+        if (parameters.getParameter("messageId") != null) {
+            this.messageId = parameters.getParameter("messageId").getValue();
+        }
     }
 }

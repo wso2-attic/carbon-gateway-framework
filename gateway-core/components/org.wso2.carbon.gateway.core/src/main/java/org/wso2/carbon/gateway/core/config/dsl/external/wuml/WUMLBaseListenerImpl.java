@@ -598,7 +598,8 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
         if (ctx.parent instanceof  WUMLParser.MediatorCallContext) {
             parameterHolder.addParameter(new Parameter("returnVariableKey",
-                    ((WUMLParser.MediatorCallContext) ctx.parent).Identifier().getText()));
+                    ((WUMLParser.MediatorCallContext) ((WUMLParser.InvokeMediatorCallContext) ctx).parent).Identifier()
+                            .getText()));
         }
 
         callMediator.setParameters(parameterHolder);
@@ -627,6 +628,19 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
         logMediator.setParameters(parameterHolder);
         dropMediatorFilterAware(logMediator);
+    }
+
+    /** statements with 'reply'. It maps to a Respond mediator*/
+    @Override public void exitReturnStatement(WUMLParser.ReturnStatementContext ctx) {
+        Mediator respondMediator = MediatorProviderRegistry.getInstance().getMediator("respond");
+        ParameterHolder parameterHolder = new ParameterHolder();
+        if (ctx.Identifier() != null) {
+            String messageId = ctx.Identifier().getText();
+            parameterHolder.addParameter(new Parameter("messageId", messageId));
+        }
+        
+        respondMediator.setParameters(parameterHolder);
+        dropMediatorFilterAware(respondMediator);
     }
 
     /**
