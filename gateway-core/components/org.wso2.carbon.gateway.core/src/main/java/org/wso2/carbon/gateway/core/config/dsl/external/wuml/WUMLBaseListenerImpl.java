@@ -69,13 +69,19 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     // Temporary reference for the currently processing filter mediator
     private Stack<AbstractFlowController> flowControllerStack;
     private Stack<FlowControllerMediatorSection> flowControllerMediatorSection;
+    // Used when mediator returns a value
     private String nextMediatorReturnParameter;
+    // Handling statements like "message n = invoke(endpoint,m)". Here we will add a property and a call mediator
+    private boolean isInitializationFired;
+    private Mediator initializerMediator;
 
     public WUMLBaseListenerImpl(String fileName) {
         this.integrationName = fileName;
         this.flowControllerStack = new Stack<>();
         this.flowControllerMediatorSection = new Stack<>();
         this.nextMediatorReturnParameter = null;
+        this.isInitializationFired = false;
+        this.initializerMediator = null;
     }
 
     @Override
@@ -824,6 +830,11 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     }
 
     @Override
+    public void enterLocalVariableInitializationStatement(WUMLParser.LocalVariableInitializationStatementContext ctx) {
+        isInitializationFired = true;
+    }
+
+    @Override
     public void exitLocalVariableInitializationStatement(WUMLParser.LocalVariableInitializationStatementContext ctx) {
         String type = null;
         String variableName = null;
@@ -851,8 +862,13 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         parameterHolder.addParameter(new Parameter("type", type));
         parameterHolder.addParameter(new Parameter("assignment", "false"));
 
+        isInitializationFired = false;
         propertyMediator.setParameters(parameterHolder);
         dropMediatorFilterAware(propertyMediator);
+        if (initializerMediator != null) {
+            dropMediatorFilterAware(initializerMediator);
+            initializerMediator = null;
+        }
 
     }
 
@@ -893,7 +909,9 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
      * @param mediator
      */
     private void dropMediatorFilterAware(Mediator mediator) {
-        if (!flowControllerMediatorSection.empty()) {
+        if (isInitializationFired) {
+            initializerMediator = mediator;
+        } else if (!flowControllerMediatorSection.empty()) {
             switch (flowControllerMediatorSection.peek()) {
             case ifBlock:
                 ((FilterMediator) flowControllerStack.peek()).addThenMediator(mediator);

@@ -48,6 +48,8 @@ public class RespondMediator extends AbstractMediator implements Invoker {
             parentCallback = ((FlowControllerMediateCallback) parentCallback).getParentCallback();
         }
 
+        carbonMessage = (CarbonMessage) getObjectFromContext(carbonMessage, messageId);
+
         parentCallback.done(carbonMessage);
         return true;
     }

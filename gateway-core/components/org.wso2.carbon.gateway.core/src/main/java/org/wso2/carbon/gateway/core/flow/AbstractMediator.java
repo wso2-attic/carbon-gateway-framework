@@ -140,8 +140,12 @@ public abstract class AbstractMediator implements Mediator {
      * @param object Object itself
      */
     public void setObjectToContext(CarbonMessage carbonMessage, String objectName, Object object) {
-            Map map = (Map) VariableUtil.getMap(carbonMessage, objectName);
+        Map map = (Map) VariableUtil.getMap(carbonMessage, objectName);
+        if (map !=  null) {
             map.put(objectName, object);
+        } else {
+            log.error("Variable " + objectName + " is not declared.");
+        }
     }
 
     public String getReturnedOutput() {
