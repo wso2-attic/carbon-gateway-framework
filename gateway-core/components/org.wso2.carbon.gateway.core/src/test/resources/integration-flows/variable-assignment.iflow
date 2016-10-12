@@ -3,13 +3,20 @@
 @Api (tags = {"stock_info","stock_update"}, description = "Rest api for do operations on admin", produces = MediaType.APPLICATION_JSON)
 package com.sample;
 
-constant endpoint stockEP = new HTTPEndPoint("http://www.mocky.io/v2/5185415ba171ea3a00704eed");
+constant endpoint stockEP = new HTTPEndPoint("http://localhost:8080/exchange/");
 
 @GET
 @PUT
 @POST
 @Path ("/passthrough")
 resource passthrough (message m) {
- message n = invoke(stockEP, m);
-reply n;
+    message response;
+    try {
+        response = invoke(stockEP, m);
+    } catch (exception e) {
+        response = new Message();
+        response.setHeader(HTTPStatusCode, 500);
+        response.setPayload(TypeJSON, "{\"error\":\"backend failed\"}");
+    }
+    reply response;
 }
