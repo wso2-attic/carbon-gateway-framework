@@ -675,14 +675,26 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         // For expressions with pattern "exp1" == "exp2"
         if (ctx.EQUAL() != null) {
             List<WUMLParser.ExpressionContext> expressions = ((WUMLParser.ParExpressionContext) ctx).expression();
-            // log.info(Integer.toString(expressions.size()));
-            // Works only for formats: "eval("$p1.p2")=="abc""
             if (expressions != null && expressions.size() == 2) {
-                String sourceDefinition = StringParserUtil
-                        .getValueWithinDoubleQuotes(expressions.get(0).evalExpression().StringLiteral().getText());
-                Source source = new Source(sourceDefinition);
-                String conditionValue = StringParserUtil
-                        .getValueWithinDoubleQuotes(expressions.get(1).literal().StringLiteral().getText());
+                String sourceDefinition, conditionValue;
+                Source source;
+                //TODO: A better way to do this?
+                if (expressions.get(0).evalExpression().getChild(2) instanceof TerminalNode) {
+                    sourceDefinition = StringParserUtil
+                            .getValueWithinDoubleQuotes(expressions.get(0).evalExpression().StringLiteral().getText());
+                    source = new Source(sourceDefinition);
+                    conditionValue = StringParserUtil
+                            .getValueWithinDoubleQuotes(expressions.get(1).literal().StringLiteral().getText());
+
+                } else {
+                    // xpath, jsonpath case
+                    sourceDefinition = StringParserUtil
+                            .getValueWithinDoubleQuotes(expressions.get(0)
+                            .evalExpression().pathExpression().xpathExpression().getText());
+                    source = new Source(sourceDefinition, Constants.PATHLANGUAGE.XPATH);
+                    conditionValue = StringParserUtil
+                            .getValueWithinDoubleQuotes(expressions.get(1).literal().StringLiteral().getText());
+                }
 
                 Condition condition = new Condition(source, Pattern.compile(conditionValue));
 

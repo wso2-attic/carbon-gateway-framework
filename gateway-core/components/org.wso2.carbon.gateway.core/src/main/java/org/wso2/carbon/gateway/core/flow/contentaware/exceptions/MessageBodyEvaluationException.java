@@ -16,16 +16,23 @@
  * under the License.
  */
 
-package org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter;
+package org.wso2.carbon.gateway.core.flow.contentaware.exceptions;
 
 /**
- * An Enum class that contains Filtering Scopes
+ * Exception to be thrown when a problem is encountered while message evaluation.
+ *
  */
-public enum Scope {
-    // TODO: I think we need to capitalize all of them.
-    HEADER,
-    MessageBody,
-    MessageHeader,
-    BODY
+public class MessageBodyEvaluationException extends Exception {
+    public MessageBodyEvaluationException(Throwable cause) {
+        super(cause);
+    }
+
+    public MessageBodyEvaluationException() {
+        super();
+    }
+
+    public MessageBodyEvaluationException(String message) {
+        super(message);
+    }
 
 }

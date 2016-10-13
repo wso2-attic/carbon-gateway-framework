@@ -260,6 +260,12 @@
                 <artifactId>powermock-module-junit4</artifactId>
                 <version>${powermock.version}</version>
             </dependency>
+            <!-- An orbit should be created -->
+            <dependency>
+                <groupId>net.sf.saxon.wso2</groupId>
+                <artifactId>Saxon-HE</artifactId>
+                <version>${saxon.wso2.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -396,6 +402,7 @@
         <carbon.deployment.version>5.0.0</carbon.deployment.version>
         <carbon.deployment.export.version>5.0.0</carbon.deployment.export.version>
         <rxjava.export.version>1.2.0.wso2v1</rxjava.export.version>
+        <saxon.wso2.version>9.7.0.wso2v1</saxon.wso2.version>
 
         <commons.io.version>2.0</commons.io.version>
         <rx.java.version>1.2.0.wso2v1</rx.java.version>
@@ -410,5 +417,6 @@
         <module>archetypes</module>
         <module>type-converters</module>
         <module>message-readers</module>
+        <module>evaluators</module>
     </modules>
 </project>
