@@ -21,6 +21,7 @@ package org.wso2.carbon.gateway.core.flow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.exception.DefaultExceptionHandler;
+import org.wso2.carbon.gateway.core.flow.mediators.builtin.invokers.CallMediator;
 import org.wso2.carbon.gateway.core.util.VariableUtil;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
@@ -56,6 +57,11 @@ public class FlowControllerMediateCallback implements FlowControllerCallback {
             VariableUtil.popVariableStack(carbonMessage, variableStack);
             if (mediator.hasNext()) { // If Mediator has a sibling after this
                 try {
+                    if (mediator instanceof CallMediator) {
+                        ((CallMediator) mediator)
+                                .setObjectToContext(carbonMessage, ((CallMediator) mediator).getReturnedOutput(),
+                                        carbonMessage);
+                    }
                     mediator.next(carbonMessage, parentCallback);
                 } catch (Exception e) {
                     log.error("Error while mediating from Callback", e);

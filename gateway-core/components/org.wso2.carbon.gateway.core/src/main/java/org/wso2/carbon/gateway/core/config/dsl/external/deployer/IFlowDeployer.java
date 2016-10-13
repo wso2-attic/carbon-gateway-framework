@@ -175,7 +175,7 @@ public class IFlowDeployer implements Deployer {
                 parser.sourceFile();
 
             }
-        }  catch (IOException e) {
+        } catch (IOException e) {
             logger.error("Error while creating Cheetah object model", e);
         } finally {
             if (inputStream != null) {

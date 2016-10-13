@@ -31,6 +31,7 @@ import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.Constants;
 
+
 /**
  * Send a Message out from Pipeline to an Outbound Endpoint
  */
@@ -39,6 +40,7 @@ public class CallMediator extends AbstractMediator implements Invoker {
     private static final Logger log = LoggerFactory.getLogger(CallMediator.class);
     private String outboundEPKey;
     private String integration;
+    private String inputMessageParameter;
     private OutboundEndpoint outboundEndpoint;
 
     public CallMediator() {
@@ -55,6 +57,10 @@ public class CallMediator extends AbstractMediator implements Invoker {
     public void setParameters(ParameterHolder parameterHolder) {
         outboundEPKey = parameterHolder.getParameter("endpointKey").getValue();
         integration = parameterHolder.getParameter("integrationKey").getValue();
+        inputMessageParameter = parameterHolder.getParameter("inputMessageParameter").getValue();
+        if (parameterHolder.getParameter("returnVariableKey") != null) {
+            returnedOutput = parameterHolder.getParameter("returnVariableKey").getValue();
+        }
     }
 
     @Override
@@ -85,6 +91,12 @@ public class CallMediator extends AbstractMediator implements Invoker {
             //remove HTTP status code
             carbonMessage.removeProperty(org.wso2.carbon.transport.http.netty.common.Constants.HTTP_STATUS_CODE);
             //TODO decide and remove/add any other properties (removed above to enable service chaining support)
+        }
+
+        CarbonMessage inputCarbonMessage = (CarbonMessage) getObjectFromContext(carbonMessage, inputMessageParameter);
+        // if the message is not already built
+        if (inputCarbonMessage.getMessageDataSource() == null) {
+            carbonMessage = inputCarbonMessage;
         }
 
         CarbonCallback callback = new FlowControllerMediateCallback(carbonCallback, this,

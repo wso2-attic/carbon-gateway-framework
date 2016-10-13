@@ -35,6 +35,7 @@ public class Resource {
      * Metadata holders
      */
     private String name;
+    private String inputParamIdentifier;
     private Map<String, Annotation> annotations = new HashMap<>();
     private Worker defaultWorker;
     private URITemplate path;
@@ -82,6 +83,8 @@ public class Resource {
 
         Map<String, Observable> observableMap = new LinkedHashMap<>();
         carbonMessage.setProperty("OBSERVABLES", observableMap);
+
+        VariableUtil.addVariable(carbonMessage, inputParamIdentifier, carbonMessage);
 
         defaultWorker.submit(UUID.randomUUID(), carbonMessage, carbonCallback).subscribe(r -> log.info(
                 "Resource subscribe event " + ((RxContext) r).getId())); // we don't need subscriber to return here?
@@ -132,5 +135,9 @@ public class Resource {
     private void addVariables(CarbonMessage cMsg, Map<String, String> uriVars) {
         uriVars.forEach((k, v) -> VariableUtil
                 .addGlobalVariable(cMsg, k, VariableUtil.createVariable(Constants.TYPES.STRING, v)));
+    }
+
+    public void setInputParamIdentifier(String inputParamIdentifier) {
+        this.inputParamIdentifier = inputParamIdentifier;
     }
 }

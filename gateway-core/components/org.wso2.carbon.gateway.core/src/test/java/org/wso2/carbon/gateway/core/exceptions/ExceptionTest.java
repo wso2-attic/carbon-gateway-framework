@@ -1,6 +1,7 @@
 package org.wso2.carbon.gateway.core.exceptions;
 
 import org.testng.annotations.Test;
+import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.exception.ConnectionClosedException;
 import org.wso2.carbon.gateway.core.exception.ConnectionTimeoutException;
@@ -16,6 +17,8 @@ import org.wso2.carbon.gateway.core.flow.mediators.builtin.manipulators.log.LogM
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 import static org.junit.Assert.assertFalse;
@@ -132,9 +135,13 @@ public class ExceptionTest {
     @Test(description = "Test the scenario that includes a mediator after the correct tryblock mediator")
     public void mediatorAfterTryBlockMediatorTest() throws Exception {
         Resource resource = new Resource("TestResource");
+        //Sample Stack
+        Stack<Map<String, Object>> stack = new Stack<>();
+        stack.push(new HashMap());
 
         // Mocking a faulty carbon message
         CarbonMessage carbonMessage = mock(CarbonMessage.class);
+        when(carbonMessage.getProperty(Constants.VARIABLE_STACK)).thenReturn(stack);
         when(carbonMessage.isFaulty()).thenReturn(true);
         when(carbonMessage.getNelException()).thenReturn(mock(ConnectionTimeoutException.class));
 
@@ -154,6 +161,7 @@ public class ExceptionTest {
         resource.getDefaultWorker().addMediator(tryBlockMediator);
         resource.getDefaultWorker().addMediator(outSideCatch);
 
+        resource.setInputParamIdentifier("some_value");
         resource.receive(carbonMessage, carbonCallback);
         verify(outSideCatch, times(1)).receive(carbonMessage, carbonCallback);
     }
