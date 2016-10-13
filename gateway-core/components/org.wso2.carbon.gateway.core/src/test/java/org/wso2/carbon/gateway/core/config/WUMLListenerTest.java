@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import org.wso2.carbon.gateway.core.config.dsl.external.WUMLConfigurationBuilder;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.WUMLBaseListenerImpl;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLLexer;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLParser;
@@ -78,11 +77,6 @@ public class WUMLListenerTest {
             parser.sourceFile();
 
             // TODO: Need to update the test case with IntegrationConfigRegistry object.
-            WUMLConfigurationBuilder.IntegrationFlow integrationFlow = wumlBaseListener.getIntegrationFlow();
-//            GWConfigHolder configHolder = integrationFlow.getGWConfigHolder();
-//            if (configHolder != null) {
-//                ConfigRegistry.getInstance().addGWConfig(configHolder);
-//            }
 
             return true;
 

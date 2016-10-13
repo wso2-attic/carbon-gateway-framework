@@ -87,11 +87,6 @@
             <groupId>org.wso2.orbit.io.reactivex</groupId>
             <artifactId>rxjava</artifactId>
         </dependency>
-        <!--rxJava Orbit dependency, commented until it gets updated -->
-        <!--<dependency>-->
-            <!--<groupId>org.wso2.com.netflix.rxjava</groupId>-->
-            <!--<artifactId>rxJava</artifactId>-->
-        <!--</dependency>-->
     </dependencies>
 
     <build>

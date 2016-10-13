@@ -29,7 +29,6 @@ import org.wso2.carbon.gateway.core.config.IntegrationConfigRegistry;
 import org.wso2.carbon.gateway.core.config.Parameter;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.config.dsl.external.StringParserUtil;
-import org.wso2.carbon.gateway.core.config.dsl.external.WUMLConfigurationBuilder;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLBaseListener;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLParser;
 import org.wso2.carbon.gateway.core.exception.ChildExceptionHandler;
@@ -75,10 +74,6 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         this.integrationName = fileName;
         this.flowControllerStack = new Stack<>();
         this.flowControllerMediatorSection = new Stack<>();
-    }
-
-    public WUMLConfigurationBuilder.IntegrationFlow getIntegrationFlow() {
-        return null;
     }
 
     @Override
