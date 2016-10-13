@@ -34,6 +34,13 @@ public class Constants {
         STRING, INTEGER, BOOLEAN, DOUBLE, FLOAT, LONG, SHORT, XML, JSON, UNKNOWN
     }
 
+    /**
+     * Enumeration for path languages.
+     */
+    public enum PATHLANGUAGE {
+        XPATH, JSONPATH
+    }
+
     public static final String GW_GT_SCOPE = "GW_GT_SCOPE";
 
     public static final String SERVICE_METHOD = "SERVICE_METHOD";
