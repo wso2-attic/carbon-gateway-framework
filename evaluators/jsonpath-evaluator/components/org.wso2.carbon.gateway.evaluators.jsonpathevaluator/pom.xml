@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>org.wso2.carbon.gateway.evaluators.jsonpathevaluator.parent</artifactId>
+        <groupId>org.wso2.carbon.gateway</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <name>JSONPath Evaluator</name>
+    <groupId>org.wso2.carbon.gateway.evaluators</groupId>
+    <artifactId>org.wso2.carbon.gateway.evaluators.jsonpathevaluator</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>bundle</packaging>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.eclipse.osgi</groupId>
+            <artifactId>org.eclipse.osgi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.eclipse.osgi</groupId>
+            <artifactId>org.eclipse.osgi.services</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.gateway</groupId>
+            <artifactId>org.wso2.carbon.gateway.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.messaging</groupId>
+            <artifactId>org.wso2.carbon.messaging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <bundle.activator>org.wso2.carbon.gateway.evaluators.jsonpathevaluator.internal.Activator
+        </bundle.activator>
+        <private.package>org.wso2.carbon.gateway.evaluators.jsonpathevaluator.internal</private.package>
+        <export.package>
+            !org.wso2.carbon.gateway.evaluators.jsonpathevaluator.internal,
+            org.wso2.carbon.gateway.evaluators.jsonpathevaluator
+        </export.package>
+        <import.package>
+            org.wso2.carbon.kernel.startupresolver.*;version="${carbon.kernel.package.import.version.range}",
+            org.osgi.framework.*;version="${osgi.framework.import.version.range}",
+            org.sample.dsl.*;version="1.0.0",
+            org.wso2.carbon.gateway.core.config.dsl.internal.*,
+            org.wso2.carbon.gateway.core.*,
+            org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
+            org.wso2.carbon.messaging,
+            javax.xml.*;version=0.0.0,
+            org.apache.axiom.*;version="0.0.0"
+        </import.package>
+        <osgi.framework.import.version.range>[1.8.0, 2.0.0)</osgi.framework.import.version.range>
+    </properties>
+
+</project>

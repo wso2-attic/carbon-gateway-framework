@@ -34,6 +34,7 @@
 
     <modules>
         <module>xpath-evaluator</module>
+        <module>jsonpath-evaluator</module>
     </modules>
 
 
