@@ -29,6 +29,7 @@ import org.wso2.carbon.gateway.core.outbound.OutboundEndpoint;
 import org.wso2.carbon.gateway.core.util.VariableUtil;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.Constants;
 
 /**
  * Send a Message out from Pipeline to an Outbound Endpoint
@@ -73,6 +74,17 @@ public class CallMediator extends AbstractMediator implements Invoker {
                 log.error("Outbound Endpoint : " + outboundEPKey + "not found ");
                 return false;
             }
+        }
+
+        //prepare CarbonMessage if it is a response message from a previous invoke
+        //If the DIRECTION property of the carbonMessage is DIRECTION_RESPONSE, we can assume service chaining
+        if (carbonMessage.getProperty(Constants.DIRECTION) != null &&
+                            carbonMessage.getProperty(Constants.DIRECTION).equals(Constants.DIRECTION_RESPONSE)) {
+            //remove Direction property
+            carbonMessage.removeProperty(Constants.DIRECTION);
+            //remove HTTP status code
+            carbonMessage.removeProperty(org.wso2.carbon.transport.http.netty.common.Constants.HTTP_STATUS_CODE);
+            //TODO decide and remove/add any other properties (removed above to enable service chaining support)
         }
 
         CarbonCallback callback = new FlowControllerMediateCallback(carbonCallback, this,
