@@ -311,7 +311,20 @@ expression
     ;
 
 evalExpression
-    :   'eval' '(' StringLiteral ','    Identifier ')'
+    :   'eval' '(' (StringLiteral | pathExpression) ','    Identifier ')'
+    ;
+
+pathExpression
+    : xpathExpression
+    | jsonpathExpression
+    ;
+
+xpathExpression
+    :   'xpath' '(' StringLiteral ')'
+    ;
+
+jsonpathExpression
+    :   'jsonpath' '(' StringLiteral ')'
     ;
 
 literal

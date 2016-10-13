@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter;
 
+import org.wso2.carbon.gateway.core.Constants.PATHLANGUAGE;
+
 /**
  * A class that represents the source condition of the message to be evaluated.
  */
@@ -29,9 +31,22 @@ public class Source {
 
     private String value;
 
+    private PATHLANGUAGE pathLanguage;
+
     public Source(String key, Scope scope) {
         this.scope = scope;
         this.key = key;
+    }
+
+    public Source(String value, PATHLANGUAGE pathLanguage) {
+        this.value = value;
+        this.pathLanguage = pathLanguage;
+        if (this.value.contains("$body")) {
+            if (pathLanguage == PATHLANGUAGE.XPATH) {
+                key = this.value.substring(this.value.indexOf(":") + 1);
+            }
+            scope = Scope.BODY;
+        }
     }
 
     public Source(String value) {
@@ -49,5 +64,9 @@ public class Source {
 
     public String getKey() {
         return key;
+    }
+
+    public PATHLANGUAGE getPathLanguage() {
+        return pathLanguage;
     }
 }

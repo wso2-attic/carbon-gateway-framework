@@ -25,6 +25,7 @@ public enum Scope {
     // TODO: I think we need to capitalize all of them.
     HEADER,
     MessageBody,
-    MessageHeader
+    MessageHeader,
+    BODY
 
 }
