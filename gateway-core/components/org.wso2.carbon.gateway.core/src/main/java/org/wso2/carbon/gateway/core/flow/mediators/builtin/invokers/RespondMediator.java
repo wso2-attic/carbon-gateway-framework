@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.gateway.core.flow.mediators.builtin.invokers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.flow.AbstractMediator;
 import org.wso2.carbon.gateway.core.flow.FlowControllerMediateCallback;
@@ -31,6 +33,9 @@ import org.wso2.carbon.messaging.CarbonMessage;
 public class RespondMediator extends AbstractMediator implements Invoker {
 
     private String messageId;
+
+    private static final Logger log = LoggerFactory.getLogger(RespondMediator.class);
+
 
     @Override
     public String getName() {
@@ -50,7 +55,12 @@ public class RespondMediator extends AbstractMediator implements Invoker {
 
         carbonMessage = (CarbonMessage) getObjectFromContext(carbonMessage, messageId);
 
-        parentCallback.done(carbonMessage);
+        if (carbonMessage != null) {
+            parentCallback.done(carbonMessage);
+        } else {
+            log.error("Message: " + messageId + " not found in the context.");
+        }
+
         return true;
     }
 
