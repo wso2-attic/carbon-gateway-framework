@@ -20,6 +20,7 @@ package org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filt
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.gateway.core.flow.AbstractFlowController;
 import org.wso2.carbon.gateway.core.flow.FlowControllerMediateCallback;
 import org.wso2.carbon.gateway.core.flow.Mediator;
@@ -89,9 +90,8 @@ public class FilterMediator extends AbstractFlowController {
                throws Exception {
 
         super.receive(carbonMessage, carbonCallback);
-
-        if (source.getScope().equals(Scope.HEADER)) {
-
+        Scope scope = source.getScope();
+        if (scope.equals(Scope.HEADER)) {
             if (Evaluator.isHeaderMatched(carbonMessage, source, pattern)) {
                 childThenMediatorList.getFirstMediator().
                            receive(carbonMessage, new FlowControllerMediateCallback(carbonCallback, this,
@@ -101,6 +101,23 @@ public class FilterMediator extends AbstractFlowController {
                     childOtherwiseMediatorList.getFirstMediator().
                             receive(carbonMessage, new FlowControllerMediateCallback(carbonCallback, this,
                                     VariableUtil.getVariableStack(carbonMessage)));
+                }
+            }
+        } else if (scope.equals(Scope.BODY)) {
+            Constants.PATHLANGUAGE pathlanguage = source.getPathLanguage();
+            if (pathlanguage != null) {
+                if (pathlanguage == Constants.PATHLANGUAGE.XPATH) {
+                    if (Evaluator.isXPathMatched(carbonMessage, source, pattern)) {
+                        childThenMediatorList.getFirstMediator().
+                                receive(carbonMessage, new FlowControllerMediateCallback(carbonCallback, this,
+                                        VariableUtil.getVariableStack(carbonMessage)));
+                    } else {
+                        if (childOtherwiseMediatorList.getMediators().size() != 0) {
+                            childOtherwiseMediatorList.getFirstMediator().
+                                    receive(carbonMessage, new FlowControllerMediateCallback(carbonCallback, this,
+                                            VariableUtil.getVariableStack(carbonMessage)));
+                        }
+                    }
                 }
             }
         }
