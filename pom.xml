@@ -260,6 +260,11 @@
                 <artifactId>powermock-module-junit4</artifactId>
                 <version>${powermock.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.transport</groupId>
+                <artifactId>org.wso2.carbon.transport.http.netty</artifactId>
+                <version>${carbon.transport.version}</version>
+            </dependency>
             <!-- An orbit should be created -->
             <dependency>
                 <groupId>net.sf.saxon.wso2</groupId>
@@ -370,7 +375,7 @@
         <slf4j.logging.package.import.version.range>[1.7.1, 2.0.0)
         </slf4j.logging.package.import.version.range>
 
-        <carbon.transport.version>2.1.4-SNAPSHOT</carbon.transport.version>
+        <carbon.transport.version>2.1.9-SNAPSHOT</carbon.transport.version>
         <carbon.transport.package.import.version.range>[2.0.0, 2.2.0)
         </carbon.transport.package.import.version.range>
 

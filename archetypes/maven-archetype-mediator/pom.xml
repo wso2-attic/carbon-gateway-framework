@@ -28,7 +28,6 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>maven-archetype-mediator</artifactId>
-    <version>1.0</version>
     <packaging>maven-archetype</packaging>
 
     <name>WSO2 Gateway Mediator Archetype</name>

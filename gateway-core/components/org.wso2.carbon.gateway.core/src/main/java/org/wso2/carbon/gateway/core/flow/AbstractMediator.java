@@ -26,6 +26,8 @@ import org.wso2.carbon.gateway.core.util.VariableUtil;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 
+import java.util.Map;
+
 /**
  * Base class for all the mediators. All the mediators must be extended from this base class
  */
@@ -36,6 +38,8 @@ public abstract class AbstractMediator implements Mediator {
 
     /* Pointer for the next sibling in the pipeline*/
     Mediator nextMediator = null;
+
+    protected String returnedOutput;
 
     /**
      * Check whether a sibling is present after this in the pipeline
@@ -117,6 +121,35 @@ public abstract class AbstractMediator implements Mediator {
         } else {
             return name;
         }
+    }
+
+    /**
+     * Retrieve an object from the Variable stack
+     * @param carbonMessage Carbon message with the stack
+     * @param objectName Name of the object
+     * @return Object itself
+     */
+    protected Object getObjectFromContext(CarbonMessage carbonMessage, String objectName) {
+        return VariableUtil.getVariable(carbonMessage, objectName);
+    }
+
+    /**
+     * Put an object in the variable stack
+     * @param carbonMessage Carbon message with the stack
+     * @param objectName Name of the object
+     * @param object Object itself
+     */
+    public void setObjectToContext(CarbonMessage carbonMessage, String objectName, Object object) {
+        Map map = (Map) VariableUtil.getMap(carbonMessage, objectName);
+        if (map !=  null) {
+            map.put(objectName, object);
+        } else {
+            log.error("Variable " + objectName + " is not declared.");
+        }
+    }
+
+    public String getReturnedOutput() {
+        return this.returnedOutput;
     }
 
 }

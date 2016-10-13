@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.DefaultCarbonMessage;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -172,6 +173,8 @@ public class VariableUtil {
             return Long.valueOf(value);
         } else if (type.equals(Constants.TYPES.SHORT)) {
             return Short.valueOf(value);
+        } else if (type.equals(Constants.TYPES.MESSAGE)) {
+            return new DefaultCarbonMessage();
         } else if (type.equals(Constants.TYPES.XML)) {
             log.info("XML Variable type not yet implemented! Using string instead.");
             return String.valueOf(value);
@@ -222,7 +225,7 @@ public class VariableUtil {
         typeName = typeName.toLowerCase(Locale.ROOT);
         if (typeName.equals("string")) {
             return Constants.TYPES.STRING;
-        } else if (typeName.equals("integer")) {
+        } else if (typeName.equals("int")) {
             return Constants.TYPES.INTEGER;
         } else if (typeName.equals("boolean")) {
             return Constants.TYPES.BOOLEAN;
@@ -234,6 +237,8 @@ public class VariableUtil {
             return Constants.TYPES.LONG;
         } else if (typeName.equals("short")) {
             return Constants.TYPES.SHORT;
+        } else if (typeName.equals("message")) {
+            return Constants.TYPES.MESSAGE;
         } else {
             return Constants.TYPES.UNKNOWN;
         }
