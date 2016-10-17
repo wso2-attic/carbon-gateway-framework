@@ -36,7 +36,6 @@
         <dependency>
             <groupId>org.wso2.carbon.gateway.evaluators</groupId>
             <artifactId>org.wso2.carbon.gateway.evaluators.jsonpathevaluator</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.eclipse.osgi</groupId>

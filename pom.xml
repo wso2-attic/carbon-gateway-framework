@@ -145,6 +145,28 @@
                 <type>zip</type>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.gateway.evaluators</groupId>
+                <artifactId>org.wso2.carbon.gateway.evaluators.jsonpathevaluator</artifactId>
+                <version>${carbon.gw.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.gateway.evaluators</groupId>
+                <artifactId>org.wso2.carbon.gateway.evaluators.jsonpathevaluator.feature</artifactId>
+                <version>${carbon.gw.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.gateway.evaluators</groupId>
+                <artifactId>org.wso2.carbon.gateway.evaluators.xpathevaluator</artifactId>
+                <version>${carbon.gw.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.gateway.evaluators</groupId>
+                <artifactId>org.wso2.carbon.gateway.evaluators.xpathevaluator.feature</artifactId>
+                <version>${carbon.gw.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
                 <version>${osgi.api.version}</version>
