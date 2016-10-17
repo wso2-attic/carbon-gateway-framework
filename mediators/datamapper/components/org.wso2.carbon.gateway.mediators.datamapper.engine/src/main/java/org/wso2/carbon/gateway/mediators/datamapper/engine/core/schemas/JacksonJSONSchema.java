@@ -17,11 +17,13 @@
 package org.wso2.carbon.gateway.mediators.datamapper.engine.core.schemas;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.InvalidPayloadException;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.SchemaException;
-import org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants;
+
+import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,7 +38,7 @@ import java.util.Map;
  */
 public class JacksonJSONSchema implements Schema {
 
-    private static final Logger log = LoggerFactory.getLogger(JacksonJSONSchema.class);
+    private static final Log log = LogFactory.getLog(JacksonJSONSchema.class);
     private static final String EMPTY_STRING = "";
     private static final String NAMESPACE_NAME_CONCAT_STRING = ":";
     private Map jsonSchemaMap;
@@ -91,20 +93,20 @@ public class JacksonJSONSchema implements Schema {
             throws InvalidPayloadException, SchemaException {
         Map<String, Object> schema = jsonSchemaMap;
         String elementType = null;
-        boolean elementFound = false;
+        boolean elementFound;
         for (SchemaElement element : elementStack) {
             elementFound = false;
             String elementName = element.getElementName();
             if (elementName.equals(getName())) {
                 schema = (Map<String, Object>) jsonSchemaMap.get(PROPERTIES_KEY);
                 elementType = (String) jsonSchemaMap.get(TYPE_KEY);
-                if (DataMapperEngineConstants.ARRAY_ELEMENT_TYPE.equals(elementType)) {
+                if (ARRAY_ELEMENT_TYPE.equals(elementType)) {
                     setCurrentArrayType(schema, elementName);
                 }
                 elementFound = true;
             } else if (schema.containsKey(elementName)) {
                 elementType = (String) ((Map<String, Object>) schema.get(elementName)).get(TYPE_KEY);
-                if (DataMapperEngineConstants.ARRAY_ELEMENT_TYPE.equals(elementType)) {
+                if (ARRAY_ELEMENT_TYPE.equals(elementType)) {
                     setCurrentArrayType(schema, elementName);
                     schema = getSchemaItems((Map<String, Object>) schema.get(elementName));
                     schema = getSchemaProperties(schema);
@@ -114,7 +116,7 @@ public class JacksonJSONSchema implements Schema {
                 elementFound = true;
             }
             if (!elementFound) {
-                elementType = DataMapperEngineConstants.NULL_ELEMENT_TYPE;
+                elementType = NULL_ELEMENT_TYPE;
                 log.warn("Element name not found : " + elementName);
             }
         }
@@ -123,11 +125,11 @@ public class JacksonJSONSchema implements Schema {
 
     private void setCurrentArrayType(Map<String, Object> schema, String elementName) {
         Map<String, Object> tempSchema = getSchemaItems((Map<String, Object>) schema.get(elementName));
-        if (DataMapperEngineConstants.OBJECT_ELEMENT_TYPE.equals(tempSchema.get(TYPE_KEY))) {
+        if (OBJECT_ELEMENT_TYPE.equals(tempSchema.get(TYPE_KEY))) {
             currentArrayIsPrimitive = false;
-        } else if (DataMapperEngineConstants.STRING_ELEMENT_TYPE.equals(tempSchema.get(TYPE_KEY)) || DataMapperEngineConstants.BOOLEAN_ELEMENT_TYPE
-                .equals(tempSchema.get(TYPE_KEY)) || DataMapperEngineConstants.NUMBER_ELEMENT_TYPE.equals(tempSchema.get(TYPE_KEY))
-                   || DataMapperEngineConstants.INTEGER_ELEMENT_TYPE.equals(tempSchema.get(TYPE_KEY))) {
+        } else if (STRING_ELEMENT_TYPE.equals(tempSchema.get(TYPE_KEY)) || BOOLEAN_ELEMENT_TYPE
+                .equals(tempSchema.get(TYPE_KEY)) || NUMBER_ELEMENT_TYPE.equals(tempSchema.get(TYPE_KEY))
+                || INTEGER_ELEMENT_TYPE.equals(tempSchema.get(TYPE_KEY))) {
             currentArrayIsPrimitive = true;
         }
     }
@@ -144,9 +146,9 @@ public class JacksonJSONSchema implements Schema {
             while (entryIterator.hasNext()) {
                 Map<String, Object> subSchema = (Map<String, Object>) entryIterator.next().getValue();
                 String schemaType = getSchemaType(subSchema);
-                if (DataMapperEngineConstants.OBJECT_ELEMENT_TYPE.equals(schemaType)) {
+                if (OBJECT_ELEMENT_TYPE.equals(schemaType)) {
                     elementType = getElementTypeByName(elementName, subSchema);
-                } else if (DataMapperEngineConstants.ARRAY_ELEMENT_TYPE.equals(schemaType)) {
+                } else if (ARRAY_ELEMENT_TYPE.equals(schemaType)) {
                     elementType = getElementTypeByName(elementName, getSchemaItems(subSchema));
                 }
                 if (elementType != null) {
@@ -199,7 +201,6 @@ public class JacksonJSONSchema implements Schema {
     private Map<String, Object> getElementSchemaByName(List<SchemaElement> elementStack, Map<String, Object> schema)
             throws InvalidPayloadException, SchemaException {
         Map<String, Object> tempSchema = schema;
-        String elementType = null;
         for (SchemaElement element : elementStack) {
             String elementName = element.getElementName();
             String elementNamespace = element.getNamespace();
@@ -207,8 +208,8 @@ public class JacksonJSONSchema implements Schema {
             if (elementName.equals(getName())) {
                 tempSchema = (Map<String, Object>) jsonSchemaMap.get(PROPERTIES_KEY);
             } else if (tempSchema.containsKey(elementName)) {
-                elementType = (String) ((Map<String, Object>) tempSchema.get(elementName)).get(TYPE_KEY);
-                if (DataMapperEngineConstants.ARRAY_ELEMENT_TYPE.equals(elementType)) {
+                String elementType = (String) ((Map<String, Object>) tempSchema.get(elementName)).get(TYPE_KEY);
+                if (ARRAY_ELEMENT_TYPE.equals(elementType)) {
                     tempSchema = getSchemaItems((Map<String, Object>) tempSchema.get(elementName));
                     tempSchema = getSchemaProperties(tempSchema);
                 } else {
@@ -229,10 +230,10 @@ public class JacksonJSONSchema implements Schema {
             while (entryIterator.hasNext()) {
                 Map<String, Object> subSchema = (Map<String, Object>) entryIterator.next().getValue();
                 String schemaType = getSchemaType(subSchema);
-                if (DataMapperEngineConstants.OBJECT_ELEMENT_TYPE.equals(schemaType)) {
+                if (OBJECT_ELEMENT_TYPE.equals(schemaType)) {
                     elementType = getElementSchemaByName(elementName, subSchema);
 
-                } else if (DataMapperEngineConstants.ARRAY_ELEMENT_TYPE.equals(schemaType)) {
+                } else if (ARRAY_ELEMENT_TYPE.equals(schemaType)) {
                     elementType = getElementSchemaByName(elementName, getSchemaItems(subSchema));
                 }
                 if (elementType != null) {
@@ -253,9 +254,7 @@ public class JacksonJSONSchema implements Schema {
             while (entryIterator.hasNext()) {
                 Map<String, Object> subSchema = (Map<String, Object>) entryIterator.next().getValue();
                 String schemaType = getSchemaType(subSchema);
-                if (DataMapperEngineConstants.OBJECT_ELEMENT_TYPE.equals(schemaType)) {
-                    elementType = getElementTypeByName(elementName, subSchema);
-                } else if (DataMapperEngineConstants.ARRAY_ELEMENT_TYPE.equals(schemaType)) {
+                if (ARRAY_ELEMENT_TYPE.equals(schemaType)) {
                     elementType = getElementTypeByName(elementName, getSchemaItems(subSchema));
                 } else {
                     elementType = getElementTypeByName(elementName, subSchema);
@@ -279,7 +278,7 @@ public class JacksonJSONSchema implements Schema {
         return nextSchema;
     }
 
-    private Map<String, Object> getSchemaItems(Map<String, Object> schema) {
+    public Map<String, Object> getSchemaItems(Map<String, Object> schema) {
         Map<String, Object> nextSchema = new HashMap<>();
         if (schema.containsKey(ITEMS_KEY)) {
             Object propertyList = schema.get(ITEMS_KEY);
@@ -332,7 +331,7 @@ public class JacksonJSONSchema implements Schema {
     private String getNamespaceAddedFieldName(String uri, String localName) throws InvalidPayloadException {
         if (uri != null) {
             String prefix = getPrefixForNamespace(uri);
-            if (!(prefix == null || prefix.length() == 0)) {
+            if (StringUtils.isNotEmpty(prefix)) {
                 return prefix + NAMESPACE_NAME_CONCAT_STRING + localName;
             } else if (prefix != null) {
                 return localName;
@@ -344,4 +343,8 @@ public class JacksonJSONSchema implements Schema {
         return localName;
     }
 
+    @Override
+    public Map getSchemaMap() {
+        return jsonSchemaMap;
+    }
 }

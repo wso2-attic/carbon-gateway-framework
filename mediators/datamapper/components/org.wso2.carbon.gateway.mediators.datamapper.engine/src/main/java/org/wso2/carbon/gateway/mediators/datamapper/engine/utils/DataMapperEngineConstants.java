@@ -37,5 +37,24 @@ public class DataMapperEngineConstants {
     public static final String ORG_APACHE_SYNAPSE_DATAMAPPER_EXECUTOR_POOL_SIZE =
             "org.apache.synapse.datamapper.executor.pool.size";
     public static final String SCHEMA_NAMESPACE_NAME_SEPARATOR = ":";
+    public static final String SCHEMA_XML_ELEMENT_TEXT_VALUE_FIELD = "_ELEMVAL";
+    public static final  String DMC_FILE_FUNCTION_PREFIX = "function ";
+    public static final  String DMC_FILE_DOLLAR_FUNCTION_PREFIX = "$function ";
+    public static final String XSI_NAMESPACE_URI = "http://www.w3.org/2001/XMLSchema-instance";
+    public static final String XMLNS = "xmlns";
+    public static final String PROPERTIES_KEY = "properties";
+    public static final String ATTRIBUTES_KEY = "attributes";
+    public static final String TYPE_KEY = "type";
+    public static final String ITEMS_KEY = "items";
+    public static final String VALUE_KEY = "value";
+    public static final String PROPERTIES_OBJECT_NAME = "DM_PROPERTIES";
+    public static final String EQUALS_SIGN = "=";
+    public static final String JS_STRINGIFY = "JSON.stringify";
+    public static final String BRACKET_OPEN = "(";
+    public static final String BRACKET_CLOSE = ")";
+    public static final String FUNCTION_NAME_CONST_1 = "map_S_";
+    public static final String FUNCTION_NAME_CONST_2 = "_S_";
+    public static final String NAME_SEPERATOR = "_Separat0r_";
+    public static final String TEXT = "text";
 
 }

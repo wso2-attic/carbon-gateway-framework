@@ -19,12 +19,13 @@ package org.wso2.carbon.gateway.mediators.datamapper.engine.input.builders;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 
-import java.io.IOException;
-import java.io.StringWriter;
-
 import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.BOOLEAN_ELEMENT_TYPE;
 import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.INTEGER_ELEMENT_TYPE;
 import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.NUMBER_ELEMENT_TYPE;
+import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.STRING_ELEMENT_TYPE;
+
+import java.io.IOException;
+import java.io.StringWriter;
 
 /**
  * This class implements {@link Builder} interface and JSON builder for data mapper engine using

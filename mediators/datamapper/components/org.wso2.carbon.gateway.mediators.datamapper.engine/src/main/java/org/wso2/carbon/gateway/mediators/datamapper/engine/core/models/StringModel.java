@@ -14,23 +14,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.gateway.mediators.datamapper.engine.input.builders;
-
-import java.io.IOException;
-
-import org.wso2.carbon.gateway.mediators.datamapper.engine.utils.ModelType;
+package org.wso2.carbon.gateway.mediators.datamapper.engine.core.models;
 
 /**
- * This class is a factory class to get {@link Builder} needed by the data mapper engine
+ * This class implements {@link Model} interface to hold String data
  */
-public class BuilderFactory {
+public class StringModel implements Model<String> {
 
-    public static Builder getBuilder(ModelType inputType) throws IOException {
-        switch (inputType) {
-            case JSON_STRING:
-                return new JSONBuilder();
-            default:
-                throw new IllegalArgumentException("Model builder for type " + inputType + " is not implemented.");
-        }
+    private String mapDataHolder;
+
+    public StringModel(String model) {
+        mapDataHolder = model;
+    }
+
+    @Override
+    public String getModel() {
+        return mapDataHolder;
+    }
+
+    @Override
+    public void setModel(String model) {
+        mapDataHolder = model;
     }
 }

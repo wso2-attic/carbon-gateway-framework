@@ -16,6 +16,15 @@
  */
 package org.wso2.carbon.gateway.mediators.datamapper.engine.output.formatters;
 
+import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.SCHEMA_ATTRIBUTE_FIELD_PREFIX;
+import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+
+import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.JSException;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.SchemaException;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.WriterException;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.models.Model;
@@ -23,14 +32,7 @@ import org.wso2.carbon.gateway.mediators.datamapper.engine.core.schemas.Schema;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.input.readers.events.ReaderEvent;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.input.readers.events.ReaderEventType;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.output.OutputMessageBuilder;
-import org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineUtils;
 
 /**
  * This class implements {@link Formatter} interface to read {@link Map} model and trigger events
@@ -39,17 +41,14 @@ import java.util.regex.Pattern;
  */
 public class MapOutputFormatter implements Formatter {
 
-    private static final String XSI_NAMESPACE_URI = "http://www.w3.org/2001/XMLSchema-instance";
+    public static final String RHINO_NATIVE_ARRAY_FULL_QUALIFIED_CLASS_NAME = "sun.org.mozilla.javascript.internal.NativeArray";
     private OutputMessageBuilder outputMessageBuilder;
-    private Schema outputSchema = null;
 
-    @Override
-    public void format(Model model, OutputMessageBuilder outputMessageBuilder, Schema outputSchema)
+    @Override public void format(Model model, OutputMessageBuilder outputMessageBuilder, Schema outputSchema)
             throws SchemaException, WriterException {
         if (model.getModel() instanceof Map) {
             this.outputMessageBuilder = outputMessageBuilder;
-            this.outputSchema = outputSchema;
-            Map<String, Object> mapOutputModel = (Map<String, Object>) model.getModel();
+            Map<Object, Object> mapOutputModel = (Map<Object, Object>) model.getModel();
             traverseMap(mapOutputModel);
             sendTerminateEvent();
         } else {
@@ -64,44 +63,62 @@ public class MapOutputFormatter implements Formatter {
      *
      * @param outputMap
      */
-    private void traverseMap(Map<String, Object> outputMap) throws SchemaException, WriterException {
-        Set<String> mapKeys = outputMap.keySet();
-        LinkedList<String> orderedKeyList = new LinkedList<>();
+    private void traverseMap(Map<Object, Object> outputMap) throws SchemaException, WriterException {
+        Set<Object> mapKeys = outputMap.keySet();
+        LinkedList<Object> orderedKeyList = new LinkedList<>();
         boolean arrayType = false;
         if (isMapContainArray(mapKeys)) {
             sendArrayStartEvent();
             arrayType = true;
         }
-        ArrayList<String> tempKeys = new ArrayList<>();
+        ArrayList<Object> tempKeys = new ArrayList<>();
         tempKeys.addAll(mapKeys);
         //Attributes should come first than other fields. So attribute should be listed first
-        for (String key : mapKeys) {
-            if (key.contains(DataMapperEngineConstants.SCHEMA_ATTRIBUTE_FIELD_PREFIX) && tempKeys.contains(key)) {
-                orderedKeyList.addFirst(key);
-                tempKeys.remove(key);
-            } else {
-                if (key.endsWith(DataMapperEngineConstants.SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX) && tempKeys.contains(key)) {
-                    String elementName = key.substring(0, key.lastIndexOf(DataMapperEngineConstants.SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX));
-                    orderedKeyList.addLast(key);
-                    orderedKeyList.addLast(elementName);
+        for (Object keyVal : mapKeys) {
+            if(keyVal instanceof String) {
+                String key= (String) keyVal;
+                if (key.contains(SCHEMA_ATTRIBUTE_FIELD_PREFIX) && tempKeys.contains(key)) {
+                    orderedKeyList.addFirst(key);
                     tempKeys.remove(key);
-                    tempKeys.remove(elementName);
-                } else if (tempKeys.contains(key)) {
-                    if (tempKeys.contains(key + DataMapperEngineConstants.SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX)) {
-                        orderedKeyList.addLast(key + DataMapperEngineConstants.SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX);
+                } else {
+                    if (key.endsWith(SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX) && tempKeys.contains(key)) {
+                        String elementName = key.substring(0, key.lastIndexOf(SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX));
                         orderedKeyList.addLast(key);
+                        orderedKeyList.addLast(elementName);
                         tempKeys.remove(key);
-                        tempKeys.remove(key + DataMapperEngineConstants.SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX);
-                    } else {
-                        orderedKeyList.addLast(key);
-                        tempKeys.remove(key);
+                        tempKeys.remove(elementName);
+                    } else if (tempKeys.contains(key)) {
+                        if (tempKeys.contains(key + SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX)) {
+                            orderedKeyList.addLast(key + SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX);
+                            orderedKeyList.addLast(key);
+                            tempKeys.remove(key);
+                            tempKeys.remove(key + SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX);
+                        } else {
+                            orderedKeyList.addLast(key);
+                            tempKeys.remove(key);
+                        }
                     }
                 }
+            }else if(keyVal instanceof Integer){
+                if (tempKeys.contains(keyVal)) {
+                        orderedKeyList.addLast((Integer) keyVal);
+                        tempKeys.remove(keyVal);
+                    }
             }
         }
         int mapKeyIndex = 0;
-        for (String key : orderedKeyList) {
-            Object value = outputMap.get(key);
+        for (Object keyVal : orderedKeyList) {
+            Object value = outputMap.get(keyVal);
+            String key = String.valueOf(keyVal);
+            // When Data Mapper runs in Java 7 array element is given as a Native Array object.
+            // This array object doesn't give values inside. That's why we used reflections in here
+            if (value != null && value.getClass().toString().contains(RHINO_NATIVE_ARRAY_FULL_QUALIFIED_CLASS_NAME)) {
+                try {
+                    value = DataMapperEngineUtils.getMapFromNativeArray(value);
+                } catch (JSException e) {
+                    throw new WriterException(e.getMessage(),e);
+                }
+            }
             if (value instanceof Map) {
                 // key value is a type of object or an array
                 if (arrayType) {
@@ -112,25 +129,29 @@ public class MapOutputFormatter implements Formatter {
                     */
                     if (mapKeyIndex != 0) {
                         sendAnonymousObjectStartEvent();
-                        createAndSendIdentifierFieldEvent(key);
                     }
-                    traverseMap((Map<String, Object>) value);
+                    traverseMap((Map<Object, Object>) value);
                     if (mapKeyIndex != mapKeys.size() - 1) {
                         sendObjectEndEvent(key);
                     }
                 } else {
                     sendObjectStartEvent(key);
-                    createAndSendIdentifierFieldEvent(key);
-                    traverseMap((Map<String, Object>) value);
-                    if (!key.endsWith(DataMapperEngineConstants.SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX)) {
+                    traverseMap((Map<Object, Object>) value);
+                    if (!key.endsWith(SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX)) {
                         sendObjectEndEvent(key);
                     }
                 }
             } else {
-                // Primitive value recieved to write
-                if (arrayType) {
+                // Primitive value received to write
+                if(arrayType){
                     // if it is an array of primitive values
+                    if (mapKeyIndex != 0) {
+                        sendAnonymousObjectStartEvent();
+                    }
                     sendPrimitiveEvent(key, value);
+                    if (mapKeyIndex != mapKeys.size() - 1) {
+                        sendObjectEndEvent(key);
+                    }
                 } else {
                     // if field value
                     sendFieldEvent(key, value);
@@ -140,20 +161,6 @@ public class MapOutputFormatter implements Formatter {
         }
         if (arrayType) {
             sendArrayEndEvent();
-        }
-    }
-
-    private void createAndSendIdentifierFieldEvent(String key) throws SchemaException, WriterException {
-        //sending events to create xsi:type attribute
-        Pattern identifierPattern = Pattern.compile("(_.+_type)");
-        Matcher matcher = identifierPattern.matcher(key);
-        while (matcher.find()) {
-            String s = matcher.group(0);
-            String stringArray[] = s.split("_");
-            String prefix = stringArray[stringArray.length - 2];
-            if (prefix.equals(outputSchema.getNamespaceMap().get(XSI_NAMESPACE_URI))) {
-                sendFieldEvent("attr_" + prefix + ":type", key.split("_" + prefix + "_type_")[1].replace('_', ':'));
-            }
         }
     }
 
@@ -169,15 +176,20 @@ public class MapOutputFormatter implements Formatter {
         getOutputMessageBuilder().notifyEvent(new ReaderEvent(ReaderEventType.ARRAY_END, null, null));
     }
 
-    private boolean isMapContainArray(Set<String> mapKeys) {
-        for (String key : mapKeys) {
-            if (DataMapperEngineConstants.ARRAY_ELEMENT_FIRST_NAME.equals(key)) {
-                return true;
-            } else {
+    private boolean isMapContainArray(Set<Object> mapKeys) {
+        for (Object key : mapKeys) {
+            try {
+                if(key instanceof String) {
+                    Integer.parseInt((String) key);
+                    continue;
+                }else if(key instanceof Integer){
+                    continue;
+                }
+            } catch (NumberFormatException e) {
                 return false;
             }
         }
-        return false;
+        return true;
     }
 
     private void sendArrayStartEvent() throws SchemaException, WriterException {

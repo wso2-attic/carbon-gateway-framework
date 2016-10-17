@@ -66,6 +66,22 @@
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
         </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang.wso2</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ws.commons.axiom</groupId>
+            <artifactId>axiom-api</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -103,10 +119,6 @@
                                     <symbolicName>org.wso2.carbon.gateway.mediators.datamapper.engine</symbolicName>
                                     <version>${carbon.gw.version}</version>
                                 </bundle>
-                                <!--bundle>
-                                    <symbolicName>json-simple</symbolicName>
-                                    <version>${json.simple.version}</version>
-                                </bundle-->
                                 <bundle>
                                     <symbolicName>jackson-core</symbolicName>
                                     <version>${fasterxml.jackson.version}</version>
@@ -118,6 +130,14 @@
                                 <bundle>
                                     <symbolicName>jackson-annotations</symbolicName>
                                     <version>${fasterxml.jackson.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>org.apache.ws.commons.axiom.axiom-api</symbolicName>
+                                    <version>${axiom.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>commons-lang</symbolicName>
+                                    <version>${commons.lang.version}</version>
                                 </bundle>
                             </bundles>
                         </configuration>

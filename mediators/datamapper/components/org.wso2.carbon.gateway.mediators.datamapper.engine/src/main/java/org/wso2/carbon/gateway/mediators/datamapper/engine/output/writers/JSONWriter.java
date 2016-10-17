@@ -18,14 +18,15 @@ package org.wso2.carbon.gateway.mediators.datamapper.engine.output.writers;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.InvalidPayloadException;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.SchemaException;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.WriterException;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.schemas.Schema;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.schemas.SchemaElement;
-import org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants;
-import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.InvalidPayloadException;
+
+import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.*;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -38,7 +39,7 @@ import java.util.List;
  */
 public class JSONWriter implements Writer {
 
-    private static final Logger log = LoggerFactory.getLogger(JSONWriter.class);
+    private static final Log log = LogFactory.getLog(JSONWriter.class);
     private Schema outputSchema;
     private JsonGenerator jsonGenerator;
     private StringWriter writer;
@@ -61,8 +62,8 @@ public class JSONWriter implements Writer {
     @Override public void writeStartObject(String name) throws WriterException {
         try {
             String schemaName = name;
-            if (name.endsWith(DataMapperEngineConstants.SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX)) {
-                schemaName = name.substring(0, name.lastIndexOf(DataMapperEngineConstants.SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX));
+            if (name.endsWith(SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX)) {
+                schemaName = name.substring(0, name.lastIndexOf(SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX));
             }
             schemaElementList.add(new SchemaElement(schemaName));
             String type = null;
@@ -71,9 +72,9 @@ public class JSONWriter implements Writer {
             } catch (InvalidPayloadException | SchemaException e) {
                 throw new WriterException(e.getMessage());
             }
-            if (DataMapperEngineConstants.OBJECT_ELEMENT_TYPE.equals(type)) {
+            if (OBJECT_ELEMENT_TYPE.equals(type)) {
                 jsonGenerator.writeObjectFieldStart(name);
-            } else if (DataMapperEngineConstants.STRING_ELEMENT_TYPE.equals(type)) {
+            } else if (STRING_ELEMENT_TYPE.equals(type)) {
                 jsonGenerator.writeObjectFieldStart(name);
             } else {
                 jsonGenerator.writeArrayFieldStart(name);
@@ -105,12 +106,12 @@ public class JSONWriter implements Writer {
 
     @Override public void writeEndObject(String objectName) throws WriterException {
         try {
-            if ((!DataMapperEngineConstants.ARRAY_ELEMENT_TYPE.equals(outputSchema.getElementTypeByName(schemaElementList)) && !schemaElementList
+            if ((!ARRAY_ELEMENT_TYPE.equals(outputSchema.getElementTypeByName(schemaElementList)) && !schemaElementList
                     .isEmpty()) && schemaElementList.get(schemaElementList.size() - 1).getElementName()
                     .equals(objectName)) {
                 schemaElementList.remove(schemaElementList.size() - 1);
                 jsonGenerator.writeEndObject();
-            } else if (DataMapperEngineConstants.ARRAY_ELEMENT_TYPE.equals(outputSchema.getElementTypeByName(schemaElementList))) {
+            } else if (ARRAY_ELEMENT_TYPE.equals(outputSchema.getElementTypeByName(schemaElementList))) {
                 if (!outputSchema.isCurrentArrayIsPrimitive()) {
                     jsonGenerator.writeEndObject();
                 }

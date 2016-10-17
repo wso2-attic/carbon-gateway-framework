@@ -16,20 +16,26 @@
  */
 package org.wso2.carbon.gateway.mediators.datamapper.engine.core.executors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.JSException;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.SchemaException;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.mapper.JSFunction;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.mapper.MappingResource;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.models.MapModel;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.models.Model;
+import org.wso2.carbon.gateway.mediators.datamapper.engine.core.models.StringModel;
+import org.wso2.carbon.gateway.mediators.datamapper.engine.output.formatters.MapOutputFormatter;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants;
-import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.JSException;
+import org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineUtils;
 
-import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+
+import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.EQUALS_SIGN;
+import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.PROPERTIES_OBJECT_NAME;
+
 import java.util.Map;
 
 /**
@@ -38,8 +44,8 @@ import java.util.Map;
  */
 public class ScriptExecutor implements Executor {
 
+    private static final Log log = LogFactory.getLog(ScriptExecutor.class);
     private ScriptEngine scriptEngine;
-    private static final Logger log = LoggerFactory.getLogger(ScriptExecutor.class);
 
     /**
      * Create a script executor of the provided script executor type
@@ -63,21 +69,24 @@ public class ScriptExecutor implements Executor {
         }
     }
 
-    @Override public Model execute(MappingResource mappingResource, String inputVariable)
+    @Override
+    public Model execute(MappingResource mappingResource, String inputVariable)
             throws JSException, SchemaException {
         try {
             JSFunction jsFunction = mappingResource.getFunction();
             injectInputVariableToEngine(mappingResource.getInputSchema().getName(), inputVariable);
             scriptEngine.eval(jsFunction.getFunctionBody());
-            Invocable invocable = (Invocable) scriptEngine;
-            Object result = invocable.invokeFunction(jsFunction.getFunctionName());
+            Object result = scriptEngine.eval(jsFunction.getFunctionName());
             if (result instanceof Map) {
                 return new MapModel((Map<String, Object>) result);
+            } else if (result instanceof String) {
+                return new StringModel((String) result);
+            } else if (result != null && result.getClass().toString()
+                    .contains(MapOutputFormatter.RHINO_NATIVE_ARRAY_FULL_QUALIFIED_CLASS_NAME)) {
+                return new MapModel(DataMapperEngineUtils.getMapFromNativeArray(result));
             }
         } catch (ScriptException e) {
             throw new JSException("Script engine unable to execute the script " + e);
-        } catch (NoSuchMethodException e) {
-            throw new JSException("Undefined method called to execute " + e);
         }
         throw new JSException("Failed to execute mapping function");
     }

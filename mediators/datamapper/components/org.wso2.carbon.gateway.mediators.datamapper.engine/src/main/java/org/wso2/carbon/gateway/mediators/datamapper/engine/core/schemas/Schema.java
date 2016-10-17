@@ -16,11 +16,11 @@
  */
 package org.wso2.carbon.gateway.mediators.datamapper.engine.core.schemas;
 
-import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.SchemaException;
-import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.InvalidPayloadException;
-
 import java.util.List;
 import java.util.Map;
+
+import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.InvalidPayloadException;
+import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.SchemaException;
 
 /**
  * Interface to represent schema in data mapper engine.
@@ -59,4 +59,6 @@ public interface Schema {
     Map<String, String> getNamespaceMap();
 
     boolean isCurrentArrayIsPrimitive();
+
+    Map getSchemaMap();
 }

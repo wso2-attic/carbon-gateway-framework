@@ -40,7 +40,7 @@ public class DataMapperMediatorProvider implements MediatorProvider {
 
     @Override
     public String getName() {
-        return "DataMapper";
+        return "datamap";
     }
 
     @Override

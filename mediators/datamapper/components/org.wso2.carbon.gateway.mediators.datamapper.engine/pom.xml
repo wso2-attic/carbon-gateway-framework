@@ -33,8 +33,20 @@
 
     <dependencies>
         <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang.wso2</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.json.wso2</groupId>
             <artifactId>json</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
@@ -53,12 +65,8 @@
             <artifactId>json-simple</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
+            <groupId>org.apache.ws.commons.axiom</groupId>
+            <artifactId>axiom-api</artifactId>
         </dependency>
     </dependencies>
 
@@ -69,9 +77,15 @@
         </export.package>
         <import.package>
             org.osgi.framework.*;version="${osgi.framework.import.version.range}",
-            org.wso2.carbon.gateway.core.*,
+            org.wso2.carbon.gateway.core.*;version="${carbon.gw.import.version.range}",
             org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
-            *;resolution:=optional,
+            org.apache.commons.logging.*;version="${commons.logging.import.version.range}",
+            com.fasterxml.jackson.*; version="${fasterxml.jackson.import.version.range}",
+            org.apache.ws.commons.axiom.*;version="${axiom.version}",
+            javax.xml.*;version=0.0.0,
+            org.apache.axiom.om;version=0.0.0,
+            javax.script; version="0.0.0",
+            org.apache.commons.lang;version="${commons.lang.import.version.range}"
         </import.package>
     </properties>
 </project>

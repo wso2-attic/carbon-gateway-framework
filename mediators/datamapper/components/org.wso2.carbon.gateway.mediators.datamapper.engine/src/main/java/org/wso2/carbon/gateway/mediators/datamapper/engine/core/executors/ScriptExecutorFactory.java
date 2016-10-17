@@ -16,9 +16,10 @@
  */
 package org.wso2.carbon.gateway.mediators.datamapper.engine.core.executors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants;
+import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.DEFAULT_DATAMAPPER_ENGINE_POOL_SIZE;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class act as a factory to get the requested script executor
@@ -27,7 +28,7 @@ public class ScriptExecutorFactory {
 
     private static ScriptExecutorPool executorPool = null;
     private static ScriptExecutorType scriptExecutorType = ScriptExecutorType.NASHORN;
-    private static final Logger log = LoggerFactory.getLogger(ScriptExecutorFactory.class);
+    private static final Log log = LogFactory.getLog(ScriptExecutorFactory.class);
 
     /**
      * This private constructor added to hide the implicit public constructor
@@ -65,7 +66,7 @@ public class ScriptExecutorFactory {
                 log.debug("Script Engine set to Nashorn");
             }
 
-            int executorPoolSize = DataMapperEngineConstants.DEFAULT_DATAMAPPER_ENGINE_POOL_SIZE;
+            int executorPoolSize = DEFAULT_DATAMAPPER_ENGINE_POOL_SIZE;
             if (executorPoolSizeStr != null) {
                 executorPoolSize = Integer.parseInt(executorPoolSizeStr);
                 log.debug("Script executor pool size set to " + executorPoolSize);

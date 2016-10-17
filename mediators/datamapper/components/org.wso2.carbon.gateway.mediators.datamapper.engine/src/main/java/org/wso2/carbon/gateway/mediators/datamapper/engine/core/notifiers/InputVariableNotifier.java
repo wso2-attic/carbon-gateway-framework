@@ -16,9 +16,9 @@
  */
 package org.wso2.carbon.gateway.mediators.datamapper.engine.core.notifiers;
 
-import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.SchemaException;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.JSException;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.ReaderException;
+import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.SchemaException;
 
 public interface InputVariableNotifier {
 

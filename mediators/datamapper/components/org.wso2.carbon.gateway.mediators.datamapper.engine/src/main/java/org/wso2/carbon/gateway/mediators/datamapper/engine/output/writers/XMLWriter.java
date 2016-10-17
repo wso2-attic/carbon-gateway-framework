@@ -16,16 +16,21 @@
  */
 package org.wso2.carbon.gateway.mediators.datamapper.engine.output.writers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.SchemaException;
-import org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.WriterException;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.schemas.Schema;
+import org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+
+import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.SCHEMA_ATTRIBUTE_FIELD_PREFIX;
+import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX;
+import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.SCHEMA_XML_ELEMENT_TEXT_VALUE_FIELD;
+
 import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.Map;
@@ -36,7 +41,7 @@ import java.util.Stack;
  */
 public class XMLWriter implements Writer {
 
-    private static final Logger log = LoggerFactory.getLogger(XMLWriter.class);
+    private static final Log log = LogFactory.getLog(XMLWriter.class);
     private StringWriter stringWriter;
     private XMLStreamWriter xmlStreamWriter;
     private Schema outputSchema;
@@ -44,6 +49,8 @@ public class XMLWriter implements Writer {
     private String latestElementName;
     private Map<String, String> namespaceMap;
     private static final String NAMESPACE_SEPARATOR = "_";
+    private static final String XSI_TYPE_IDENTIFIER = "_xsi_type_";
+
 
     public XMLWriter(Schema outputSchema) throws SchemaException, WriterException {
         this.outputSchema = outputSchema;
@@ -53,7 +60,7 @@ public class XMLWriter implements Writer {
     }
 
     private void init(Schema outputSchema) throws SchemaException, WriterException {
-        XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
+        XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
         try {
             xmlStreamWriter = xmlOutputFactory.createXMLStreamWriter(stringWriter);
             //creating root element of the xml message
@@ -71,8 +78,8 @@ public class XMLWriter implements Writer {
 
     @Override public void writeStartObject(String name) throws WriterException {
         try {
-            if (name.endsWith(DataMapperEngineConstants.SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX)) {
-                latestElementName = name.substring(0, name.lastIndexOf(DataMapperEngineConstants.SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX));
+            if (name.endsWith(SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX)) {
+                latestElementName = name.substring(0, name.lastIndexOf(SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX));
                 writeStartElement(latestElementName, xmlStreamWriter);
             } else {
                 writeStartElement(name, xmlStreamWriter);
@@ -88,8 +95,8 @@ public class XMLWriter implements Writer {
             //with in a element attributes must come first before any of other field values
             if (fieldValue != null) {
                 String value = getFieldValueAsString(fieldValue);
-                if (name.contains(DataMapperEngineConstants.SCHEMA_ATTRIBUTE_FIELD_PREFIX)) {
-                    String attributeNameWithNamespace = name.replaceFirst(DataMapperEngineConstants.SCHEMA_ATTRIBUTE_FIELD_PREFIX, "");
+                if (name.contains(SCHEMA_ATTRIBUTE_FIELD_PREFIX)) {
+                    String attributeNameWithNamespace = name.replaceFirst(SCHEMA_ATTRIBUTE_FIELD_PREFIX, "");
                     if (attributeNameWithNamespace.contains("_")) {
                         String[] attributeNameArray = attributeNameWithNamespace.split("_");
                         if (namespaceMap.values().contains(attributeNameArray[0])) {
@@ -108,6 +115,8 @@ public class XMLWriter implements Writer {
                     } else {
                         xmlStreamWriter.writeAttribute(attributeNameWithNamespace, value);
                     }
+                } else if (name.equals(SCHEMA_XML_ELEMENT_TEXT_VALUE_FIELD)){
+                    xmlStreamWriter.writeCharacters(value);
                 } else if (name.equals(latestElementName)) {
                     xmlStreamWriter.writeCharacters(value);
                     xmlStreamWriter.writeEndElement();
@@ -171,21 +180,30 @@ public class XMLWriter implements Writer {
     }
 
     @Override public void writePrimitive(Object value) throws WriterException {
-        //TODO implement write primitive
-        writeField(latestElementName,value);
+        try {
+            xmlStreamWriter.writeCharacters(getFieldValueAsString(value));
+        } catch (XMLStreamException e) {
+            throw new WriterException(e.getMessage());
+        }
     }
 
     private void writeStartElement(String name, XMLStreamWriter xMLStreamWriter) throws XMLStreamException {
         String prefix = name.split(NAMESPACE_SEPARATOR)[0];
         if (namespaceMap.values().contains(prefix)) {
-            String nameWithoutPrefix = name.split(NAMESPACE_SEPARATOR)[1];
+            if (name.contains(DataMapperEngineConstants.NAME_SEPERATOR)) {
+                name = name.split(DataMapperEngineConstants.NAME_SEPERATOR)[0];
+            }
+            name = name.replaceFirst(prefix + NAMESPACE_SEPARATOR, "");
             Iterator<Map.Entry<String, String>> entryIterator = namespaceMap.entrySet().iterator();
             while (entryIterator.hasNext()) {
                 Map.Entry<String, String> entry = entryIterator.next();
                 if (prefix.equals(entry.getValue())) {
-                    xMLStreamWriter.writeStartElement(prefix, nameWithoutPrefix, entry.getKey());
+                    xMLStreamWriter.writeStartElement(prefix, name, entry.getKey());
                 }
             }
+        } else if (name.contains(DataMapperEngineConstants.NAME_SEPERATOR)) {
+            name = name.split(DataMapperEngineConstants.NAME_SEPERATOR)[0];
+            xMLStreamWriter.writeStartElement(name);
         } else {
             xMLStreamWriter.writeStartElement(name);
         }

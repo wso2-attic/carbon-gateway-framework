@@ -306,6 +306,36 @@
                 <artifactId>json-simple</artifactId>
                 <version>${json.simple.version}</version>
             </dependency>
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>${commons-logging.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-lang.wso2</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>${commons.lang.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sf.opencsv</groupId>
+                <artifactId>opencsv</artifactId>
+                <version>${opencsv.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>${commons-logging.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-lang.wso2</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>${commons.lang.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sf.opencsv</groupId>
+                <artifactId>opencsv</artifactId>
+                <version>${opencsv.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -396,6 +426,7 @@
 
         <carbon.gw.version>1.0.0-SNAPSHOT</carbon.gw.version>
         <carbon.gw.package.export.version>1.0.0</carbon.gw.package.export.version>
+        <carbon.gw.import.version.range>[1.0.0, 2.0.0)</carbon.gw.import.version.range>
 
         <osgi.api.version>6.0.0</osgi.api.version>
         <equinox.osgi.version>3.10.2.v20150203-1939</equinox.osgi.version>
@@ -416,7 +447,7 @@
 
         <carbon.messaging.version>1.0.8-SNAPSHOT</carbon.messaging.version>
         <axiom.version>1.2.11-wso2v10</axiom.version>
-        <axiom.import.version.range>[1.2.10-wso2v10,1.2.12-wso2v10)</axiom.import.version.range>
+        <axiom.import.version.range>[1.2.11, 1.3.0)</axiom.import.version.range>
 
         <carbon.messaging.package.import.version.range>[0.0.0, 2.0.0)
         </carbon.messaging.package.import.version.range>
@@ -449,7 +480,13 @@
 
         <orbit.version.json>2.0.0.wso2v1</orbit.version.json>
         <fasterxml.jackson.version>2.6.1.wso2v1</fasterxml.jackson.version>
+        <fasterxml.jackson.import.version.range>[2.6.1, 2.7.0)</fasterxml.jackson.import.version.range>
         <json.simple.version>1.1.1</json.simple.version>
+        <commons-logging.version>1.1.1</commons-logging.version>
+        <commons.logging.import.version.range>[1.1.1, 1.2.0)</commons.logging.import.version.range>
+        <commons.lang.version>2.6.0.wso2v1</commons.lang.version>
+        <commons.lang.import.version.range>[2.6.0, 2.7.0)</commons.lang.import.version.range>
+        <opencsv.version>2.3</opencsv.version>
     </properties>
 
     <modules>

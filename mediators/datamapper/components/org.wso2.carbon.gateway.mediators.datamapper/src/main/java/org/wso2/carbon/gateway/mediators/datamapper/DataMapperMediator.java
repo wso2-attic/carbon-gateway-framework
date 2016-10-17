@@ -25,13 +25,14 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.Constants;
-import org.wso2.carbon.gateway.core.config.Parameter;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.flow.AbstractMediator;
 import org.wso2.carbon.gateway.core.flow.contentaware.ByteBufferBackedInputStream;
@@ -46,69 +47,76 @@ import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.DefaultCarbonMessage;
 
 /**
- * Sample Custom Mediator
+ * This class contains the mediation logic for the Data Mapper Mediator
  */
 public class DataMapperMediator extends AbstractMediator {
 
     private static final Logger log = LoggerFactory.getLogger(DataMapperMediator.class);
-
     private static final String DM_CONF_DIR = "deployment" + File.separator + "resources" + File.separator + "datamapper";
-
-    private String configKey, inSchemaKey, outSchemaKey;
+    private String configKey;
+    private String inSchemaKey;
+    private String outSchemaKey;
     private MappingResource mappingResource = null;
-    private String inputType, outputType;
+    private String inputType;
+    private String outputType;
 
     public DataMapperMediator() {
     }
 
+    @Override
     public void setParameters(ParameterHolder parameterHolder) {
         try {
-            Parameter inputTypeParam = parameterHolder.getParameter("input-type");
-            if (inputTypeParam == null) {
+            Map<String, String> parameters = new HashMap<>();
+            String paramString = parameterHolder.getParameter("parameters").getValue();
+            String[] paramArray = paramString.split(",");
+
+            for (String param : paramArray) {
+                String[] params = param.split("=", 2);
+                if (params.length == 2) {
+                    parameters.put(params[0].trim(), params[1].trim());
+                }
+            }
+            
+            if (parameters.containsKey(Constants.INPUT_TYPE)) {
+                inputType = parameters.get(Constants.INPUT_TYPE);
+            } else {
                 handleException("DataMapper mediator : InputType is not specified");
-            } else { // else is not required, but to make findbugs happy
-                inputType = inputTypeParam.getValue();
             }
 
-            Parameter outputTypeParam = parameterHolder.getParameter("output-type");
-            if (outputTypeParam == null) {
+            if (parameters.containsKey(Constants.OUTPUT_TYPE)) {
+                outputType = parameters.get(Constants.OUTPUT_TYPE);
+            } else {
                 handleException("DataMapper mediator : OutputType is not specified");
-            } else {
-                outputType = outputTypeParam.getValue();
             }
 
-            Parameter configParam = parameterHolder.getParameter("config");
-            if (configParam == null) {
+            if (parameters.containsKey(Constants.CONFIG)) {
+                configKey = parameters.get(Constants.CONFIG);
+            } else {
                 handleException("DataMapper mediator : mapping configuration is not specified");
-            } else {
-                configKey = configParam.getValue();
             }
 
-            Parameter inSchemaParam = parameterHolder.getParameter("input-schema");
-            if (inSchemaParam == null) {
+            if (parameters.containsKey(Constants.INPUT_SCHEMA)) {
+                inSchemaKey = parameters.get(Constants.INPUT_SCHEMA);
+            } else {
                 handleException("DataMapper mediator : input schema is not specified");
-            } else {
-                inSchemaKey = inSchemaParam.getValue();
             }
 
-            Parameter outSchemaParam = parameterHolder.getParameter("output-schema");
-            if (outSchemaParam == null) {
-                handleException("DataMapper mediator : output schema is not specified");
+            if (parameters.containsKey(Constants.OUTPUT_SCHEMA)) {
+                outSchemaKey = parameters.get(Constants.OUTPUT_SCHEMA);
             } else {
-                outSchemaKey = outSchemaParam.getValue();
+                handleException("DataMapper mediator : output schema is not specified");
             }
 
             mappingResource = getMappingResource();
         } catch (Exception ex) {
             log.error("DataMapper Mediator : Error while setting parameters", ex);
             //TODO: Do proper error handling here. Currently there is no way to fail the deployment for missing configs
-            //TODO: parameters
         }
     }
 
     @Override
     public String getName() {
-        return "SampleCustomMediator";
+        return "datamap";
     }
 
     @Override
@@ -122,16 +130,15 @@ public class DataMapperMediator extends AbstractMediator {
      */
     private CarbonMessage transform(CarbonMessage cMsg) throws Exception {
         try {
-
+            //FIXME: can't we read this from a config?
             String dmExecutorPoolSize = "100";
 
             MappingHandler mappingHandler = new MappingHandler(mappingResource, inputType, outputType,
-                                                               dmExecutorPoolSize);
-
+                    dmExecutorPoolSize);
+            
             //execute mapping on the input stream
             String outputResult = mappingHandler.doMap(getPayloadStream(cMsg));
 
-            // Due to a bug we have to create a new carbon message
             DefaultCarbonMessage transformedCarbonMsg = new DefaultCarbonMessage();
             transformedCarbonMsg.setStringMessageBody(outputResult);
 
@@ -140,29 +147,33 @@ public class DataMapperMediator extends AbstractMediator {
                 transformedCarbonMsg.setProperty(key, cMsg.getProperty(key));
             }
 
-            //TODO: Need to improve this logic, we shouldn't hard code the content-type here
-            if (Constants.JSON.equalsIgnoreCase(outputType)) {
-                transformedCarbonMsg.setHeader(Constants.HTTP_CONTENT_TYPE, Constants.MEDIA_TYPE_APPLICATION_JSON);
-            } else if (Constants.XML.equalsIgnoreCase(outputType)) {
-                transformedCarbonMsg.setHeader(Constants.HTTP_CONTENT_TYPE, Constants.MEDIA_TYPE_APPLICATION_XML);
-            } else {
-                transformedCarbonMsg.setHeader(Constants.HTTP_CONTENT_TYPE, outputType);
-            }
+            // Set message headers
+            transformedCarbonMsg.setHeader(Constants.HTTP_CONTENT_TYPE, getContentType(outputType));
             transformedCarbonMsg.setHeader(Constants.HTTP_CONTENT_LENGTH,
-                    (String.valueOf(outputResult.getBytes(Charset.forName(StandardCharsets.UTF_8.toString())).length)));
-
-            //ByteBuffer outputByteBuffer = ByteBuffer.wrap(outputResult.getBytes(Charset.forName("UTF-8")));
-            //cMsg.addMessageBody(outputByteBuffer);
-            //cMsg.setEndOfMsgAdded(true);
+                    String.valueOf(outputResult.getBytes(Charset.forName(StandardCharsets.UTF_8.toString())).length));
 
             return transformedCarbonMsg;
-
-        } catch (ReaderException | InterruptedException | SchemaException
-                | IOException | WriterException e) {
-            handleException("DataMapper mediator : mapping failed");
+        } catch (ReaderException | InterruptedException | SchemaException | IOException | WriterException e) {
+            handleException("DataMapper mediator : mapping failed", e);
         }
 
         return null; // we never get here, just to make compiler happy
+    }
+    
+    /**
+     * Get the content-type for a given output-type
+     * 
+     * @param outputType
+     * @return
+     */
+    private String getContentType(String outputType) {
+        if (Constants.JSON.equalsIgnoreCase(outputType)) {
+            return Constants.MEDIA_TYPE_APPLICATION_JSON;
+        } else if (Constants.XML.equalsIgnoreCase(outputType)) {
+            return Constants.MEDIA_TYPE_APPLICATION_XML;
+        } else {
+            return outputType;
+        }
     }
 
     /**
@@ -177,7 +188,7 @@ public class DataMapperMediator extends AbstractMediator {
         InputStream outputSchemaStream = getConfigStream(outSchemaKey);
         try {
             // Creates a new mappingResourceLoader
-            return new MappingResource(inputSchemaStream, outputSchemaStream, configFileInputStream);
+            return new MappingResource(inputSchemaStream, outputSchemaStream, configFileInputStream, outputType);
         } catch (SchemaException | JSException e) {
             handleException(e.getMessage());
         }
@@ -196,8 +207,9 @@ public class DataMapperMediator extends AbstractMediator {
     }
 
     private InputStream getPayloadStream(CarbonMessage msg) {
-        BlockingQueue<ByteBuffer> msgBody = new LinkedBlockingQueue<>(msg.getFullMessageBody());
+        BlockingQueue<ByteBuffer> msgBody = new LinkedBlockingQueue<>(msg.getCopyOfFullMessageBody());
         return new ByteBufferBackedInputStream(msgBody);
     }
 
 }
+
