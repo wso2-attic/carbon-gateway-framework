@@ -27,6 +27,7 @@ import org.wso2.carbon.gateway.core.flow.contentaware.exceptions.MessageBodyEval
 public interface MessageBodyEvaluator {
     /**
      * Evaluates a message given an Path language.
+     *
      * @param message message to be evaluated
      * @return
      */
@@ -34,6 +35,7 @@ public interface MessageBodyEvaluator {
 
     /**
      * Returns the relevant path language of the MessageBody evaluator.
+     *
      * @return Path Language eg: xpath
      */
     Constants.PATHLANGUAGE getPathLanguage();
