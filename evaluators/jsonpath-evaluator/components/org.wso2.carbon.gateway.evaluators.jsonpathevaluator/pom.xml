@@ -6,6 +6,7 @@
         <artifactId>org.wso2.carbon.gateway.evaluators.jsonpathevaluator.parent</artifactId>
         <groupId>org.wso2.carbon.gateway</groupId>
         <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -72,7 +73,8 @@
             org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
             org.wso2.carbon.messaging,
             javax.xml.*;version=0.0.0,
-            org.apache.axiom.*;version="0.0.0"
+            org.apache.axiom.*;version="0.0.0",
+            com.jayway.jsonpath.*;version="${jayway.version}"
         </import.package>
         <osgi.framework.import.version.range>[1.8.0, 2.0.0)</osgi.framework.import.version.range>
     </properties>

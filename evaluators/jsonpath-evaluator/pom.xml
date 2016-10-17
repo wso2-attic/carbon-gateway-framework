@@ -15,4 +15,9 @@
 
     <packaging>pom</packaging>
 
+    <modules>
+        <module>components/org.wso2.carbon.gateway.evaluators.jsonpathevaluator</module>
+        <module>features/org.wso2.carbon.gateway.evaluators.jsonpathevaluator.feature</module>
+    </modules>
+
 </project>

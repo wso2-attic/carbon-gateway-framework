@@ -16,14 +16,14 @@
  * under the License.
  */
 
-package org.wso2.carbon.gateway.evaluators.xpathevaluator.internal;
+package org.wso2.carbon.gateway.evaluators.jsonpathevaluator.internal;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.MessageBodyEvaluator;
-import org.wso2.carbon.gateway.evaluators.xpathevaluator.JSONPathEvaluator;
+import org.wso2.carbon.gateway.evaluators.jsonpathevaluator.JSONPathEvaluator;
 
 /**
  * OSGi BundleActivator of the XPathEvaluator.

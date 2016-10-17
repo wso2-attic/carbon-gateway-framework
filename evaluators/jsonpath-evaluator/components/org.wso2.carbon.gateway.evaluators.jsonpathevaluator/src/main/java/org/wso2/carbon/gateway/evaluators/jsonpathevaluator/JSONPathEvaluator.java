@@ -18,10 +18,13 @@
 
 package org.wso2.carbon.gateway.evaluators.jsonpathevaluator;
 
+import com.jayway.jsonpath.JsonPath;
 import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.MessageBodyEvaluator;
 import org.wso2.carbon.gateway.core.flow.contentaware.exceptions.MessageBodyEvaluationException;
 
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * This class evaluates jsonpath expressions.
@@ -29,14 +32,23 @@ import org.wso2.carbon.gateway.core.flow.contentaware.exceptions.MessageBodyEval
 public class JSONPathEvaluator implements MessageBodyEvaluator {
 
     @Override
-    public Object evaluate(Object message, String expression) throws MessageBodyEvaluationException {
-        //TODO: Implement
-        return null;
+    public Object evaluate(Object inputStreamObject, String expression) throws MessageBodyEvaluationException {
+        JsonPath jsonPath = JsonPath.compile(expression);
+        try {
+            if (inputStreamObject instanceof InputStream) {
+                Object result = jsonPath.read((InputStream) inputStreamObject);
+                return result;
+            } else {
+                throw new MessageBodyEvaluationException("The type " + inputStreamObject.getClass()
+                        + "is not supported");
+            }
+        } catch (IOException e) {
+            throw new MessageBodyEvaluationException(e);
+        }
     }
 
     @Override
     public Constants.PATHLANGUAGE getPathLanguage() {
-        //TODO: Implement
-        return null;
+        return Constants.PATHLANGUAGE.JSONPATH;
     }
 }
