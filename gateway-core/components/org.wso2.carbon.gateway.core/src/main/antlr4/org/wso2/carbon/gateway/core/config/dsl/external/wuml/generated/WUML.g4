@@ -236,13 +236,13 @@ localVariableDeclarationStatement
 localVariableInitializationStatement
     :   type    Identifier  '='   literal ';'
     |   classType newTypeObjectCreation ';'
-    |   classType mediatorCall ';' // calling a mediator that will return a message
+    |   classType Identifier '=' mediatorCall ';' // calling a mediator that will return a message
     ;
 
 localVariableAssignmentStatement
     :   Identifier  '='   literal ';'
     |   newTypeObjectCreation ';'
-    |   mediatorCall ';'
+    |   Identifier '=' mediatorCall ';'
     ;
 
 logMediatorStatement
@@ -256,33 +256,17 @@ newTypeObjectCreation
 
 //mediator calls
 mediatorCall
-    :  Identifier '='
-    (   invokeMediatorCall
-    |   sendToMediatorCall
-    |   dataMapMediatorCall
-    |   receiveFromMediatorCall
-    |   customMediatorCall
-    )
+    :   Identifier '(' ( keyValuePairs )? ')'
     ;
 
-invokeMediatorCall
-    :   'invoke' '(' Identifier ',' Identifier ')'
+keyValuePairs
+    : keyValuePair ( ',' keyValuePair )*
     ;
 
-sendToMediatorCall
-    :   'sendTo' '(' Identifier ',' Identifier ')'
-    ;
-
-dataMapMediatorCall
-    :   'datamap' '(' literal ',' Identifier ')'
-    ;
-
-receiveFromMediatorCall
-    :   'receiveFrom' '(' Identifier ',' Identifier ')'
-    ;
-
-customMediatorCall
-    :   Identifier '.mediator' '(' Identifier ( ',' StringLiteral )? ')'
+// classType is also used as a parameter identifier because, 'endpoint' and 'message' is also commenly used as
+// method argument identifiers
+keyValuePair
+    :   (Identifier | classType) '='  ( literal | Identifier )
     ;
 
 logMediatorCall
@@ -297,7 +281,7 @@ messageModificationStatement
 
 //return (reply) Statement specification
 returnStatement
-    :   'reply' (Identifier | invokeMediatorCall)? ';'
+    :   'reply' (Identifier | mediatorCall)? ';'
     ;
 
 // expression, which will be used to build the parExpression used inside if condition

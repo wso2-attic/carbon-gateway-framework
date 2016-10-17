@@ -39,8 +39,8 @@ public class CallMediator extends AbstractMediator implements Invoker {
 
     private static final Logger log = LoggerFactory.getLogger(CallMediator.class);
     private String outboundEPKey;
-    private String integration;
-    private String inputMessageParameter;
+    private String integrationKey;
+    private String messageKey;
     private OutboundEndpoint outboundEndpoint;
 
     public CallMediator() {
@@ -56,8 +56,8 @@ public class CallMediator extends AbstractMediator implements Invoker {
 
     public void setParameters(ParameterHolder parameterHolder) {
         outboundEPKey = parameterHolder.getParameter("endpointKey").getValue();
-        integration = parameterHolder.getParameter("integrationKey").getValue();
-        inputMessageParameter = parameterHolder.getParameter("inputMessageParameter").getValue();
+        integrationKey = parameterHolder.getParameter("integrationKey").getValue();
+        messageKey = parameterHolder.getParameter("messageKey").getValue();
         if (parameterHolder.getParameter("returnVariableKey") != null) {
             returnedOutput = parameterHolder.getParameter("returnVariableKey").getValue();
         }
@@ -74,7 +74,7 @@ public class CallMediator extends AbstractMediator implements Invoker {
         OutboundEndpoint endpoint = outboundEndpoint;
         if (endpoint == null) {
             endpoint = IntegrationConfigRegistry.getInstance()
-                    .getIntegrationConfig(integration).getOutbound(outboundEPKey);
+                    .getIntegrationConfig(integrationKey).getOutbound(outboundEPKey);
 
             if (endpoint == null) {
                 log.error("Outbound Endpoint : " + outboundEPKey + "not found ");
@@ -93,7 +93,7 @@ public class CallMediator extends AbstractMediator implements Invoker {
             //TODO decide and remove/add any other properties (removed above to enable service chaining support)
         }
 
-        CarbonMessage inputCarbonMessage = (CarbonMessage) getObjectFromContext(carbonMessage, inputMessageParameter);
+        CarbonMessage inputCarbonMessage = (CarbonMessage) getObjectFromContext(carbonMessage, messageKey);
         // if the message is not already built
         if (inputCarbonMessage.getMessageDataSource() == null) {
             carbonMessage = inputCarbonMessage;

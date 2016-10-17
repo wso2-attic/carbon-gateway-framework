@@ -588,35 +588,67 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     }
 
     @Override
-    public void exitInvokeMediatorCall(WUMLParser.InvokeMediatorCallContext ctx) {
-        /*  Implementation is done to directly call the backend and respond.
-            Only supports when "return invoke(EP, message)"
-            "message m = invoke(EP, message)" not supported
-         */
-
-        //Add the call mediator
-        Mediator callMediator = MediatorProviderRegistry.getInstance().getMediator("call");
-
-        ParameterHolder parameterHolder = new ParameterHolder();
-        parameterHolder.addParameter(new Parameter("endpointKey", ctx.Identifier().get(0).getText()));
-        parameterHolder.addParameter(new Parameter("inputMessageParameter", ctx.Identifier().get(1).getText()));
-        parameterHolder.addParameter(new Parameter("integrationKey", integrationName));
-
-        if (ctx.parent instanceof  WUMLParser.MediatorCallContext) {
-            parameterHolder.addParameter(new Parameter("returnVariableKey",
-                    ((WUMLParser.MediatorCallContext) ((WUMLParser.InvokeMediatorCallContext) ctx).parent).Identifier()
-                            .getText()));
-        }
-
-        callMediator.setParameters(parameterHolder);
-
-        dropMediatorFilterAware(callMediator);
-    }
-
-    @Override
     public void exitResourceName(WUMLParser.ResourceNameContext ctx) {
         /* Creating the resource */
         this.currentResource = new Resource(ctx.Identifier().getText());
+    }
+
+    /**
+     * Handle events regarding all the data manipulation mediators (including custom mediators)
+     * @param ctx
+     */
+    @Override
+    public void exitMediatorCall(WUMLParser.MediatorCallContext ctx) {
+        String mediatorId =  ctx.Identifier().getText();
+        // call mediator is specified in the language as "invoke". This is a special case.
+        if ("invoke".equals(mediatorId)) {
+            mediatorId = "call";
+        }
+
+        Mediator mediator = MediatorProviderRegistry.getInstance().getMediator(mediatorId);
+
+        if (mediator != null) {
+            ParameterHolder parameterHolder  = new ParameterHolder();
+            String key, value;
+            // passing all the mediator input arguments
+            if (ctx.keyValuePairs() != null) {
+                for (WUMLParser.KeyValuePairContext keyValuePair : ctx.keyValuePairs().keyValuePair()) {
+                    if (keyValuePair.literal() != null) {
+                        if (keyValuePair.literal().StringLiteral() != null) {
+                            value = StringParserUtil
+                                    .getValueWithinDoubleQuotes(keyValuePair.literal().StringLiteral().getText());
+                        } else {
+                            value = keyValuePair.literal().getText();
+                        }
+                    } else {
+                        value = keyValuePair.Identifier(keyValuePair.Identifier().size() - 1).getText();
+                    }
+                    // if the key is a classType (eg: 'endpoint' or 'message')
+                    if (keyValuePair.classType() != null) {
+                        key = keyValuePair.classType().getText();
+                    } else {
+                        key = keyValuePair.Identifier(0).getText();
+                    }
+                    parameterHolder.addParameter(new Parameter(key, value));
+                }
+            }
+            //Adding the return variable key
+            if (ctx.parent instanceof WUMLParser.LocalVariableInitializationStatementContext) {
+                parameterHolder.addParameter(new Parameter("returnVariableKey",
+                        ((WUMLParser.LocalVariableInitializationStatementContext)
+                                ((WUMLParser.MediatorCallContext) ctx).parent).Identifier().getText()));
+            } else if (ctx.parent instanceof WUMLParser.LocalVariableAssignmentStatementContext) {
+                parameterHolder.addParameter(new Parameter("returnVariableKey",
+                        ((WUMLParser.LocalVariableAssignmentStatementContext)
+                                ((WUMLParser.MediatorCallContext) ctx).parent).Identifier().getText()));
+            }
+
+            // setting the integration name to the mediator. It can use useful in writing the operation in the mediator
+            parameterHolder.addParameter(new Parameter("integrationKey", this.integrationName));
+
+            mediator.setParameters(parameterHolder);
+            dropMediatorFilterAware(mediator);
+        }
     }
 
     @Override
@@ -636,43 +668,20 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         dropMediatorFilterAware(logMediator);
     }
 
-    /** statements with 'reply'. It maps to a Respond mediator*/
-    @Override public void exitReturnStatement(WUMLParser.ReturnStatementContext ctx) {
+    /**
+     * statements with 'reply'. It maps to a Respond mediator
+     */
+    @Override
+    public void exitReturnStatement(WUMLParser.ReturnStatementContext ctx) {
         Mediator respondMediator = MediatorProviderRegistry.getInstance().getMediator("respond");
         ParameterHolder parameterHolder = new ParameterHolder();
         if (ctx.Identifier() != null) {
             String messageId = ctx.Identifier().getText();
             parameterHolder.addParameter(new Parameter("messageId", messageId));
         }
-        
+
         respondMediator.setParameters(parameterHolder);
         dropMediatorFilterAware(respondMediator);
-    }
-
-    /**
-     * Handle custom mediator statements
-     */
-    @Override public void exitCustomMediatorCall(WUMLParser.CustomMediatorCallContext ctx) {
-        /* Proceed only of the configuration is valid */
-        String mediatorName = ctx.Identifier().get(0).getText();
-        String messageId = ctx.Identifier().get(1).getText();
-        String configurations = StringParserUtil.getValueWithinDoubleQuotes(ctx.StringLiteral().getText());
-        Mediator mediator = MediatorProviderRegistry.getInstance().getMediator(mediatorName);
-
-        if (mediator != null) {
-            ParameterHolder parameterHolder = new ParameterHolder();
-            parameterHolder.addParameter(new Parameter("parameters", configurations));
-            parameterHolder.addParameter(new Parameter("message", messageId));
-            if (nextMediatorReturnParameter != null) {
-                parameterHolder.addParameter(new Parameter("returnVariableKey", nextMediatorReturnParameter));
-                nextMediatorReturnParameter = null;
-            }
-
-            mediator.setParameters(parameterHolder);
-            dropMediatorFilterAware(mediator);
-        } else {
-            log.warn("Mediator with the name :" + mediatorName + "not found.");
-        }
     }
 
     /**
@@ -733,31 +742,37 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
 
     /* Try-catch parsing */
+
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterTryClause(WUMLParser.TryClauseContext ctx) {
+    @Override
+    public void enterTryClause(WUMLParser.TryClauseContext ctx) {
         TryBlockMediator tryBlockMediator = new TryBlockMediator();
         dropMediatorFilterAware(tryBlockMediator);
         flowControllerStack.push(tryBlockMediator);
         this.flowControllerMediatorSection.push(FlowControllerMediatorSection.tryBlock);
     }
+
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitTryClause(WUMLParser.TryClauseContext ctx) {
+    @Override
+    public void exitTryClause(WUMLParser.TryClauseContext ctx) {
         this.flowControllerMediatorSection.pop();
     }
+
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitExceptionHandler(WUMLParser.ExceptionHandlerContext ctx) {
+    @Override
+    public void exitExceptionHandler(WUMLParser.ExceptionHandlerContext ctx) {
 
         if (ctx.getChild(0) != null && ctx.getChild(0).getChild(0) != null) {
 
@@ -786,20 +801,24 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
             this.flowControllerMediatorSection.push(FlowControllerMediatorSection.catchBlock);
         }
     }
+
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitCatchClause(WUMLParser.CatchClauseContext ctx) {
+    @Override
+    public void exitCatchClause(WUMLParser.CatchClauseContext ctx) {
         this.flowControllerMediatorSection.pop();
     }
+
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitTryCatchBlock(WUMLParser.TryCatchBlockContext ctx) {
+    @Override
+    public void exitTryCatchBlock(WUMLParser.TryCatchBlockContext ctx) {
         this.flowControllerStack.pop();
     }
 
@@ -849,8 +868,7 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
             parameterHolder.addParameter(new Parameter("value", variableValue));
         } else if (ctx.mediatorCall() != null) { // pattern of " message n = invoke(Ep,m) ';'"
             type = ctx.classType().getText();
-            nextMediatorReturnParameter = ctx.mediatorCall().Identifier().getText();
-            variableName = nextMediatorReturnParameter;
+            variableName = ctx.Identifier().getText();
         } else if (ctx.classType() != null) { // pattern of " message m '=' new message() ';' "
             type = ctx.classType().getText();
             variableName = ctx.newTypeObjectCreation().Identifier().getText();
@@ -884,7 +902,6 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
             parameterHolder.addParameter(new Parameter("type", type));
             parameterHolder.addParameter(new Parameter("assignment", "false"));
         } else if (ctx.mediatorCall() != null) {
-            nextMediatorReturnParameter = ctx.mediatorCall().Identifier().getText();
             return;
         } else {  // pattern of " i = 4 ';'"
             variableName = ctx.Identifier().getText();
@@ -901,6 +918,7 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     }
 
     /* Util methods */
+
     /**
      * Use correct mediation flow to place the mediator when filter mediator is present
      *
