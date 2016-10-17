@@ -651,23 +651,6 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         }
     }
 
-    @Override
-    public void exitLogMediatorCall(WUMLParser.LogMediatorCallContext ctx) {
-        Mediator logMediator = MediatorProviderRegistry.getInstance().getMediator(Constants.LOG_MEDIATOR);
-        ParameterHolder parameterHolder = new ParameterHolder();
-        logMediator.setParameters(parameterHolder);
-        //Currently the log only support for log full and custom string input
-        if (ctx.literal() != null) {
-            parameterHolder.addParameter(new Parameter("Log Message:", ctx.literal().getText()));
-            parameterHolder.addParameter(new Parameter(Constants.LEVEL, Constants.LEVEL_CUSTOM));
-        } else {
-            parameterHolder.addParameter(new Parameter(Constants.LEVEL, Constants.LEVEL_FULL));
-        }
-
-        logMediator.setParameters(parameterHolder);
-        dropMediatorFilterAware(logMediator);
-    }
-
     /**
      * statements with 'reply'. It maps to a Respond mediator
      */

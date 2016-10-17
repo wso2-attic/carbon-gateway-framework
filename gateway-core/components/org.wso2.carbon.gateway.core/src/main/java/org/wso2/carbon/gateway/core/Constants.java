@@ -132,6 +132,8 @@ public class Constants {
 
     public static final String INTEGRATION_KEY = "integrationKey";
 
+    public static final String MESSAGE_KEY = "messageKey";
+
     /* Exception Types */
 
     public static final String CONN_CLOSED_EX = "ConnectionClosedException";

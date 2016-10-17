@@ -186,7 +186,7 @@ blockStatement
     |   localVariableAssignmentStatement    //  eg: i =45; msgModification mediators also falls under this
     |   messageModificationStatement    //  eg: response.setHeader(HTTP.StatusCode, 500);
     |   returnStatement //  eg: reply response;
-    |   logMediatorStatement // read only mediator : log("my_message");
+    |   mediatorCallStatement // eg: log(level="custom", log_value="log message");
     |   tryCatchBlock   // flowControl Mediator
     |   ifElseBlock // flowControl Mediator
     ;
@@ -245,8 +245,8 @@ localVariableAssignmentStatement
     |   Identifier '=' mediatorCall ';'
     ;
 
-logMediatorStatement
-    :   logMediatorCall ';'
+mediatorCallStatement
+    :   mediatorCall ';'
     ;
 
  // this is only used when "m = new message ()" called
@@ -267,11 +267,6 @@ keyValuePairs
 // method argument identifiers
 keyValuePair
     :   (Identifier | classType) '='  ( literal | Identifier )
-    ;
-
-logMediatorCall
-    :   'log' '(' Identifier ')'
-    |   'log' '(' literal ')'
     ;
 
 // Message Modification statements

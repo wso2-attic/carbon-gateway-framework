@@ -92,6 +92,10 @@ public class LogMediator extends AbstractMediator {
      * The holder for the custom properties
      */
     private final List<LogMediatorProperty> properties = new ArrayList<>();
+    /**
+     * Message ID
+     */
+    private String messageId;
 
     private static final Logger log = LoggerFactory.getLogger(LogMediator.class);
 
@@ -182,6 +186,13 @@ public class LogMediator extends AbstractMediator {
         if (seperatorParameter != null) {
             separator = seperatorParameter.getValue();
             parameterHolder.removeParameter(seperatorParameter.getName());
+        }
+        // remove the Integration Name from the logging parameters
+        parameterHolder.removeParameter(Constants.INTEGRATION_KEY);
+
+        // Setting the message id
+        if (parameterHolder.getParameter(Constants.MESSAGE_KEY) != null) {
+            this.messageId = parameterHolder.getParameter(Constants.MESSAGE_KEY).getValue();
         }
 
         Map<String, Parameter> properties = parameterHolder.getParameters();
