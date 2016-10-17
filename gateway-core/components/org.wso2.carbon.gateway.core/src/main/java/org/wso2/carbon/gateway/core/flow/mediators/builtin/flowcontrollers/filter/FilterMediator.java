@@ -120,7 +120,7 @@ public class FilterMediator extends AbstractFlowController {
             }
         }
 
-        return next(carbonMessage, carbonCallback);
+        return true;
     }
 
 }

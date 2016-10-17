@@ -60,6 +60,9 @@ public abstract class AbstractMediator implements Mediator {
      */
     public boolean next(CarbonMessage carbonMessage, CarbonCallback carbonCallback)
             throws Exception {
+        if (!hasNext() && carbonCallback instanceof FlowControllerCallback) {
+            carbonCallback.done(carbonMessage);
+        }
         return hasNext() && nextMediator.receive(carbonMessage, carbonCallback);
     }
 
