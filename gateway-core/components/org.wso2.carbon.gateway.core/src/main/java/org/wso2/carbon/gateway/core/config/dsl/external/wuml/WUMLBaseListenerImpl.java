@@ -701,10 +701,17 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
                 } else {
                     // xpath, jsonpath case
-                    sourceDefinition = StringParserUtil
-                            .getValueWithinDoubleQuotes(expressions.get(0)
-                            .evalExpression().pathExpression().xpathExpression().getText());
-                    source = new Source(sourceDefinition, Constants.PATHLANGUAGE.XPATH);
+                    WUMLParser.PathExpressionContext pathExpressionContext = expressions.get(0)
+                            .evalExpression().pathExpression();
+                    if (pathExpressionContext.xpathExpression() != null) {
+                        sourceDefinition = StringParserUtil
+                                .getValueWithinDoubleQuotes(pathExpressionContext.xpathExpression().getText());
+                        source = new Source(sourceDefinition, Constants.PATHLANGUAGE.XPATH);
+                    } else {
+                        sourceDefinition = StringParserUtil
+                                .getValueWithinDoubleQuotes(pathExpressionContext.jsonpathExpression().getText());
+                        source = new Source(sourceDefinition, Constants.PATHLANGUAGE.JSONPATH);
+                    }
                     conditionValue = StringParserUtil
                             .getValueWithinDoubleQuotes(expressions.get(1).literal().StringLiteral().getText());
                 }
