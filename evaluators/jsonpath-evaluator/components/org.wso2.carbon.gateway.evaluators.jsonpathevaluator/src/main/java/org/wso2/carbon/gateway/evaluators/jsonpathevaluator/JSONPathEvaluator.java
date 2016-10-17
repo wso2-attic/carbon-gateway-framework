@@ -31,6 +31,14 @@ import java.io.InputStream;
  */
 public class JSONPathEvaluator implements MessageBodyEvaluator {
 
+    /**
+     * This evaluates a JSON message against a provided JSONPath expression.
+     *
+     * @param inputStreamObject JSON input stream
+     * @param expression JSON expression to evaluate the JSON message against
+     * @return The resulting value
+     * @throws MessageBodyEvaluationException
+     */
     @Override
     public Object evaluate(Object inputStreamObject, String expression) throws MessageBodyEvaluationException {
         JsonPath jsonPath = JsonPath.compile(expression);
@@ -47,6 +55,11 @@ public class JSONPathEvaluator implements MessageBodyEvaluator {
         }
     }
 
+    /**
+     * Returns the path language of this evaluator.
+     *
+     * @return enum for JSONPath
+     */
     @Override
     public Constants.PATHLANGUAGE getPathLanguage() {
         return Constants.PATHLANGUAGE.JSONPATH;

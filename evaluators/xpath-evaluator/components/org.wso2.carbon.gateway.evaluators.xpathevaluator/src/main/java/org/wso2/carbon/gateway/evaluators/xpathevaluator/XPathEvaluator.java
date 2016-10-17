@@ -45,6 +45,15 @@ public class XPathEvaluator implements MessageBodyEvaluator {
         builder = processor.newDocumentBuilder();
     }
 
+    /**
+     * This evaluates an XML message against a provided XPath expression.
+     *
+     * @param omElementObject OMElement object to be evaluated
+     * @param xpathExpression XPath expression to evaluate the OMElement against
+     * @return The resulting value
+     * @throws MessageBodyEvaluationException
+     */
+    @Override
     public Object evaluate(Object omElementObject, String xpathExpression)
             throws MessageBodyEvaluationException {
         if (omElementObject instanceof OMElement) {
@@ -63,6 +72,11 @@ public class XPathEvaluator implements MessageBodyEvaluator {
         }
     }
 
+    /**
+     * Returns the path language of this evaluator.
+     *
+     * @return enum for XPATH
+     */
     public Constants.PATHLANGUAGE getPathLanguage() {
         return Constants.PATHLANGUAGE.XPATH;
     }
