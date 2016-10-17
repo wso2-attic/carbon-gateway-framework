@@ -106,17 +106,15 @@ public class FilterMediator extends AbstractFlowController {
         } else if (scope.equals(Scope.BODY)) {
             Constants.PATHLANGUAGE pathlanguage = source.getPathLanguage();
             if (pathlanguage != null) {
-                if (pathlanguage == Constants.PATHLANGUAGE.XPATH) {
-                    if (Evaluator.isXPathMatched(carbonMessage, source, pattern)) {
-                        childThenMediatorList.getFirstMediator().
+                if (Evaluator.isPathMatched(pathlanguage, carbonMessage, source, pattern)) {
+                    childThenMediatorList.getFirstMediator()
+                            .receive(carbonMessage, new FlowControllerMediateCallback(carbonCallback, this,
+                                    VariableUtil.getVariableStack(carbonMessage)));
+                } else {
+                    if (childOtherwiseMediatorList.getMediators().size() != 0) {
+                        childOtherwiseMediatorList.getFirstMediator().
                                 receive(carbonMessage, new FlowControllerMediateCallback(carbonCallback, this,
                                         VariableUtil.getVariableStack(carbonMessage)));
-                    } else {
-                        if (childOtherwiseMediatorList.getMediators().size() != 0) {
-                            childOtherwiseMediatorList.getFirstMediator().
-                                    receive(carbonMessage, new FlowControllerMediateCallback(carbonCallback, this,
-                                            VariableUtil.getVariableStack(carbonMessage)));
-                        }
                     }
                 }
             }

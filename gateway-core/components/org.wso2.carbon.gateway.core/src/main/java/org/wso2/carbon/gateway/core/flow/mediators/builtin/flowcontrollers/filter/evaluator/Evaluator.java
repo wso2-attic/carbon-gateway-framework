@@ -33,6 +33,7 @@ import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filte
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.MessageDataSource;
 
+import java.io.InputStream;
 import java.util.regex.Pattern;
 
 /**
@@ -48,7 +49,8 @@ public class Evaluator {
         return false;
     }
 
-    public static boolean isXPathMatched(CarbonMessage carbonMessage, Source source, Pattern pattern) throws Exception {
+    private static boolean isXPathMatched(CarbonMessage carbonMessage, Source source, Pattern pattern)
+            throws Exception {
         Reader reader = ReaderRegistryImpl.getInstance().getReader(carbonMessage);
         MessageDataSource messageDataSource = reader.makeMessageReadable(carbonMessage);
 
@@ -65,10 +67,9 @@ public class Evaluator {
             // it could be a set of nodes, etc..
             return pattern.matcher(xpathResult.toString()).matches();
         //TODO: Add cases for other types as appropriate
-        default: break;
+        default:
+            return false;
         }
-
-        return false;
     }
 
     private static Object evaluateXPath(OMElement messageBody, String xpathExpression) throws
@@ -76,5 +77,44 @@ public class Evaluator {
         MessageBodyEvaluator messageBodyEvaluator = BaseMessageBodyEvaluatorRegistry.getInstance()
                 .getMessageBodyEvaluator(Constants.PATHLANGUAGE.XPATH);
         return messageBodyEvaluator.evaluate(messageBody, xpathExpression);
+    }
+
+    private static boolean isJSONPathMatched(CarbonMessage carbonMessage, Source source, Pattern pattern)
+            throws Exception {
+        Reader reader = ReaderRegistryImpl.getInstance().getReader(carbonMessage);
+        InputStream inputStream = (InputStream) ((reader.makeMessageReadable(carbonMessage)).getDataObject());
+
+        String contentType = reader.getContentType();
+        Object jsonPathResult = null;
+
+        switch (contentType) {
+        case MIMEType.JSON:
+            jsonPathResult = evaluateJSONPath(inputStream, source.getKey());
+            //TODO: I'm converting the result to a string and match the pattern.
+            // Think of the cases where it is not applicable and implement as needed.
+            return pattern.matcher(jsonPathResult.toString()).matches();
+        //TODO: Add cases for other types as appropriate
+        default:
+            return false;
+        }
+    }
+
+    private static Object evaluateJSONPath(InputStream messageBody, String jsonpathExpression)
+            throws MessageBodyEvaluationException {
+        MessageBodyEvaluator messageBodyEvaluator = BaseMessageBodyEvaluatorRegistry.getInstance()
+                .getMessageBodyEvaluator(Constants.PATHLANGUAGE.JSONPATH);
+        return messageBodyEvaluator.evaluate(messageBody, jsonpathExpression);
+    }
+
+    public static boolean isPathMatched(Constants.PATHLANGUAGE pathlanguage, CarbonMessage carbonMessage, Source source,
+            Pattern pattern) throws Exception {
+        switch (pathlanguage) {
+        case XPATH:
+            return isXPathMatched(carbonMessage, source, pattern);
+        case JSONPATH:
+            return isJSONPathMatched(carbonMessage, source, pattern);
+        default:
+            return false;
+        }
     }
 }

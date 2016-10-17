@@ -42,7 +42,7 @@ public class Source {
         this.value = value;
         this.pathLanguage = pathLanguage;
         if (this.value.contains("$body")) {
-            if (pathLanguage == PATHLANGUAGE.XPATH) {
+            if (pathLanguage == PATHLANGUAGE.XPATH || pathLanguage == PATHLANGUAGE.JSONPATH) {
                 key = this.value.substring(this.value.indexOf(":") + 1);
             }
             scope = Scope.BODY;
