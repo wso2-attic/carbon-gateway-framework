@@ -186,7 +186,7 @@ blockStatement
     |   localVariableAssignmentStatement    //  eg: i =45; msgModification mediators also falls under this
     |   messageModificationStatement    //  eg: response.setHeader(HTTP.StatusCode, 500);
     |   returnStatement //  eg: reply response;
-    |   logMediatorStatement // read only mediator : log("my_message");
+    |   mediatorCallStatement // eg: log(level="custom", log_value="log message");
     |   tryCatchBlock   // flowControl Mediator
     |   ifElseBlock // flowControl Mediator
     ;
@@ -236,17 +236,17 @@ localVariableDeclarationStatement
 localVariableInitializationStatement
     :   type    Identifier  '='   literal ';'
     |   classType newTypeObjectCreation ';'
-    |   classType mediatorCall ';' // calling a mediator that will return a message
+    |   classType Identifier '=' mediatorCall ';' // calling a mediator that will return a message
     ;
 
 localVariableAssignmentStatement
     :   Identifier  '='   literal ';'
     |   newTypeObjectCreation ';'
-    |   mediatorCall ';'
+    |   Identifier '=' mediatorCall ';'
     ;
 
-logMediatorStatement
-    :   logMediatorCall ';'
+mediatorCallStatement
+    :   mediatorCall ';'
     ;
 
  // this is only used when "m = new message ()" called
@@ -256,33 +256,17 @@ newTypeObjectCreation
 
 //mediator calls
 mediatorCall
-    :  Identifier '='
-    (   invokeMediatorCall
-    |   sendToMediatorCall
-    |   receiveFromMediatorCall
-    |   customMediatorCall
-    )
+    :   Identifier '(' ( keyValuePairs )? ')'
     ;
 
-invokeMediatorCall
-    :   'invoke' '(' Identifier ',' Identifier ')'
+keyValuePairs
+    : keyValuePair ( ',' keyValuePair )*
     ;
 
-sendToMediatorCall
-    :   'sendTo' '(' Identifier ',' Identifier ')'
-    ;
-
-receiveFromMediatorCall
-    :   'receiveFrom' '(' Identifier ',' Identifier ')'
-    ;
-
-customMediatorCall
-    :   Identifier '.mediator' '(' Identifier ( ',' StringLiteral )? ')'
-    ;
-
-logMediatorCall
-    :   'log' '(' Identifier ')'
-    |   'log' '(' literal ')'
+// classType is also used as a parameter identifier because, 'endpoint' and 'message' is also commenly used as
+// method argument identifiers
+keyValuePair
+    :   (Identifier | classType) '='  ( literal | Identifier )
     ;
 
 // Message Modification statements
@@ -292,7 +276,7 @@ messageModificationStatement
 
 //return (reply) Statement specification
 returnStatement
-    :   'reply' (Identifier | invokeMediatorCall)? ';'
+    :   'reply' (Identifier | mediatorCall)? ';'
     ;
 
 // expression, which will be used to build the parExpression used inside if condition

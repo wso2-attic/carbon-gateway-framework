@@ -122,6 +122,22 @@ public class Constants {
 
     public static final String LEVEL_CUSTOM = "custom";
 
+    public static final String RETURN_VALUE = "returnVariableKey";
+
+    public static final String INVOKE_STATEMENT = "invoke";
+
+    public static final String CALL_MEDIATOR_NAME = "call";
+
+    public static final String RESPOND_MEDIATOR_NAME = "respond";
+
+    public static final String PROPERTY_MEDIATOR_NAME = "property";
+
+    public static final String INTEGRATION_KEY = "integrationKey";
+
+    public static final String MESSAGE_KEY = "messageKey";
+
+    public static final String ENDPOINT_KEY = "endpointKey";
+
     /* Exception Types */
 
     public static final String CONN_CLOSED_EX = "ConnectionClosedException";
@@ -139,4 +155,14 @@ public class Constants {
     public static final String INPUT_SCHEMA = "input-schema";
     public static final String OUTPUT_SCHEMA = "output-schema";
     public static final String CONFIG = "config";
+
+    /* Variable Handling Constants */
+
+    public static final String VALUE = "value";
+
+    public static final String KEY = "key";
+
+    public static final String TYPE = "type";
+
+    public static final String ASSIGNMENT = "assignment";
 }
