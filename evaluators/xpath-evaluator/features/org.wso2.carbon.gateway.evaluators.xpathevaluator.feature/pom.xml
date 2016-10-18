@@ -46,7 +46,7 @@
             <artifactId>org.eclipse.osgi.services</artifactId>
         </dependency>
         <dependency>
-            <groupId>net.sf.saxon.wso2</groupId>
+            <groupId>org.wso2.orbit.net.sf.saxon</groupId>
             <artifactId>Saxon-HE</artifactId>
         </dependency>
     </dependencies>

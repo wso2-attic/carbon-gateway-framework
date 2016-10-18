@@ -289,7 +289,7 @@
             </dependency>
             <!-- An orbit should be created -->
             <dependency>
-                <groupId>net.sf.saxon.wso2</groupId>
+                <groupId>org.wso2.orbit.net.sf.saxon</groupId>
                 <artifactId>Saxon-HE</artifactId>
                 <version>${saxon.wso2.version}</version>
             </dependency>
