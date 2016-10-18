@@ -19,7 +19,7 @@ package org.wso2.carbon.gateway.mediators.datamapper.engine.core.models;
 import java.util.Map;
 
 /**
- * This class implements {@link Model} interface with a {@link Map} to hold data
+ * This class implements {@link Model} interface with a {@link Map} to hold data.
  */
 public class MapModel implements Model<Map<String, Object>> {
 

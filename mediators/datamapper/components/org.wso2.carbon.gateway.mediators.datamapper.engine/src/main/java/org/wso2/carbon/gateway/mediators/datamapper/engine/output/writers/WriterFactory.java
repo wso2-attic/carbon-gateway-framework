@@ -22,10 +22,19 @@ import org.wso2.carbon.gateway.mediators.datamapper.engine.core.schemas.Schema;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.utils.InputOutputDataType;
 
 /**
- * This class is a factory class to get {@link Writer} needed by the data mapper engine
+ * This class is a factory class to get {@link Writer} needed by the data mapper engine.
  */
 public class WriterFactory {
 
+    /**
+     * Get a writer of a given type.
+     * 
+     * @param outputType    Type of the writer
+     * @param outputSchema  Output schema
+     * @return              Write of the given type
+     * @throws              SchemaException
+     * @throws              WriterException
+     */
     public static Writer getWriter(InputOutputDataType outputType, Schema outputSchema)
             throws SchemaException, WriterException {
         switch (outputType) {

@@ -23,6 +23,12 @@ import org.wso2.carbon.gateway.mediators.datamapper.engine.utils.ModelType;
  */
 public class FormatterFactory {
 
+    /**
+     * Get a formatter of a given type.
+     * 
+     * @param formatterType Type of the formatter
+     * @return              Formatter of given type
+     */
     public static Formatter getFormatter(ModelType formatterType) {
         switch (formatterType) {
             case JAVA_MAP:

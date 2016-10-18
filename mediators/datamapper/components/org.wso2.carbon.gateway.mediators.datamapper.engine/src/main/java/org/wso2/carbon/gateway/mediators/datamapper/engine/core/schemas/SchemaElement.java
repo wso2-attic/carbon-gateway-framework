@@ -17,7 +17,7 @@
 package org.wso2.carbon.gateway.mediators.datamapper.engine.core.schemas;
 
 /**
- * This class hold properties of a element
+ * This class hold properties of a element.
  */
 public class SchemaElement {
 

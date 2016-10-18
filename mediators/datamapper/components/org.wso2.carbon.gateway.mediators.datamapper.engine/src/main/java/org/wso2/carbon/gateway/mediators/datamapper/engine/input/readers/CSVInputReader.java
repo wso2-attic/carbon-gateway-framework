@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;;
 
 /**
- * This class is responsible for generating the JSON message for the given CSV message
+ * This class is responsible for generating the JSON message for the given CSV message.
  */
 public class CSVInputReader implements InputReader {
 
@@ -43,7 +43,7 @@ public class CSVInputReader implements InputReader {
     private InputBuilder messageBuilder;
 
     /**
-     * Constructor
+     * Initialize the builder.
      *
      * @throws IOException
      */
@@ -67,7 +67,7 @@ public class CSVInputReader implements InputReader {
     }
 
     /**
-     * Populate CSV content to a JSON message
+     * Populate CSV content to a JSON message.
      *
      * @param csvContent CSV content extracted from the input message
      * @param jsonSchemaMap respective JSON schema
@@ -109,7 +109,8 @@ public class CSVInputReader implements InputReader {
     }
 
     /**
-     * Extract CSV content from the input message
+     * Extract CSV content from the input message.
+     * 
      * @param element root element
      * @return CSV content as text
      */
@@ -131,6 +132,11 @@ public class CSVInputReader implements InputReader {
         return (String) ((Map) elementMap.get(elementName)).get(TYPE_KEY);
     }
 
+    /**
+     * Get the input schema.
+     * 
+     * @return  Input schema
+     */
     public Schema getInputSchema() {
         return inputSchema;
     }

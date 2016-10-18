@@ -16,6 +16,9 @@
  */
 package org.wso2.carbon.gateway.mediators.datamapper.engine.utils;
 
+/**
+ * Holds model types.
+ */
 public enum ModelType {
 
     JSON_STRING("JSON_STRING"),

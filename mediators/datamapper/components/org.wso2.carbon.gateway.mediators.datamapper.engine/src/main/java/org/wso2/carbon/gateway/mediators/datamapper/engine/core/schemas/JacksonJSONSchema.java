@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class implements {@link Schema} interface using Jackson JSON library to hold JSON schema
+ * This class implements {@link Schema} interface using Jackson JSON library to hold JSON schema.
  */
 public class JacksonJSONSchema implements Schema {
 
@@ -65,7 +65,7 @@ public class JacksonJSONSchema implements Schema {
     }
 
     /**
-     * populating name-space value map
+     * populating name-space value map.
      */
     private void initNamespaceMap() {
         namespaceMap = new HashMap<>();
@@ -203,6 +203,9 @@ public class JacksonJSONSchema implements Schema {
         return false;
     }
 
+    /**
+     * Retrieve all namespaces.
+     */
     public Map<String, String> getNamespaceMap() {
         return namespaceMap;
     }

@@ -31,14 +31,14 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 /**
- * This class is capable of parsing XML through AXIOMS for the InputStream and build the respective JSON message
+ * This class is capable of parsing XML through AXIOMS for the InputStream and build the respective JSON message.
  */
 public class JSONInputReader implements InputReader {
 
     private static final Log log = LogFactory.getLog(JSONInputReader.class);
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @throws IOException
      */
@@ -46,12 +46,12 @@ public class JSONInputReader implements InputReader {
     }
 
     /**
-     * Read, parse the XML and notify with the output JSON message
+     * Read, parse the XML and notify with the output JSON message.
      *
-     * @param input          XML message InputStream
-     * @param inputSchema    Schema of the input message
-     * @param messageBuilder Reference of the InputXMLMessageBuilder
-     * @throws ReaderException Exceptions in the parsing stage
+     * @param input             XML message InputStream
+     * @param inputSchema       Schema of the input message
+     * @param messageBuilder    Reference of the InputXMLMessageBuilder
+     * @throws ReaderException  Exceptions in the parsing stage
      */
     @Override
     public void read(InputStream input, Schema inputSchema, InputBuilder messageBuilder) throws ReaderException {
@@ -66,12 +66,11 @@ public class JSONInputReader implements InputReader {
     }
 
     /**
-     * Method added to convert the input directly into a string and to return
-     * This method is used only when the JSON input is present
+     * Converts the input directly into a string. This method is used only when the JSON input is present.
      *
-     * @param inputStream JSON message as a InputStream
-     * @return JSON message as a String
-     * @throws IOException
+     * @param inputStream   JSON message as a InputStream
+     * @return              JSON message as a String
+     * @throws              IOException
      */
     private String readFromInputStream(InputStream inputStream) throws IOException {
         InputStreamReader isr = new InputStreamReader(inputStream, StandardCharsets.UTF_8);

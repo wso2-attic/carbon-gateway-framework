@@ -50,7 +50,9 @@ public class InputBuilder {
     }
 
     /**
-     * @param inputStream           XML input message
+     * Build the input message from the stream.
+     * 
+     * @param inputStream           Input message as a stream
      * @param inputVariableNotifier Reference to the MappingHandler instance
      * @throws ReaderException
      */
@@ -61,7 +63,7 @@ public class InputBuilder {
     }
 
     /**
-     * This method will be called by the XMLInputReader instance to notify with the output
+     * This method will be called by the XMLInputReader instance to notify with the output.
      *
      * @param builtMessage Built JSON message
      * @throws JSException

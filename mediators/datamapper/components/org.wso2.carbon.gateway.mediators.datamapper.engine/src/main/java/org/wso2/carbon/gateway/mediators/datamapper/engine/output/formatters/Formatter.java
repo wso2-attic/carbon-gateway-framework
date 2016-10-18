@@ -16,6 +16,8 @@
  */
 package org.wso2.carbon.gateway.mediators.datamapper.engine.output.formatters;
 
+import java.util.Map;
+
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.SchemaException;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.WriterException;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.models.Model;
@@ -27,6 +29,15 @@ import org.wso2.carbon.gateway.mediators.datamapper.engine.output.OutputMessageB
  */
 public interface Formatter {
 
+    /**
+     * Read the {@link Map} model and trigger events to build output message in {@link OutputMessageBuilder}.
+     * 
+     * @param model
+     * @param outputMessageBuilder
+     * @param outputSchema
+     * @throws SchemaException
+     * @throws WriterException
+     */
     void format(Model model, OutputMessageBuilder outputMessageBuilder, Schema outputSchema)
             throws SchemaException, WriterException;
 }

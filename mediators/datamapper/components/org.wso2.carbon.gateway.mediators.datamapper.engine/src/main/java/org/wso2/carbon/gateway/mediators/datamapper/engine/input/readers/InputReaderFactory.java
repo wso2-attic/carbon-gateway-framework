@@ -21,10 +21,17 @@ import java.io.IOException;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.utils.InputOutputDataType;
 
 /**
- * This class is a factory class to get {@link InputReader} needed by the data mapper engine
+ * This class is a factory class to get {@link InputReader} needed by the data mapper engine.
  */
 public class InputReaderFactory {
 
+    /**
+     * Get an input reader of a given type.
+     * 
+     * @param inputType Type of the input reader
+     * @return          Input reader of given type
+     * @throws          IOException
+     */
     public static InputReader getReader(InputOutputDataType inputType) throws IOException {
         switch (inputType) {
         case XML:

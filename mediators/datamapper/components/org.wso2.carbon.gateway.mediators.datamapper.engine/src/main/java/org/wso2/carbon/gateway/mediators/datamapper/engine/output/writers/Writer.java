@@ -19,24 +19,70 @@ package org.wso2.carbon.gateway.mediators.datamapper.engine.output.writers;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.WriterException;
 
 /**
- * This interface should be implemented by data-mapper output writers
+ * This interface should be implemented by data-mapper output writers.
  */
 public interface Writer {
-
+    
+    /**
+     * Write the start of an object in the message.
+     * 
+     * @param name  Object Name
+     * @throws      WriterException
+     */
     void writeStartObject(String name) throws WriterException;
 
+    /**
+     * Write a field in the message.
+     * 
+     * @param name  Name of the field
+     * @param value Value of the field
+     * @throws      WriterException
+     */
     void writeField(String name, Object value) throws WriterException;
 
+    /**
+     * Write the end of an object in the message.
+     * 
+     * @param objectName    Name of the object
+     * @throws              WriterException
+     */
     void writeEndObject(String objectName) throws WriterException;
 
+    /**
+     * Terminate message building.
+     * 
+     * @return  Built message
+     * @throws  WriterException
+     */
     String terminateMessageBuilding() throws WriterException;
 
+    /**
+     * Write start of an array in the message.
+     * 
+     * @throws WriterException
+     */
     void writeStartArray() throws WriterException;
 
+    /**
+     * Write end of an array in the message.
+     * 
+     * @throws WriterException
+     */
     void writeEndArray() throws WriterException;
 
+    /**
+     * Write start of an annonymous object in the message.
+     * 
+     * @throws WriterException
+     */
     void writeStartAnonymousObject() throws WriterException;
 
+    /**
+     * Write a primitive value in the message.
+     * 
+     * @param value     Premitive value 
+     * @throws          WriterException
+     */
     void writePrimitive(Object value) throws WriterException;
 
 }

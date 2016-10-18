@@ -26,8 +26,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 
 /**
- * This class implements {@link Builder} interface and JSON builder for data mapper engine using
- * jackson.
+ * This class implements {@link Builder} interface and JSON builder for data mapper engine using jackson.
  */
 public class JSONBuilder implements Builder {
 

@@ -92,9 +92,9 @@ public class MappingResource {
     }
 
     /**
-     * need to create java script function by passing the configuration file
-     * Since this function going to execute every time when message hit the mapping backend
-     * so this function save in the resource model
+     * Creates java script function by passing the configuration file.
+     * Since this function going to execute every time when message hit the mapping backend, 
+     * this function save in the resource model.
      *
      * @param mappingConfig mapping configuration
      * @return java script function

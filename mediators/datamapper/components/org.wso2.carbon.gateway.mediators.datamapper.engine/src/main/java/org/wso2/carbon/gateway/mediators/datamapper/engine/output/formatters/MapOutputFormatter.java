@@ -35,8 +35,7 @@ import org.wso2.carbon.gateway.mediators.datamapper.engine.output.OutputMessageB
 import org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineUtils;
 
 /**
- * This class implements {@link Formatter} interface to read {@link Map} model and trigger events
- * to read
+ * This class implements {@link Formatter} interface to read {@link Map} model and trigger events to read.
  * by {@link OutputMessageBuilder}
  */
 public class MapOutputFormatter implements Formatter {
@@ -44,7 +43,8 @@ public class MapOutputFormatter implements Formatter {
     public static final String RHINO_NATIVE_ARRAY_FULL_QUALIFIED_CLASS_NAME = "sun.org.mozilla.javascript.internal.NativeArray";
     private OutputMessageBuilder outputMessageBuilder;
 
-    @Override public void format(Model model, OutputMessageBuilder outputMessageBuilder, Schema outputSchema)
+    @Override 
+    public void format(Model model, OutputMessageBuilder outputMessageBuilder, Schema outputSchema)
             throws SchemaException, WriterException {
         if (model.getModel() instanceof Map) {
             this.outputMessageBuilder = outputMessageBuilder;

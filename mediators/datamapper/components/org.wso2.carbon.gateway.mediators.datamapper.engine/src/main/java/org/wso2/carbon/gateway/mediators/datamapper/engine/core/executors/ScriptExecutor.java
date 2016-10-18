@@ -45,7 +45,7 @@ public class ScriptExecutor implements Executor {
     private ScriptEngine scriptEngine;
 
     /**
-     * Create a script executor of the provided script executor type
+     * Create a script executor of the provided script executor type.
      *
      * @param scriptExecutorType
      */

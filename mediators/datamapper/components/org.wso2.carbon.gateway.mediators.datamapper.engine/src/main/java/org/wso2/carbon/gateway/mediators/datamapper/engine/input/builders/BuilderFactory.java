@@ -21,7 +21,7 @@ import java.io.IOException;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.utils.ModelType;
 
 /**
- * This class is a factory class to get {@link Builder} needed by the data mapper engine
+ * This class is a factory class to get {@link Builder} needed by the data mapper engine.
  */
 public class BuilderFactory {
 

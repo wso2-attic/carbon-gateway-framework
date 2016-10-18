@@ -17,7 +17,7 @@
 package org.wso2.carbon.gateway.mediators.datamapper.engine.utils;
 
 /**
- * This class contains constants used in Data Mapper Engine
+ * This class contains constants used in Data Mapper Engine.
  */
 public class DataMapperEngineConstants {
 

@@ -19,7 +19,7 @@ package org.wso2.carbon.gateway.mediators.datamapper.engine.input.builders;
 import java.io.IOException;
 
 /**
- * Interface for implement the methods to create generic data holding model of data mapper engine
+ * Interface for implement the methods to create generic data holding model of data mapper engine.
  */
 public interface Builder {
 
@@ -126,8 +126,8 @@ public interface Builder {
      */
 
     /**
-     * Convenience method for outputting a field entry ("member")
-     * that has a String value. Equivalent to:
+     * Convenience method for outputting a field entry ("member") that has a String value. 
+     * Equivalent to:
      * <pre>
      *  writeFieldName(fieldName);
      *  writeString(value);
@@ -217,8 +217,7 @@ public interface Builder {
     void writeObjectFieldStart(String fieldName) throws IOException;
 
     /**
-     * Method called to close builder, so that no more content
-     * can be written.
+     * Method called to close builder, so that no more content can be written.
      */
     void close() throws IOException;
 
@@ -231,8 +230,7 @@ public interface Builder {
     String getContent() throws IOException;
 
     /**
-     * Convenience method for outputting a primitive
-     * that has a primitive value.
+     * Convenience method for outputting a primitive that has a primitive value.
      */
     void writePrimitive(Object value, String fieldType) throws IOException;
 

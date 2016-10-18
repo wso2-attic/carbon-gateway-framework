@@ -46,7 +46,7 @@ import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.DefaultCarbonMessage;
 
 /**
- * This class contains the mediation logic for the Data Mapper Mediator
+ * This class contains the mediation logic for the Data Mapper Mediator.
  */
 public class DataMapperMediator extends AbstractMediator {
 
@@ -154,7 +154,7 @@ public class DataMapperMediator extends AbstractMediator {
     }
     
     /**
-     * Get the content-type for a given output-type
+     * Get the content-type for a given output-type.
      * 
      * @param outputType
      * @return
@@ -171,7 +171,7 @@ public class DataMapperMediator extends AbstractMediator {
 
     /**
      * When Data mapper mediator has been invoked initially, this creates a new mapping resource
-     * loader
+     * loader.
      *
      * @throws Exception
      */

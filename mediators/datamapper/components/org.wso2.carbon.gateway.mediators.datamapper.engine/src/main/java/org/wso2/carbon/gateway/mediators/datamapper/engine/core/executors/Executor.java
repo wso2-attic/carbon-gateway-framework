@@ -28,7 +28,7 @@ public interface Executor {
 
     /**
      * Method to execute the mapping config in the {@link MappingResource} on
-     * input variable and returns the output model
+     * input variable and returns the output model.
      *
      * @param mappingResource mapping resource model
      * @param inputVariable   input variable

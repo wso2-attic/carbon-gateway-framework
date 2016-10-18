@@ -23,7 +23,7 @@ import org.wso2.carbon.gateway.core.flow.Mediator;
 import org.wso2.carbon.gateway.mediators.datamapper.DataMapperMediator;
 
 /**
- * Sample Custom Mediator Builder
+ * Sample Custom Mediator Builder.
  */
 public class DataMapperMediatorBuilder {
     public static Mediator customLog(String message) {

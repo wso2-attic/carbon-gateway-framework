@@ -34,8 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class implements {@link Writer} interface and json writer for data mapper engine using
- * Jackson
+ * This class implements {@link Writer} interface and json writer for data mapper engine using Jackson.
  */
 public class JSONWriter implements Writer {
 
@@ -59,7 +58,8 @@ public class JSONWriter implements Writer {
         }
     }
 
-    @Override public void writeStartObject(String name) throws WriterException {
+    @Override 
+    public void writeStartObject(String name) throws WriterException {
         try {
             String schemaName = name;
             if (name.endsWith(SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX)) {
@@ -88,7 +88,8 @@ public class JSONWriter implements Writer {
         }
     }
 
-    @Override public void writeField(String name, Object value) throws WriterException {
+    @Override
+    public void writeField(String name, Object value) throws WriterException {
         try {
             if (value instanceof String) {
                 jsonGenerator.writeStringField(name, (String) value);
@@ -104,7 +105,8 @@ public class JSONWriter implements Writer {
         }
     }
 
-    @Override public void writeEndObject(String objectName) throws WriterException {
+    @Override 
+    public void writeEndObject(String objectName) throws WriterException {
         try {
             if ((!ARRAY_ELEMENT_TYPE.equals(outputSchema.getElementTypeByName(schemaElementList)) && !schemaElementList
                     .isEmpty()) && schemaElementList.get(schemaElementList.size() - 1).getElementName()
@@ -121,7 +123,8 @@ public class JSONWriter implements Writer {
         }
     }
 
-    @Override public String terminateMessageBuilding() throws WriterException {
+    @Override
+    public String terminateMessageBuilding() throws WriterException {
         String inputJSVariable = null;
         try {
             writeEndObject(null);
@@ -134,10 +137,12 @@ public class JSONWriter implements Writer {
         }
     }
 
-    @Override public void writeStartArray() {
+    @Override
+    public void writeStartArray() {
     }
 
-    @Override public void writeEndArray() throws WriterException {
+    @Override
+    public void writeEndArray() throws WriterException {
         try {
             schemaElementList.remove(schemaElementList.size() - 1);
             jsonGenerator.writeEndArray();
@@ -151,7 +156,8 @@ public class JSONWriter implements Writer {
         }
     }
 
-    @Override public void writeStartAnonymousObject() throws WriterException {
+    @Override
+    public void writeStartAnonymousObject() throws WriterException {
         try {
             jsonGenerator.writeStartObject();
         } catch (IOException e) {
@@ -159,8 +165,8 @@ public class JSONWriter implements Writer {
         }
     }
 
-    @Override public void writePrimitive(Object value) throws WriterException {
-
+    @Override
+    public void writePrimitive(Object value) throws WriterException {
         try {
             if (value instanceof String) {
                 jsonGenerator.writeString((String) value);
@@ -174,6 +180,5 @@ public class JSONWriter implements Writer {
         } catch (IOException e) {
             throw new WriterException("Error while writing primitive. " + e.getMessage());
         }
-
     }
 }

@@ -61,7 +61,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * This class is capable of parsing XML through AXIOMS for the InputStream and build the respective JSON message
+ * This class is capable of parsing XML through AXIOMS for the InputStream and build the respective JSON message.
  */
 public class XMLInputReader implements InputReader {
 
@@ -87,7 +87,7 @@ public class XMLInputReader implements InputReader {
     private Map jsonSchema;
 
     /**
-     * Constructor
+     * Initialize a XML builder.
      *
      * @throws IOException
      */
@@ -96,12 +96,12 @@ public class XMLInputReader implements InputReader {
     }
 
     /**
-     * Read, parse the XML and notify with the output JSON message
+     * Read, parse the XML and notify with the output JSON message.
      *
-     * @param input          XML message InputStream
-     * @param inputSchema    Schema of the input message
-     * @param messageBuilder Reference of the InputXMLMessageBuilder
-     * @throws ReaderException Exceptions in the parsing stage
+     * @param input             XML message InputStream
+     * @param inputSchema       Schema of the input message
+     * @param messageBuilder    Reference of the InputXMLMessageBuilder
+     * @throws ReaderException  Exceptions in the parsing stage
      */
     @Override
     public void read(InputStream input, Schema inputSchema, InputBuilder messageBuilder) throws ReaderException {
@@ -124,12 +124,12 @@ public class XMLInputReader implements InputReader {
     }
 
     /**
-     * This method will perform a Depth First Search on the XML message and build the json message
+     * This method will perform a Depth First Search on the XML message and build the json message.
      *
-     * @param omElement       initially the root element will be passed-in
-     * @param prevElementName name of the previous element only if the previous element was an array, a null otherwise
-     * @param jsonSchemaMap   reduced json input schema map that is applicable to this level
-     * @return the name of the previous element if the element was an array element, null otherwise
+     * @param omElement         Root element
+     * @param prevElementName   Name of the previous element only if the previous element was an array, a null otherwise
+     * @param jsonSchemaMap     Reduced json input schema map that is applicable to this level
+     * @return                  The name of the previous element if the element was an array element, null otherwise
      * @throws IOException
      * @throws ReaderException
      * @throws SchemaException
@@ -139,16 +139,13 @@ public class XMLInputReader implements InputReader {
     public String xmlTraverse(OMElement omElement, String prevElementName, Map jsonSchemaMap)
             throws IOException, ReaderException, SchemaException, JSException, InvalidPayloadException {
 
-        /** isObject becomes true if the current element is an object, therefor object end element can be written at
+        /* isObject becomes true if the current element is an object, therefore object end element can be written at
          * the end */
         boolean isObject = false;
 
         boolean isArrayElement = false;
-
         String prevElementNameSpaceLocalName = null;
-
         String elementType;
-
         Map nextJSONSchemaMap;
 
         /* iterator to hold the child elements of the passed OMElement */
@@ -242,7 +239,7 @@ public class XMLInputReader implements InputReader {
     }
 
     /**
-     * This method is used to get the namespace URI of an XML element (OMElement)
+     * This method is used to get the namespace URI of an XML element (OMElement).
      *
      * @param omElement
      * @return Namespace URI of the given OMElement, if there is no Namespace return an empty String
@@ -256,7 +253,7 @@ public class XMLInputReader implements InputReader {
     }
 
     /**
-     * This method is used to get the namespace URI of an XML attribute (OMAttribute)
+     * This method is used to get the namespace URI of an XML attribute (OMAttribute).
      *
      * @param omAttribute
      * @return Namespace URI of the given OMAttribute, if there is no Namespace return an empty String
@@ -270,7 +267,7 @@ public class XMLInputReader implements InputReader {
     }
 
     /**
-     * This method writes attribute elements into the JSON input message
+     * This method writes attribute elements into the JSON input message.
      *
      * @param jsonSchemaMap current level JSON Schema
      * @throws JSException
@@ -316,7 +313,7 @@ public class XMLInputReader implements InputReader {
     }
 
     /**
-     * Get the element type by referring to the input schema
+     * Get the element type by referring to the input schema.
      *
      * @param jsonSchemaMap Current level of the schema map
      * @param elementName   Name of the OMElement
@@ -336,7 +333,7 @@ public class XMLInputReader implements InputReader {
     }
 
     /**
-     * Get the next schema level to pass to the next element search
+     * Get the next schema level to pass to the next element search.
      *
      * @param jsonSchemaMap Current level of the schema map
      * @param elementType   Type of the parent element
@@ -363,7 +360,7 @@ public class XMLInputReader implements InputReader {
     }
 
     /**
-     * Go to the next level of the schema
+     * Go to the next level of the schema.
      *
      * @param schema Current level of the schema
      * @return next level schema
@@ -380,7 +377,7 @@ public class XMLInputReader implements InputReader {
     }
 
     /**
-     * Get the array elements sub-type. It can either be an object or primitive type
+     * Get the array elements sub-type. It can either be an object or primitive type.
      *
      * @param jsonSchemaMap Current level json schema
      * @param elementName   Name of the element
@@ -393,7 +390,7 @@ public class XMLInputReader implements InputReader {
     }
 
     /**
-     * Get the primitive type of an element
+     * Get the primitive type of an element.
      * Main type :array
      * Sub-type :object
      *
@@ -408,7 +405,7 @@ public class XMLInputReader implements InputReader {
     }
 
     /**
-     * Get the primitive type of an element
+     * Get the primitive type of an element.
      * Main type :object
      *
      * @param jsonSchemaMap Current level json schema
@@ -421,7 +418,7 @@ public class XMLInputReader implements InputReader {
     }
 
     /**
-     * Get primitive type (used for getArrayObjectTextElementType, getObjectTextElementType methods)
+     * Get primitive type (used for getArrayObjectTextElementType, getObjectTextElementType methods).
      *
      * @param objectsMap
      * @return primitive type or NULL_TYPE of there is no primitive text
@@ -434,8 +431,8 @@ public class XMLInputReader implements InputReader {
         return output;
     }
 
-    /**
-     * Elements Local name modifier methods
+    /*
+     * Elements Local name modifier methods.
      */
 
     private String getAttributeFieldName(String qName, String uri) {
@@ -503,8 +500,8 @@ public class XMLInputReader implements InputReader {
         return inputSchema;
     }
 
-    /**
-     * JSON message building methods
+    /*
+     * JSON message building methods.
      */
 
     private void writeFieldElement(String fieldName, String valueString, String fieldType)

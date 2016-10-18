@@ -23,7 +23,7 @@ import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.Write
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.schemas.Schema;
 
 /**
- * This class implements {@link Writer} interface and CSV writer for data mapper engine
+ * This class implements {@link Writer} interface and CSV writer for data mapper engine.
  */
 public class CSVWriter implements Writer {
 
@@ -32,6 +32,13 @@ public class CSVWriter implements Writer {
     private StringBuilder csvOutputMessage;
     private boolean isStartingObject;
 
+    /**
+     * Initialize a csv writer.
+     * 
+     * @param outputSchema
+     * @throws SchemaException
+     * @throws WriterException
+     */
     public CSVWriter(Schema outputSchema) throws SchemaException, WriterException {
         this.outputSchema = outputSchema;
         this.csvOutputMessage = new StringBuilder();

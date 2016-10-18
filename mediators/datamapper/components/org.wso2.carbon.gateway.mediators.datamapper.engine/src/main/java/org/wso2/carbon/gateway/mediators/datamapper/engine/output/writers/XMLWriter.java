@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.Stack;
 
 /**
- * This class implements {@link Writer} interface and xml writer for data mapper engine using StAX
+ * This class implements {@link Writer} interface and xml writer for data mapper engine using StAX.
  */
 public class XMLWriter implements Writer {
 
@@ -52,6 +52,13 @@ public class XMLWriter implements Writer {
     private static final String XSI_TYPE_IDENTIFIER = "_xsi_type_";
 
 
+    /**
+     * Initialize XML writer.
+     * 
+     * @param outputSchema  Output schema
+     * @throws              SchemaException
+     * @throws              WriterException
+     */
     public XMLWriter(Schema outputSchema) throws SchemaException, WriterException {
         this.outputSchema = outputSchema;
         this.arrayElementStack = new Stack<>();

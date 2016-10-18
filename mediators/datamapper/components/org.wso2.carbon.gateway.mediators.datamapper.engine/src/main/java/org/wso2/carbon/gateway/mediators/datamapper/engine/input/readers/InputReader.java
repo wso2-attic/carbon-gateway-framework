@@ -28,11 +28,12 @@ import org.wso2.carbon.gateway.mediators.datamapper.engine.input.InputBuilder;
 public interface InputReader {
 
     /**
+     * Read, and parse the input message and notify with the output message.
      *
-     * @param input
-     * @param inputSchema
-     * @param messageBuilder
-     * @throws ReaderException
+     * @param input             Input message as a stream
+     * @param inputSchema       Schema of the input message
+     * @param messageBuilder    Message builder to use
+     * @throws                  ReaderException
      */
     void read(InputStream input, Schema inputSchema, InputBuilder messageBuilder) throws ReaderException;
 }

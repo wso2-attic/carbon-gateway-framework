@@ -17,6 +17,9 @@
 
 package org.wso2.carbon.gateway.mediators.datamapper.engine.utils;
 
+/**
+ * Holds input and output data types.
+ */
 public enum InputOutputDataType {
 
     CSV("CSV"),
@@ -29,7 +32,12 @@ public enum InputOutputDataType {
         this.dataTypeValue = dataTypeValue;
     }
 
-    // Use to get the DataType from the relevant input and output data type
+    /**
+     * Get the DataType from the relevant input and output data type string.
+     * 
+     * @param dataType
+     * @return
+     */
     public static InputOutputDataType fromString(String dataType) {
         if (dataType != null) {
             for (InputOutputDataType definedTypes : InputOutputDataType.values()) {

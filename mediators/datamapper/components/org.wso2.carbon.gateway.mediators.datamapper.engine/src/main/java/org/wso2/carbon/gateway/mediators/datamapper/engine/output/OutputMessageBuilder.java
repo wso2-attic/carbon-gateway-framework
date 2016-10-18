@@ -39,6 +39,15 @@ public class OutputMessageBuilder {
     private Schema outputSchema;
     private OutputVariableNotifier outputVariableNotifier;
 
+    /**
+     * Initialize an Output message builder.
+     * 
+     * @param dataType      Output data type
+     * @param modelType     Model Type
+     * @param outputSchema  Output schema
+     * @throws              SchemaException
+     * @throws              WriterException
+     */
     public OutputMessageBuilder(InputOutputDataType dataType, ModelType modelType, Schema outputSchema)
             throws SchemaException, WriterException {
         this.outputSchema = outputSchema;
@@ -46,6 +55,14 @@ public class OutputMessageBuilder {
         this.outputWriter = WriterFactory.getWriter(dataType, outputSchema);
     }
 
+    /**
+     * Initialize an Output message builder.
+     * 
+     * @param outputModel       Output model
+     * @param mappingHandler    Mapping Handler
+     * @throws SchemaException
+     * @throws WriterException
+     */
     public void buildOutputMessage(Model outputModel, OutputVariableNotifier mappingHandler)
             throws SchemaException, WriterException {
         this.outputVariableNotifier = mappingHandler;
@@ -53,6 +70,8 @@ public class OutputMessageBuilder {
     }
 
     /**
+     * Notify the reader Event.
+     * 
      * @param readerEvent   Event to be notified
      * @throws              SchemaException
      * @throws              WriterException

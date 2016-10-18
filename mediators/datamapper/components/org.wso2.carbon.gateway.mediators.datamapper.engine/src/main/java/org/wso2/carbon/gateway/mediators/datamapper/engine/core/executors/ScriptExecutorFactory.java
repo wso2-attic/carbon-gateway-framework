@@ -29,14 +29,14 @@ public class ScriptExecutorFactory {
     private static final Log log = LogFactory.getLog(ScriptExecutorFactory.class);
 
     /**
-     * This private constructor added to hide the implicit public constructor
+     * This private constructor added to hide the implicit public constructor.
      */
     private ScriptExecutorFactory() {
     }
 
     /**
      * This method will return the script executor according to the given {@link
-     * ScriptExecutorType}
+     * ScriptExecutorType}.
      *
      * @return script executor
      */
@@ -49,8 +49,7 @@ public class ScriptExecutorFactory {
 
     /**
      * Initialize a script executors pool. If Java8, use Nashorn as the script engine or if Java7
-     * or 6 use Rhino
-     * which is the default javascript engine provided in Java
+     * or 6 use Rhino which is the default javascript engine provided in Java.
      *
      * @param executorPoolSize size of the executor pool
      */
@@ -72,7 +71,7 @@ public class ScriptExecutorFactory {
     }
 
     /**
-     * This method will release the script executor to the pool
+     * This method will release the script executor to the pool.
      */
     public static void releaseScriptExecutor(Executor executor) throws InterruptedException {
         executorPool.put(executor);
