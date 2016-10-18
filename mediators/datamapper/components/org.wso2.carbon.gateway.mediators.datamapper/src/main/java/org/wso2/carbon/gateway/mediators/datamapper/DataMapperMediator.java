@@ -194,7 +194,7 @@ public class DataMapperMediator extends AbstractMediator {
         try {
             inputStream = new FileInputStream(file);
         } catch (FileNotFoundException e) {
-            handleException("Datamapper Resource file : " + filename + "not found");
+            handleException("Datamapper Resource file: " + filename + " not found");
         }
         return inputStream;
     }

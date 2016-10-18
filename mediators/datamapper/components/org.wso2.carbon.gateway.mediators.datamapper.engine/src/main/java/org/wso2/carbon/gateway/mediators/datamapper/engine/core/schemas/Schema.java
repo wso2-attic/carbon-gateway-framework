@@ -28,20 +28,28 @@ import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.Schem
 public interface Schema {
 
     /**
-     * Method for get defined name of the schema
+     * Method for get defined name of the schema.
      *
      * @return Name of the schema as a String
      */
     String getName() throws SchemaException;
 
     /**
-     * Method to get the element type specified in the schema by giving the element hierarchy
+     * Method to get the element type specified in the schema by giving the element hierarchy.
      *
      * @param elementStack
      * @return type of the element
      */
     String getElementTypeByName(List<SchemaElement> elementStack) throws InvalidPayloadException, SchemaException;
 
+    /**
+     * Det the element type specified in the schema by giving the element.
+     * 
+     * @param elementStack  Element
+     * @return              Element type
+     * @throws              InvalidPayloadException
+     * @throws              SchemaException
+     */
     String getElementTypeByName(String elementStack) throws InvalidPayloadException, SchemaException;
 
     /**
@@ -51,14 +59,45 @@ public interface Schema {
      */
     boolean isChildElement(String elementName, String childElementName);
 
+    
+    /**
+     * Check whether a element is a child of the given element hierarchy.
+     * 
+     * @param elementStack      Element hierarchy
+     * @param childElementName  Name of the element to be checked
+     * @return                  Flag indicating whether the element is a child or not
+     * @throws                  InvalidPayloadException
+     * @throws                  SchemaException
+     */
     boolean isChildElement(List<SchemaElement> elementStack, String childElementName)
             throws InvalidPayloadException, SchemaException;
 
+    /**
+     * Get the prefix corresponds to the namespace.
+     * 
+     * @param url   Namespace
+     * @return
+     */
     String getPrefixForNamespace(String url);
 
+    /**
+     * Get the namespaces as a map.
+     * 
+     * @return  Map of namespaces
+     */
     Map<String, String> getNamespaceMap();
 
+    /**
+     * Check whether the array is of primitive data type.
+     * 
+     * @return
+     */
     boolean isCurrentArrayIsPrimitive();
 
+    /**
+     * Get the schema as a map.
+     * 
+     * @return  Schema as a map
+     */
     Map getSchemaMap();
 }
