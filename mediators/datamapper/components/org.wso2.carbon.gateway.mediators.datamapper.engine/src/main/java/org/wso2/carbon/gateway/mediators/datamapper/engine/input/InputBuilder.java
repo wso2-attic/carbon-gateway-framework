@@ -29,7 +29,7 @@ import org.wso2.carbon.gateway.mediators.datamapper.engine.input.readers.InputRe
 import org.wso2.carbon.gateway.mediators.datamapper.engine.utils.InputOutputDataType;
 
 /**
- * Class manage the XML to JSON parsing process
+ * Class manage the XML to JSON parsing process.
  */
 public class InputBuilder {
 
@@ -38,9 +38,10 @@ public class InputBuilder {
     private InputVariableNotifier inputVariableNotifier;
 
     /**
-     * Constructor
+     * Initialize input builder.
      *
-     * @param inputSchema Input message JSON schema
+     * @param inputType     Input message type
+     * @param inputSchema   Input message JSON schema
      * @throws IOException
      */
     public InputBuilder(InputOutputDataType inputType, Schema inputSchema) throws IOException {

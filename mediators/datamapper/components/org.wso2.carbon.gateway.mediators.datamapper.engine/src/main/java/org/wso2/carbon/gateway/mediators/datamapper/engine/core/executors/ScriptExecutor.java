@@ -33,14 +33,11 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.EQUALS_SIGN;
-import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.PROPERTIES_OBJECT_NAME;
-
 import java.util.Map;
 
 /**
  * This class implements script executor for data mapper using java script executor (Rhino or
- * Nashorn)
+ * Nashorn).
  */
 public class ScriptExecutor implements Executor {
 

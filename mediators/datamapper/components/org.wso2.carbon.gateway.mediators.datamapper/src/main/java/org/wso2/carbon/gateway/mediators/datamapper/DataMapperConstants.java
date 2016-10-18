@@ -27,4 +27,7 @@ public class DataMapperConstants {
     public static final String CONFIG = "config";
     public static final String JSON = "json";
     public static final String XML = "xml";
+    
+    DataMapperConstants() {
+    }
 }

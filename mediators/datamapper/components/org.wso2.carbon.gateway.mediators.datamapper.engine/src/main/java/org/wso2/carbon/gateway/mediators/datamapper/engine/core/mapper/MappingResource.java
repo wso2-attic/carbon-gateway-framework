@@ -38,6 +38,9 @@ import org.wso2.carbon.gateway.mediators.datamapper.engine.core.schemas.JacksonJ
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.schemas.Schema;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.utils.InputOutputDataType;
 
+/**
+ * This class holds the resources associated with a mapping.
+ */
 public class MappingResource {
 
     public static final String NAMESPACE_DELIMETER = ":";
@@ -49,6 +52,8 @@ public class MappingResource {
     private List<String> propertiesList;
 
     /**
+     * Initialize the resources.
+     * 
      * @param inputSchema   respective output json schema as a a stream of bytes
      * @param outputSchema  respective output json schema as a a stream of bytes
      * @param mappingConfig mapping configuration file as a stream of bytes

@@ -17,7 +17,7 @@
 package org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions;
 
 /**
- * This exception is thrown when engine gets an error when reading input or when building input
+ * This exception is thrown when engine gets an error when reading input or when building input.
  */
 public class ReaderException extends Exception {
 
@@ -28,11 +28,13 @@ public class ReaderException extends Exception {
         this.message = message;
     }
 
-    @Override public String toString() {
+    @Override 
+    public String toString() {
         return message;
     }
 
-    @Override public String getMessage() {
+    @Override 
+    public String getMessage() {
         return message;
     }
 }

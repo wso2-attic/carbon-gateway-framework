@@ -17,7 +17,7 @@
 package org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions;
 
 /**
- * This exception is thrown when script executors can not execute the mapping configuration script
+ * This exception is thrown when script executors can not execute the mapping configuration script.
  */
 public class JSException extends Exception {
 
@@ -33,11 +33,13 @@ public class JSException extends Exception {
         this.message = message;
     }
 
-    @Override public String toString() {
+    @Override 
+    public String toString() {
         return message;
     }
 
-    @Override public String getMessage() {
+    @Override 
+    public String getMessage() {
         return message;
     }
 }

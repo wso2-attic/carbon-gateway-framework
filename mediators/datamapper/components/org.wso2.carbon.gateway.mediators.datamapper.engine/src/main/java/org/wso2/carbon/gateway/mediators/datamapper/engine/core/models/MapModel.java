@@ -29,11 +29,13 @@ public class MapModel implements Model<Map<String, Object>> {
         mapDataHolder = model;
     }
 
-    @Override public void setModel(Map<String, Object> model) {
+    @Override
+    public void setModel(Map<String, Object> model) {
         mapDataHolder = model;
     }
 
-    @Override public Map<String, Object> getModel() {
+    @Override
+    public Map<String, Object> getModel() {
         return mapDataHolder;
     }
 }

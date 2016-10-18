@@ -17,7 +17,7 @@
 package org.wso2.carbon.gateway.mediators.datamapper.engine.core.mapper;
 
 /**
- * This class will hold the data mapper mapping configuration
+ * This class will hold the data mapper mapping configuration.
  */
 public class JSFunction {
 

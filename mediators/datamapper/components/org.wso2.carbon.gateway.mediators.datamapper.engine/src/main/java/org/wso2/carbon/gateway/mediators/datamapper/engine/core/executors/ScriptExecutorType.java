@@ -17,7 +17,7 @@
 package org.wso2.carbon.gateway.mediators.datamapper.engine.core.executors;
 
 /**
- * This enum type represent the types of executors support in data mapper
+ * This enum type represent the types of executors support in data mapper.
  */
 public enum ScriptExecutorType {
     RHINO, NASHORN

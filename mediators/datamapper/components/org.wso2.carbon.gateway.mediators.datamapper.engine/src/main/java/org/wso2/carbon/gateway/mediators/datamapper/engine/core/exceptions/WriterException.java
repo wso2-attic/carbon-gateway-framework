@@ -17,7 +17,7 @@
 package org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions;
 
 /**
- * This exception is thrown when engine gets an error writing output or when formatting
+ * This exception is thrown when engine gets an error writing output or when formatting.
  */
 public class WriterException extends Exception {
 
@@ -28,16 +28,18 @@ public class WriterException extends Exception {
         this.message = message;
     }
 
-    public WriterException(String message,Exception e) {
-        super(message,e);
+    public WriterException(String message, Exception e) {
+        super(message, e);
         this.message = message;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return message;
     }
 
-    @Override public String getMessage() {
+    @Override
+    public String getMessage() {
         return message;
     }
 }

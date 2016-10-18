@@ -17,7 +17,7 @@
 package org.wso2.carbon.gateway.mediators.datamapper.engine.core.models;
 
 /**
- * This class implements {@link Model} interface to hold String data
+ * This class implements {@link Model} interface to hold String data.
  */
 public class StringModel implements Model<String> {
 

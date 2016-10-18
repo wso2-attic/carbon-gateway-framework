@@ -20,7 +20,18 @@ import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.JSExc
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.ReaderException;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions.SchemaException;
 
+/**
+ * Interface class for input variable notifiers.
+ */
 public interface InputVariableNotifier {
-
+    
+    /**
+     * Notify the given input variable.
+     * 
+     * @param variable  Variable to be notified
+     * @throws          SchemaException
+     * @throws          JSException
+     * @throws          ReaderException
+     */
     void notifyInputVariable(Object variable) throws SchemaException, JSException, ReaderException;
 }

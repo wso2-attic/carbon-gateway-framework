@@ -29,6 +29,9 @@ import org.wso2.carbon.gateway.mediators.datamapper.engine.output.writers.Writer
 import org.wso2.carbon.gateway.mediators.datamapper.engine.utils.InputOutputDataType;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.utils.ModelType;
 
+/**
+ * Class contains methods to build the output message.
+ */
 public class OutputMessageBuilder {
 
     private Formatter formatter;
@@ -49,6 +52,11 @@ public class OutputMessageBuilder {
         formatter.format(outputModel, this, outputSchema);
     }
 
+    /**
+     * @param readerEvent   Event to be notified
+     * @throws              SchemaException
+     * @throws              WriterException
+     */
     public void notifyEvent(ReaderEvent readerEvent) throws SchemaException, WriterException {
         switch (readerEvent.getEventType()) {
             case OBJECT_START:

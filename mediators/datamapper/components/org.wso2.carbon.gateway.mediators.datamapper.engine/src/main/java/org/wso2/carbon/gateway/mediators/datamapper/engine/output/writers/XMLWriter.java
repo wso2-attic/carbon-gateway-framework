@@ -76,7 +76,8 @@ public class XMLWriter implements Writer {
         }
     }
 
-    @Override public void writeStartObject(String name) throws WriterException {
+    @Override
+    public void writeStartObject(String name) throws WriterException {
         try {
             if (name.endsWith(SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX)) {
                 latestElementName = name.substring(0, name.lastIndexOf(SCHEMA_ATTRIBUTE_PARENT_ELEMENT_POSTFIX));
@@ -90,7 +91,8 @@ public class XMLWriter implements Writer {
         }
     }
 
-    @Override public void writeField(String name, Object fieldValue) throws WriterException {
+    @Override 
+    public void writeField(String name, Object fieldValue) throws WriterException {
         try {
             //with in a element attributes must come first before any of other field values
             if (fieldValue != null) {
@@ -144,7 +146,8 @@ public class XMLWriter implements Writer {
         throw new IllegalArgumentException("Unsupported value type found" + fieldValue.toString());
     }
 
-    @Override public void writeEndObject(String objectName) throws WriterException {
+    @Override
+    public void writeEndObject(String objectName) throws WriterException {
         try {
             xmlStreamWriter.writeEndElement();
         } catch (XMLStreamException e) {
@@ -152,7 +155,8 @@ public class XMLWriter implements Writer {
         }
     }
 
-    @Override public String terminateMessageBuilding() throws WriterException {
+    @Override
+    public String terminateMessageBuilding() throws WriterException {
         try {
             xmlStreamWriter.writeEndElement();
             xmlStreamWriter.flush();
@@ -163,15 +167,18 @@ public class XMLWriter implements Writer {
         }
     }
 
-    @Override public void writeStartArray() {
+    @Override
+    public void writeStartArray() {
         arrayElementStack.push(latestElementName);
     }
 
-    @Override public void writeEndArray() {
+    @Override
+    public void writeEndArray() {
         arrayElementStack.pop();
     }
 
-    @Override public void writeStartAnonymousObject() throws WriterException {
+    @Override
+    public void writeStartAnonymousObject() throws WriterException {
         try {
             writeStartElement(arrayElementStack.peek(), xmlStreamWriter);
         } catch (XMLStreamException e) {
@@ -179,7 +186,8 @@ public class XMLWriter implements Writer {
         }
     }
 
-    @Override public void writePrimitive(Object value) throws WriterException {
+    @Override
+    public void writePrimitive(Object value) throws WriterException {
         try {
             xmlStreamWriter.writeCharacters(getFieldValueAsString(value));
         } catch (XMLStreamException e) {

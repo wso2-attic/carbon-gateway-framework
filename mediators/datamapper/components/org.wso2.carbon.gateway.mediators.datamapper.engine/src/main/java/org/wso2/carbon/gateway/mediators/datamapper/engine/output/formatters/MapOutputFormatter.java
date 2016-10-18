@@ -58,8 +58,7 @@ public class MapOutputFormatter implements Formatter {
 
     /**
      * This method traverse output variable represented as a map in a depth first traverse
-     * recursively to trigger events
-     * to build output message in {@link OutputMessageBuilder}
+     * recursively to trigger events to build output message in {@link OutputMessageBuilder}
      *
      * @param outputMap
      */
@@ -106,7 +105,15 @@ public class MapOutputFormatter implements Formatter {
                     }
             }
         }
+        
+        // Trigger events to build output message 
+        sendEvents(orderedKeyList, outputMap, arrayType);
+    }
+    
+    private void sendEvents(LinkedList<Object> orderedKeyList, Map<Object, Object> outputMap, boolean arrayType) 
+            throws WriterException, SchemaException {
         int mapKeyIndex = 0;
+        int outputMapSize = outputMap.size();
         for (Object keyVal : orderedKeyList) {
             Object value = outputMap.get(keyVal);
             String key = String.valueOf(keyVal);
@@ -122,16 +129,14 @@ public class MapOutputFormatter implements Formatter {
             if (value instanceof Map) {
                 // key value is a type of object or an array
                 if (arrayType) {
-                    /*If it is array type we need to compensate the already created object start
-                    element.
-                    So avoid create another start element in first array element and endElement
-                    in the last
+                    /*If it is array type we need to compensate the already created object start element.
+                    So avoid create another start element in first array element and endElement in the last
                     */
                     if (mapKeyIndex != 0) {
                         sendAnonymousObjectStartEvent();
                     }
                     traverseMap((Map<Object, Object>) value);
-                    if (mapKeyIndex != mapKeys.size() - 1) {
+                    if (mapKeyIndex != outputMapSize - 1) {
                         sendObjectEndEvent(key);
                     }
                 } else {
@@ -149,7 +154,7 @@ public class MapOutputFormatter implements Formatter {
                         sendAnonymousObjectStartEvent();
                     }
                     sendPrimitiveEvent(key, value);
-                    if (mapKeyIndex != mapKeys.size() - 1) {
+                    if (mapKeyIndex != outputMapSize - 1) {
                         sendObjectEndEvent(key);
                     }
                 } else {
@@ -159,6 +164,7 @@ public class MapOutputFormatter implements Formatter {
             }
             mapKeyIndex++;
         }
+        
         if (arrayType) {
             sendArrayEndEvent();
         }

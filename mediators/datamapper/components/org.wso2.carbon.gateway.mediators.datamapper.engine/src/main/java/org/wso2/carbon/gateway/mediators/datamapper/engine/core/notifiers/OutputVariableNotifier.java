@@ -17,9 +17,12 @@
 package org.wso2.carbon.gateway.mediators.datamapper.engine.core.notifiers;
 
 /**
- *
+ * Interface class for input variable notifiers.
  */
 public interface OutputVariableNotifier {
 
+    /**
+     * @param variable  Variable to be notified
+     */
     void notifyOutputVariable(Object variable);
 }

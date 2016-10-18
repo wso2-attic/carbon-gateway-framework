@@ -48,7 +48,6 @@ import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapp
 import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.SCHEMA_ATTRIBUTE_FIELD_PREFIX;
 import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.SCHEMA_NAMESPACE_NAME_SEPARATOR;
 import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.SCHEMA_XML_ELEMENT_TEXT_VALUE_FIELD;
-import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.STRING_ELEMENT_TYPE;
 import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.TYPE_KEY;
 import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.VALUE_KEY;
 import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.XMLNS;
@@ -464,17 +463,17 @@ public class XMLInputReader implements InputReader {
         }
         String prefixInMap = inputSchema.getNamespaceMap().get(XSI_NAMESPACE_URI);
         if (prefixInMap != null && omElement != null) {
-            String xsiType = omElement.getAttributeValue(new QName(XSI_NAMESPACE_URI, "type", prefixInMap));
+            String xsiType = omElement.getAttributeValue(new QName(XSI_NAMESPACE_URI, TYPE_KEY, prefixInMap));
             if (xsiType != null) {
                 xsiNamespacePrefix = xsiType.split(":", 2);
                 xsiNamespace = omElement.findNamespaceURI(xsiNamespacePrefix[0]);
                 if (xsiNamespace != null) {
                     namespaceURI = xsiNamespace.getNamespaceURI();
-                    modifiedLocalName = modifiedLocalName + "," + prefixInMap + ":type=" + getInputSchema()
+                    modifiedLocalName = modifiedLocalName + "," + prefixInMap + ":" + TYPE_KEY + "=" + getInputSchema()
                             .getPrefixForNamespace(namespaceURI) + ":" + xsiNamespacePrefix[1];
                 }
                 else {
-                    modifiedLocalName = modifiedLocalName + "," + prefixInMap + ":type=" + xsiType;
+                    modifiedLocalName = modifiedLocalName + "," + prefixInMap + ":" + TYPE_KEY + "=" + xsiType;
                 }
             }
         }
@@ -485,7 +484,7 @@ public class XMLInputReader implements InputReader {
         String prefixInMap = inputSchema.getNamespaceMap().get(XSI_NAMESPACE_URI);
         if (prefixInMap != null && omElement != null) {
             String xsiNilValue = omElement.getAttributeValue(new QName(XSI_NAMESPACE_URI, "nil", prefixInMap));
-            if (xsiNilValue != null && "true".equalsIgnoreCase(xsiNilValue)) {
+            if (xsiNilValue != null && Boolean.toString(true).equalsIgnoreCase(xsiNilValue)) {
                 return true;
             }
         }

@@ -16,6 +16,9 @@
  */
 package org.wso2.carbon.gateway.mediators.datamapper.engine.input.readers.events;
 
+/**
+ *  DTO class to hold event for input readers
+ */
 public class ReaderEvent {
 
     private ReaderEventType eventType;

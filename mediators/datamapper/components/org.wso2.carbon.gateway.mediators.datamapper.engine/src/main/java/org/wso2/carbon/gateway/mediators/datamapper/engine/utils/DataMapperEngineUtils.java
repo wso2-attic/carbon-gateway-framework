@@ -27,6 +27,9 @@ import org.wso2.carbon.gateway.mediators.datamapper.engine.output.formatters.Map
 
 public class DataMapperEngineUtils {
 
+    DataMapperEngineUtils() {
+    }
+    
     public static Map<String, Object> getMapFromNativeArray(Object value) throws JSException {
         try {
             final Class<?> cls = Class.forName(MapOutputFormatter.RHINO_NATIVE_ARRAY_FULL_QUALIFIED_CLASS_NAME);

@@ -57,4 +57,6 @@ public class DataMapperEngineConstants {
     public static final String NAME_SEPERATOR = "_Separat0r_";
     public static final String TEXT = "text";
 
+    DataMapperEngineConstants() {
+    }
 }

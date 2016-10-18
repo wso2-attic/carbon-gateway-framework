@@ -22,7 +22,7 @@ import org.wso2.carbon.gateway.mediators.datamapper.engine.core.mapper.MappingRe
 import org.wso2.carbon.gateway.mediators.datamapper.engine.core.models.Model;
 
 /**
- * This interface should be implemented by script executors of Data Mapper Engine
+ * This interface should be implemented by script executors of Data Mapper Engine.
  */
 public interface Executor {
 

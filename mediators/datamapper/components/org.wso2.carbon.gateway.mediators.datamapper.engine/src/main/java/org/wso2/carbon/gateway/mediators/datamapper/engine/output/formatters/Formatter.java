@@ -23,7 +23,7 @@ import org.wso2.carbon.gateway.mediators.datamapper.engine.core.schemas.Schema;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.output.OutputMessageBuilder;
 
 /**
- * This interface should be implemented to convert data mapper generic models to
+ * This interface should be implemented to convert data mapper generic models.
  */
 public interface Formatter {
 

@@ -20,10 +20,19 @@ package org.wso2.carbon.gateway.mediators.datamapper.engine.core.executors;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+/**
+ *  This class creates a pool of script executors for data mapper. 
+ */
 public class ScriptExecutorPool {
 
     private BlockingQueue<Executor> executors;
 
+    /**
+     * Creates a pool fo script executors.
+     * 
+     * @param executorType      Executor type
+     * @param executorPoolSize  Pool size
+     */
     public ScriptExecutorPool(ScriptExecutorType executorType, int executorPoolSize) {
         executors = new LinkedBlockingQueue<>();
         for (int i = 0; i < executorPoolSize; i++) {
@@ -36,10 +45,22 @@ public class ScriptExecutorPool {
         return new ScriptExecutor(executorType);
     }
 
+    /**
+     * Get an executor.
+     * 
+     * @return  Executor
+     * @throws  InterruptedException
+     */
     public Executor take() throws InterruptedException {
         return executors.take();
     }
 
+    /**
+     * Add an executor to the pool.
+     * 
+     * @param executor  Executor to be added to the pool
+     * @throws          InterruptedException
+     */
     public void put(Executor executor) throws InterruptedException {
         executors.put(executor);
     }

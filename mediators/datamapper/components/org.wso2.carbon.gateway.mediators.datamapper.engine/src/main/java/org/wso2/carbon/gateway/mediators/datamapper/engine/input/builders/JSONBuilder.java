@@ -22,14 +22,12 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.BOOLEAN_ELEMENT_TYPE;
 import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.INTEGER_ELEMENT_TYPE;
 import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.NUMBER_ELEMENT_TYPE;
-import static org.wso2.carbon.gateway.mediators.datamapper.engine.utils.DataMapperEngineConstants.STRING_ELEMENT_TYPE;
-
 import java.io.IOException;
 import java.io.StringWriter;
 
 /**
  * This class implements {@link Builder} interface and JSON builder for data mapper engine using
- * jackson
+ * jackson.
  */
 public class JSONBuilder implements Builder {
 
@@ -42,52 +40,64 @@ public class JSONBuilder implements Builder {
         jsonGenerator = jsonFactory.createGenerator(writer);
     }
 
-    @Override public void writeStartArray() throws IOException {
+    @Override
+    public void writeStartArray() throws IOException {
         jsonGenerator.writeStartArray();
     }
 
-    @Override public void writeEndArray() throws IOException {
+    @Override
+    public void writeEndArray() throws IOException {
         jsonGenerator.writeEndArray();
     }
 
-    @Override public void writeStartObject() throws IOException {
+    @Override
+    public void writeStartObject() throws IOException {
         jsonGenerator.writeStartObject();
     }
 
-    @Override public void writeEndObject() throws IOException {
+    @Override
+    public void writeEndObject() throws IOException {
         jsonGenerator.writeEndObject();
     }
 
-    @Override public void writeFieldName(String name) throws IOException {
+    @Override
+    public void writeFieldName(String name) throws IOException {
         jsonGenerator.writeFieldName(name);
     }
 
-    @Override public void writeString(String text) throws IOException {
+    @Override
+    public void writeString(String text) throws IOException {
         jsonGenerator.writeString(text);
     }
 
-    @Override public void writeBinary(byte[] data, int offset, int len) throws IOException {
+    @Override
+    public void writeBinary(byte[] data, int offset, int len) throws IOException {
         jsonGenerator.writeBinary(data, offset, len);
     }
 
-    @Override public void writeNumber(int number) throws IOException {
+    @Override
+    public void writeNumber(int number) throws IOException {
         jsonGenerator.writeNumber(number);
     }
 
-    @Override public void writeNumber(double number) throws IOException {
+    @Override
+    public void writeNumber(double number) throws IOException {
         jsonGenerator.writeNumber(number);
     }
 
-    @Override public void writeBoolean(boolean state) throws IOException {
+    @Override
+    public void writeBoolean(boolean state) throws IOException {
         jsonGenerator.writeBoolean(state);
     }
 
-    @Override public void writeStringField(String fieldName, String value) throws IOException {
+    @Override
+    public void writeStringField(String fieldName, String value) throws IOException {
         writeFieldName(fieldName);
         writeString(value);
     }
 
-    @Override public void writeField(String fieldName, Object value, String fieldType) throws IOException {
+    @Override
+    public void writeField(String fieldName, Object value, String fieldType) throws IOException {
         switch (fieldType) {
             case BOOLEAN_ELEMENT_TYPE:
                 writeBooleanField(fieldName, (Boolean) value);
@@ -103,41 +113,49 @@ public class JSONBuilder implements Builder {
         }
     }
 
-    @Override public void writeBooleanField(String fieldName, boolean value) throws IOException {
+    @Override
+    public void writeBooleanField(String fieldName, boolean value) throws IOException {
         writeFieldName(fieldName);
         writeBoolean(value);
     }
 
-    @Override public void writeNumberField(String fieldName, int value) throws IOException {
+    @Override
+    public void writeNumberField(String fieldName, int value) throws IOException {
         writeFieldName(fieldName);
         writeNumber(value);
     }
 
-    @Override public void writeNumberField(String fieldName, double value) throws IOException {
+    @Override
+    public void writeNumberField(String fieldName, double value) throws IOException {
         writeFieldName(fieldName);
         writeNumber(value);
     }
 
-    @Override public void writeBinaryField(String fieldName, byte[] data) throws IOException {
+    @Override
+    public void writeBinaryField(String fieldName, byte[] data) throws IOException {
         writeFieldName(fieldName);
         writeBinary(data, 0, 0);
     }
 
-    @Override public void writeArrayFieldStart(String fieldName) throws IOException {
+    @Override
+    public void writeArrayFieldStart(String fieldName) throws IOException {
         writeFieldName(fieldName);
         writeStartArray();
     }
 
-    @Override public void writeObjectFieldStart(String fieldName) throws IOException {
+    @Override
+    public void writeObjectFieldStart(String fieldName) throws IOException {
         writeFieldName(fieldName);
         writeStartObject();
     }
 
-    @Override public void close() throws IOException {
+    @Override
+    public void close() throws IOException {
         jsonGenerator.close();
     }
 
-    @Override public void writePrimitive(Object value, String fieldType) throws IOException {
+    @Override
+    public void writePrimitive(Object value, String fieldType) throws IOException {
         switch (fieldType) {
             case BOOLEAN_ELEMENT_TYPE:
                 writeBoolean((Boolean) value);
@@ -153,6 +171,9 @@ public class JSONBuilder implements Builder {
         }
     }
 
+    /**
+     * Get the content as a string
+     */
     public String getContent() throws IOException {
         String inputJSVariable = writer.toString();
         writer.close();

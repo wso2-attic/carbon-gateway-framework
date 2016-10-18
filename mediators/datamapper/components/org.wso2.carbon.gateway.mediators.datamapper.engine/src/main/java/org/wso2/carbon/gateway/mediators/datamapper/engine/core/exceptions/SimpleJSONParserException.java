@@ -19,7 +19,7 @@ package org.wso2.carbon.gateway.mediators.datamapper.engine.core.exceptions;
 import org.json.simple.parser.ParseException;
 
 /**
- * This exception is thrown when engine gets an error parsing json with simple json
+ * This exception is thrown when engine gets an error parsing json with simple json.
  */
 public class SimpleJSONParserException extends ParseException {
 
@@ -30,11 +30,13 @@ public class SimpleJSONParserException extends ParseException {
         this.message = message;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return message;
     }
 
-    @Override public String getMessage() {
+    @Override
+    public String getMessage() {
         return message;
     }
 }

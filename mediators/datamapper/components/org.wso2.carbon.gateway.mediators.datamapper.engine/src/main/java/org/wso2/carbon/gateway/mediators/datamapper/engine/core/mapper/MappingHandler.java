@@ -34,6 +34,9 @@ import org.wso2.carbon.gateway.mediators.datamapper.engine.output.OutputMessageB
 import org.wso2.carbon.gateway.mediators.datamapper.engine.utils.InputOutputDataType;
 import org.wso2.carbon.gateway.mediators.datamapper.engine.utils.ModelType;
 
+/**
+ *  This class contains the methods necessary to transform a message.
+ */
 public class MappingHandler implements InputVariableNotifier, OutputVariableNotifier {
 
     private int dmExecutorPoolSize;
@@ -44,6 +47,17 @@ public class MappingHandler implements InputVariableNotifier, OutputVariableNoti
     private Executor scriptExecutor;
     private InputBuilder inputBuilder;
 
+    /**
+     * Initialize mapping handler.
+     * 
+     * @param mappingResource       Mapping Resources
+     * @param inputType             Input type
+     * @param outputType            Output Tpe
+     * @param dmExecutorPoolSize    Script executor pool size
+     * @throws                      IOException  
+     * @throws                      SchemaException
+     * @throws                      WriterException
+     */
     public MappingHandler(MappingResource mappingResource, String inputType, String outputType,
             int dmExecutorPoolSize) throws IOException, SchemaException, WriterException {
 
@@ -57,6 +71,17 @@ public class MappingHandler implements InputVariableNotifier, OutputVariableNoti
         this.mappingResource = mappingResource;
     }
 
+    /**
+     * Transform the given message.
+     * 
+     * @param inputMsg  Message stream to be mapped
+     * @return          Transformed message as a string
+     * @throws          ReaderException
+     * @throws          InterruptedException
+     * @throws          IOException
+     * @throws          SchemaException
+     * @throws          JSException
+     */
     public String doMap(InputStream inputMsg)
             throws ReaderException, InterruptedException, IOException, SchemaException, JSException {
         this.scriptExecutor = ScriptExecutorFactory.getScriptExecutor(dmExecutorPoolSize);

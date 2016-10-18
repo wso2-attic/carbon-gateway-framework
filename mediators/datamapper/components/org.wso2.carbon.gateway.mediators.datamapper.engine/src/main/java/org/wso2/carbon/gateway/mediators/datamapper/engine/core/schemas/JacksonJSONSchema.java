@@ -80,7 +80,8 @@ public class JacksonJSONSchema implements Schema {
         }
     }
 
-    @Override public String getName() throws SchemaException {
+    @Override 
+    public String getName() throws SchemaException {
         String schemaName = (String) jsonSchemaMap.get(TITLE_KEY);
         if (schemaName != null) {
             return schemaName;
@@ -89,7 +90,8 @@ public class JacksonJSONSchema implements Schema {
         }
     }
 
-    @Override public String getElementTypeByName(List<SchemaElement> elementStack)
+    @Override 
+    public String getElementTypeByName(List<SchemaElement> elementStack)
             throws InvalidPayloadException, SchemaException {
         Map<String, Object> schema = jsonSchemaMap;
         String elementType = null;
@@ -134,6 +136,11 @@ public class JacksonJSONSchema implements Schema {
         }
     }
 
+    /**
+     * Get the type of a given element name in the schema.
+     * 
+     * @param elementName   Name of the element
+     */
     public String getElementTypeByName(String elementName) throws SchemaException {
         String elementType = null;
         Map<String, Object> properties = getSchemaProperties(jsonSchemaMap);
@@ -159,7 +166,8 @@ public class JacksonJSONSchema implements Schema {
         }
     }
 
-    @Override public boolean isChildElement(String elementName, String childElementName) {
+    @Override 
+    public boolean isChildElement(String elementName, String childElementName) {
         Map<String, Object> elementSchema = getElementSchemaByName(elementName, jsonSchemaMap);
         if (elementSchema.containsKey(PROPERTIES_KEY)) {
             if (getSchemaProperties(elementSchema).containsKey(childElementName)) {
@@ -174,7 +182,8 @@ public class JacksonJSONSchema implements Schema {
         return false;
     }
 
-    @Override public boolean isChildElement(List<SchemaElement> elementStack, String childElementName)
+    @Override 
+    public boolean isChildElement(List<SchemaElement> elementStack, String childElementName)
             throws InvalidPayloadException, SchemaException {
         Map<String, Object> elementSchema = getElementSchemaByName(elementStack, jsonSchemaMap);
         if (elementSchema.containsKey(PROPERTIES_KEY)) {
@@ -278,6 +287,12 @@ public class JacksonJSONSchema implements Schema {
         return nextSchema;
     }
 
+    /**
+     * Get all the items in the schema as a map.
+     * 
+     * @param schema    Schema
+     * @return          Schema as a map
+     */
     public Map<String, Object> getSchemaItems(Map<String, Object> schema) {
         Map<String, Object> nextSchema = new HashMap<>();
         if (schema.containsKey(ITEMS_KEY)) {
@@ -313,7 +328,8 @@ public class JacksonJSONSchema implements Schema {
         }
     }
 
-    @Override public String getPrefixForNamespace(String url) {
+    @Override 
+    public String getPrefixForNamespace(String url) {
         if (EMPTY_STRING.equals(url)) {
             return EMPTY_STRING;
         } else if (namespaceMap.containsKey(url)) {
@@ -323,9 +339,9 @@ public class JacksonJSONSchema implements Schema {
         }
     }
 
-   @Override
-   public boolean isCurrentArrayIsPrimitive() {
-       return currentArrayIsPrimitive;
+    @Override
+    public boolean isCurrentArrayIsPrimitive() {
+        return currentArrayIsPrimitive;
     }
 
     private String getNamespaceAddedFieldName(String uri, String localName) throws InvalidPayloadException {
