@@ -51,6 +51,8 @@ import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
 import org.wso2.carbon.gateway.core.outbound.OutboundEPProviderRegistry;
 import org.wso2.carbon.gateway.core.outbound.OutboundEndpoint;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -347,13 +349,21 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         String type = (ctx.classType() != null) ? ctx.classType().getText() : ctx.type().getText();
         /* Extracting endpoints as constants */
         if (Constants.ENDPOINT.equals(type)) {
-            String endpointType = ctx.getChild(5).getText();
-
-            OutboundEndpoint outboundEndpoint = OutboundEPProviderRegistry.getInstance().getProvider(
-                    endpointType.replace(Constants.ENDPOINT_GRAMMAR_KEYWORD, Constants.EMPTY_STRING)
-                            .toLowerCase(Locale.ENGLISH)).getEndpoint();
+            //String endpointType = ctx.getChild(5).getText();
+            String uriAsString = StringParserUtil.getValueWithinDoubleQuotes(ctx.StringLiteral().getText());
+            URI endpoint = null;
+            try {
+                endpoint = new URI(uriAsString);
+            } catch (URISyntaxException ex) {
+                //endpoint uri syntax error
+                log.error("Endpoint syntax error occurred. Failed to add outbound endpoint to configuration.", ex);
+                return;
+            }
+            //since protocol type is redundant in endpoint URI
+            OutboundEndpoint outboundEndpoint = OutboundEPProviderRegistry.getInstance()
+                    .getProvider(endpoint.getScheme()).getEndpoint();
             outboundEndpoint.setName(ctx.Identifier().get(0).getText());
-            outboundEndpoint.setUri(StringParserUtil.getValueWithinDoubleQuotes(ctx.StringLiteral().getText()));
+            outboundEndpoint.setUri(uriAsString);
             integration.getOutbounds().put(ctx.Identifier().get(0).getText(), outboundEndpoint);
         }
     }
