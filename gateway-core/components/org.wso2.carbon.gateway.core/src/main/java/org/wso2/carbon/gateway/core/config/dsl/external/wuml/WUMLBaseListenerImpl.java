@@ -648,6 +648,8 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
             mediator.setParameters(parameterHolder);
             dropMediatorFilterAware(mediator);
+        }  else {
+            log.warn("Mediator with the name : " + mediatorId + " is not found.");
         }
     }
 

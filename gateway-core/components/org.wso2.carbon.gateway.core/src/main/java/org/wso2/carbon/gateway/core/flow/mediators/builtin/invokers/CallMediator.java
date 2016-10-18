@@ -31,6 +31,10 @@ import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.Constants;
 
+import static org.wso2.carbon.gateway.core.Constants.ENDPOINT_KEY;
+import static org.wso2.carbon.gateway.core.Constants.INTEGRATION_KEY;
+import static org.wso2.carbon.gateway.core.Constants.MESSAGE_KEY;
+import static org.wso2.carbon.gateway.core.Constants.RETURN_VALUE;
 
 /**
  * Send a Message out from Pipeline to an Outbound Endpoint
@@ -55,11 +59,11 @@ public class CallMediator extends AbstractMediator implements Invoker {
     }
 
     public void setParameters(ParameterHolder parameterHolder) {
-        outboundEPKey = parameterHolder.getParameter("endpointKey").getValue();
-        integrationKey = parameterHolder.getParameter("integrationKey").getValue();
-        messageKey = parameterHolder.getParameter("messageKey").getValue();
-        if (parameterHolder.getParameter("returnVariableKey") != null) {
-            returnedOutput = parameterHolder.getParameter("returnVariableKey").getValue();
+        outboundEPKey = parameterHolder.getParameter(ENDPOINT_KEY).getValue();
+        integrationKey = parameterHolder.getParameter(INTEGRATION_KEY).getValue();
+        messageKey = parameterHolder.getParameter(MESSAGE_KEY).getValue();
+        if (parameterHolder.getParameter(RETURN_VALUE) != null) {
+            returnedOutput = parameterHolder.getParameter(RETURN_VALUE).getValue();
         }
     }
 

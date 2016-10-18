@@ -134,6 +134,8 @@ public class Constants {
 
     public static final String MESSAGE_KEY = "messageKey";
 
+    public static final String ENDPOINT_KEY = "endpointKey";
+
     /* Exception Types */
 
     public static final String CONN_CLOSED_EX = "ConnectionClosedException";
