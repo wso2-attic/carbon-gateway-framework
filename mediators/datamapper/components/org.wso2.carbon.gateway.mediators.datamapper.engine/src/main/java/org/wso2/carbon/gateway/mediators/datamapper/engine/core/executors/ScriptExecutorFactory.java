@@ -42,7 +42,7 @@ public class ScriptExecutorFactory {
      *
      * @return script executor
      */
-    public static Executor getScriptExecutor(String executorPoolSize) throws InterruptedException {
+    public static Executor getScriptExecutor(int executorPoolSize) throws InterruptedException {
         if (executorPool == null) {
             initializeExecutorPool(executorPoolSize);
         }
@@ -54,9 +54,9 @@ public class ScriptExecutorFactory {
      * or 6 use Rhino
      * which is the default javascript engine provided in Java
      *
-     * @param executorPoolSizeStr size of the executor pool
+     * @param executorPoolSize size of the executor pool
      */
-    private synchronized static void initializeExecutorPool(String executorPoolSizeStr) {
+    private synchronized static void initializeExecutorPool(int executorPoolSize) {
         if (executorPool == null) {
             String javaVersion = System.getProperty("java.version");
             if (javaVersion.startsWith("1.7") || javaVersion.startsWith("1.6")) {
@@ -64,14 +64,6 @@ public class ScriptExecutorFactory {
                 log.debug("Script Engine set to Rhino");
             } else {
                 log.debug("Script Engine set to Nashorn");
-            }
-
-            int executorPoolSize = DEFAULT_DATAMAPPER_ENGINE_POOL_SIZE;
-            if (executorPoolSizeStr != null) {
-                executorPoolSize = Integer.parseInt(executorPoolSizeStr);
-                log.debug("Script executor pool size set to " + executorPoolSize);
-            } else {
-                log.debug("Using default script executor pool size " + executorPoolSize);
             }
             executorPool = new ScriptExecutorPool(scriptExecutorType, executorPoolSize);
         }

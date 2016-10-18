@@ -63,8 +63,6 @@ public class Constants {
     public static final String MEDIA_TYPE_APPLICATION_ECHO_XML = "application/echo+xml";
     public static final String MEDIA_TYPE_APPLICATION_JSON = "application/json";
     public static final String MEDIA_TYPE_APPLICATION_JWT = "application/jwt";
-    public static final String JSON = "json";
-    public static final String XML = "xml";
 
     public static final String APPLICATION_XML_BUILDER_ALLOW_DTD = "application.xml.builder.allow.DTD";
 
@@ -147,14 +145,6 @@ public class Constants {
     public static final String CONN_TIMEOUT_EX = "ConnectionTimeoutException";
 
     public static final String DEFAULT_EX = "Exception";
-    
-    
-    /* DataMapper mediation parameters names */
-    public static final String INPUT_TYPE = "input-type";
-    public static final String OUTPUT_TYPE = "output-type";
-    public static final String INPUT_SCHEMA = "input-schema";
-    public static final String OUTPUT_SCHEMA = "output-schema";
-    public static final String CONFIG = "config";
 
     /* Variable Handling Constants */
 

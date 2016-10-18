@@ -36,7 +36,7 @@ import org.wso2.carbon.gateway.mediators.datamapper.engine.utils.ModelType;
 
 public class MappingHandler implements InputVariableNotifier, OutputVariableNotifier {
 
-    private String dmExecutorPoolSize;
+    private int dmExecutorPoolSize;
     private String inputVariable;
     private String outputVariable;
     private MappingResource mappingResource;
@@ -45,7 +45,7 @@ public class MappingHandler implements InputVariableNotifier, OutputVariableNoti
     private InputBuilder inputBuilder;
 
     public MappingHandler(MappingResource mappingResource, String inputType, String outputType,
-            String dmExecutorPoolSize) throws IOException, SchemaException, WriterException {
+            int dmExecutorPoolSize) throws IOException, SchemaException, WriterException {
 
         this.inputBuilder = new InputBuilder(InputOutputDataType.fromString(inputType),
                 mappingResource.getInputSchema());
