@@ -56,7 +56,9 @@ public class DataMapperEngineConstants {
     public static final String FUNCTION_NAME_CONST_2 = "_S_";
     public static final String NAME_SEPERATOR = "_Separat0r_";
     public static final String TEXT = "text";
-
+    public static final String METHOD_NAME_GET = "get";
+    public static final String METHOD_NAME_GET_ID = "getIds";
+    
     DataMapperEngineConstants() {
     }
 }

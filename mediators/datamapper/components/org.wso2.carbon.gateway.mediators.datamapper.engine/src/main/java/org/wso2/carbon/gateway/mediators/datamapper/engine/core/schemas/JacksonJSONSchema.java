@@ -54,6 +54,12 @@ public class JacksonJSONSchema implements Schema {
     private Map<String, String> namespaceMap;
     private boolean currentArrayIsPrimitive;
 
+    /**
+     * Initialize a JSON schema.
+     * 
+     * @param inputSchema   Schema as a stream
+     * @throws SchemaException
+     */
     public JacksonJSONSchema(InputStream inputSchema) throws SchemaException {
         ObjectMapper objectMapper = new ObjectMapper();
         try {

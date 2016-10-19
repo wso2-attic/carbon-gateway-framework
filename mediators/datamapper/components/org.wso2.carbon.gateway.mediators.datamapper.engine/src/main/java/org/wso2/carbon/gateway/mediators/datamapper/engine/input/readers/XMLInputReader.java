@@ -488,6 +488,13 @@ public class XMLInputReader implements InputReader {
         return false;
     }
 
+    /**
+     * Get the fully qualified name of a given attribute.
+     * 
+     * @param omNamespace   Namespace of the attribute
+     * @param localName     Attribute local name
+     * @return              Fully qualified name
+     */
     public String getAttributeQName(OMNamespace omNamespace, String localName) {
         if (omNamespace != null) {
             return omNamespace.getPrefix() + ":" + localName;
@@ -496,6 +503,11 @@ public class XMLInputReader implements InputReader {
         }
     }
 
+    /**
+     * Get Input schema of the XML Input Reader.
+     * 
+     * @return  Input Schema
+     */
     public Schema getInputSchema() {
         return inputSchema;
     }

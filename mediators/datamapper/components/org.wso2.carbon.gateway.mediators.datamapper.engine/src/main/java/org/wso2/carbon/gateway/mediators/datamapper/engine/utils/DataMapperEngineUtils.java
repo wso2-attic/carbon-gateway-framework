@@ -34,7 +34,7 @@ public class DataMapperEngineUtils {
     }
     
     /**
-     * Get a map from an array object
+     * Get a map from an array object.
      * 
      * @param value Array object
      * @return      Map
@@ -45,13 +45,13 @@ public class DataMapperEngineUtils {
             final Class<?> cls = Class.forName(MapOutputFormatter.RHINO_NATIVE_ARRAY_FULL_QUALIFIED_CLASS_NAME);
             if (cls.isAssignableFrom(value.getClass())) {
                 Map<String, Object> tempValue = new HashMap();
-                final Method getIds = cls.getMethod("getIds");
+                final Method getIds = cls.getMethod(DataMapperEngineConstants.METHOD_NAME_GET_ID);
                 Method get = null;
                 Method[] allMethods = cls.getDeclaredMethods();
                 for (Method method : allMethods) {
                     String methodName = method.getName();
                     // find the method with name get
-                    if ("get".equals(methodName)) {
+                    if (DataMapperEngineConstants.METHOD_NAME_GET.equals(methodName)) {
                         Type[] pType = method.getGenericParameterTypes();
                         //find the get method with two parameters and first one a int
                         if ((pType.length == 2) && ((Class) pType[0]).getName().equals("int")) {

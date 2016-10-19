@@ -44,6 +44,13 @@ public class JSONWriter implements Writer {
     private StringWriter writer;
     private List<SchemaElement> schemaElementList;
 
+    /**
+     * Initialize a JSON Writer.
+     * 
+     * @param outputSchema  Output schema of the writer
+     * @throws              SchemaException
+     * @throws              WriterException
+     */
     public JSONWriter(Schema outputSchema) throws SchemaException, WriterException {
         this.outputSchema = outputSchema;
         this.writer = new StringWriter();

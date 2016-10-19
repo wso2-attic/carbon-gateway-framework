@@ -71,7 +71,6 @@
     <properties>
         <export.package>
             org.wso2.carbon.gateway.mediators.datamapper;version="${carbon.gw.package.export.version}",
-            org.wso2.carbon.gateway.mediators.datamapper.builder;version="${carbon.gw.package.export.version}"
         </export.package>
         <import.package>
             org.wso2.carbon.gateway.mediators.datamapper.engine.*;version="${carbon.gw.import.version.range}",

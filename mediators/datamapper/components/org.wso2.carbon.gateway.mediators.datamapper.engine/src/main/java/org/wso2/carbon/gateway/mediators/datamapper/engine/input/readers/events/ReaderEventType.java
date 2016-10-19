@@ -16,6 +16,9 @@
  */
 package org.wso2.carbon.gateway.mediators.datamapper.engine.input.readers.events;
 
+/**
+ * Enum class to hold Reader event types.
+ */
 public enum ReaderEventType {
 
     OBJECT_START("ObjectStart"),
@@ -32,7 +35,8 @@ public enum ReaderEventType {
         this.value = value;
     }
 
-    @Override public String toString() {
+    @Override 
+    public String toString() {
         return value;
     }
 

@@ -107,10 +107,20 @@ public class OutputMessageBuilder {
         }
     }
 
+    /**
+     * Get the output schema of this Message Builder.
+     * 
+     * @return  Output schema
+     */
     public Schema getOutputSchema() {
         return outputSchema;
     }
 
+    /**
+     * Set the output schema of this Message Builder.
+     * 
+     * @param outputSchema  Output schema to set
+     */
     public void setOutputSchema(Schema outputSchema) {
         this.outputSchema = outputSchema;
     }

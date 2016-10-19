@@ -171,7 +171,7 @@ public class JSONBuilder implements Builder {
     }
 
     /**
-     * Get the content as a string
+     * Get the content as a string.
      */
     public String getContent() throws IOException {
         String inputJSVariable = writer.toString();

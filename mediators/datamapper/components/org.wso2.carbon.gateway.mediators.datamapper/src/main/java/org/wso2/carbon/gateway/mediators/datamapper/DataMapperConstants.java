@@ -17,6 +17,9 @@
  */
 package org.wso2.carbon.gateway.mediators.datamapper;
 
+/**
+ * Class contains constants related to the datamapper mediator.
+ */
 public class DataMapperConstants {
     
     /* DataMapper mediation parameters names */

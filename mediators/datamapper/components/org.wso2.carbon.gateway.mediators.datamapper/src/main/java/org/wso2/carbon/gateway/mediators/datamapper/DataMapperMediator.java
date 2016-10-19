@@ -122,7 +122,9 @@ public class DataMapperMediator extends AbstractMediator {
     }
 
     /**
-     * Does message conversion and gives the output message as the final result
+     * Does message conversion and gives the output message as the final result.
+     * 
+     * @param cMsg  Carbon message to transform
      */
     private CarbonMessage transform(CarbonMessage cMsg) throws Exception {
         try {

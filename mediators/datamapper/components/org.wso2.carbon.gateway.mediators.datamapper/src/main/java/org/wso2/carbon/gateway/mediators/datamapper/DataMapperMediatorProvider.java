@@ -25,7 +25,7 @@ import org.wso2.carbon.gateway.core.flow.Mediator;
 import org.wso2.carbon.gateway.core.flow.MediatorProvider;
 
 /**
- * Sample Custom Mediator Provider.
+ * Datamapper Mediator Provider Class.
  */
 @Component(
         name = "DataMapperMediatorProvider",

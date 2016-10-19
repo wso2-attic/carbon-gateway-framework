@@ -57,8 +57,8 @@ public class MapOutputFormatter implements Formatter {
     }
 
     /**
-     * This method traverse output variable represented as a map in a depth first traverse
-     * recursively to trigger events to build output message in {@link OutputMessageBuilder}
+     * This method traverse output variable represented as a map in a depth first traverse recursively.
+     * Trigger events to build output message in {@link OutputMessageBuilder} while traversing.
      *
      * @param outputMap
      */
