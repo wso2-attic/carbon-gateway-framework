@@ -93,7 +93,12 @@ elementValuePairs
     ;
 
 sourceElementValuePairs
-    :   protocol (',' host)?  (','  port)?
+    :   interfaceDeclaration
+    |   protocol (',' host)?  (','  port)?
+    ;
+
+interfaceDeclaration
+    :   'interface' '=' StringLiteral
     ;
 
 apiElementValuePairs

@@ -145,28 +145,39 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
     @Override
     public void exitSource(WUMLParser.SourceContext ctx) {
-        Map<String, String> valueMap = new HashMap<>();
+        InboundEndpoint inboundEndpoint;
         ParameterHolder parameterHolder = new ParameterHolder();
+        Map<String, String> valueMap = new HashMap<>();
+        String protocol;
 
-        String host = StringParserUtil
-                .getValueWithinDoubleQuotes(ctx.sourceElementValuePairs().host().StringLiteral().getText());
-        String port = ctx.sourceElementValuePairs().port().IntegerLiteral().getText();
-        String protocol = StringParserUtil
-                .getValueWithinDoubleQuotes(ctx.sourceElementValuePairs().protocol().StringLiteral().getText());
+        if (ctx.sourceElementValuePairs().interfaceDeclaration() != null) {
+            String interfaceName = StringParserUtil.getValueWithinDoubleQuotes(
+                    ctx.sourceElementValuePairs().interfaceDeclaration().StringLiteral().getText());
+            protocol = "http";
+            valueMap.put("interface", interfaceName);
+            parameterHolder.addParameter(new Parameter("interface", interfaceName));
+        } else {
+            String host = StringParserUtil
+                    .getValueWithinDoubleQuotes(ctx.sourceElementValuePairs().host().StringLiteral().getText());
+            String port = ctx.sourceElementValuePairs().port().IntegerLiteral().getText();
+            protocol = StringParserUtil
+                    .getValueWithinDoubleQuotes(ctx.sourceElementValuePairs().protocol().StringLiteral().getText());
 
-        valueMap.put(Constants.HOST, host);
-        valueMap.put(Constants.PORT, port);
+            valueMap.put(Constants.HOST, host);
+            valueMap.put(Constants.PORT, port);
+
+            parameterHolder.addParameter(new Parameter(Constants.HOST, host));
+            parameterHolder.addParameter(new Parameter(Constants.PORT, port));
+        }
+
         valueMap.put(Constants.PROTOCOL, protocol);
         integration.getAnnotation(ConfigConstants.AN_SOURCE).setValue(valueMap);
-
-        parameterHolder.addParameter(new Parameter(Constants.HOST, host));
-        parameterHolder.addParameter(new Parameter(Constants.PORT, port));
         parameterHolder.addParameter(new Parameter(Constants.CONTEXT,
                 integration.getAnnotation(ConfigConstants.AN_BASE_PATH).getValue().toString()));
 
-        InboundEndpoint inboundEndpoint = InboundEPProviderRegistry.getInstance().getProvider(protocol)
-                .getInboundEndpoint();
+        inboundEndpoint = InboundEPProviderRegistry.getInstance().getProvider(protocol).getInboundEndpoint();
         inboundEndpoint.setParameters(parameterHolder);
+
         integration.addInbound(inboundEndpoint);
     }
 
