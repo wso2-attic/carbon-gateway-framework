@@ -31,7 +31,6 @@ import java.util.Map;
  * Base implementation of a MessageBodyEvaluatorRegistry.
  */
 public class BaseMessageBodyEvaluatorRegistry implements MessageBodyEvaluatorRegistry {
-
     private static final Logger log = LoggerFactory.getLogger(BaseMessageBodyEvaluatorRegistry.class);
 
     private static BaseMessageBodyEvaluatorRegistry instance = new BaseMessageBodyEvaluatorRegistry();
@@ -43,6 +42,7 @@ public class BaseMessageBodyEvaluatorRegistry implements MessageBodyEvaluatorReg
     public static BaseMessageBodyEvaluatorRegistry getInstance() {
         return instance;
     }
+
     @Override
     public void addMessageBodyEvaluator(Constants.PATHLANGUAGE pathlanguage,
             MessageBodyEvaluator messageBodyEvaluator) {

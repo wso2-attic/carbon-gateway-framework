@@ -30,7 +30,6 @@
     <artifactId>org.wso2.carbon.gateway.evaluators.parent</artifactId>
     <packaging>pom</packaging>
     <name>WSO2 Gateway - Evaluator Module</name>
-    <version>1.0.0-SNAPSHOT</version>
 
     <modules>
         <module>xpath-evaluator</module>

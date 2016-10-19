@@ -34,7 +34,7 @@ public class Activator implements BundleActivator {
     @Override
     public void start(BundleContext bundleContext) throws Exception {
         if (log.isDebugEnabled()) {
-            log.debug("Activating XPathEvaluator");
+            log.debug("Activating the bundle registering" + XPathEvaluator.class + "service");
         }
         bundleContext.registerService(MessageBodyEvaluator.class, new XPathEvaluator(), null);
     }

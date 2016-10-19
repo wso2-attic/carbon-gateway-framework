@@ -79,14 +79,14 @@
         <private.package>org.wso2.carbon.gateway.evaluators.jsonpathevaluator.internal</private.package>
         <export.package>
             !org.wso2.carbon.gateway.evaluators.jsonpathevaluator.internal,
-            org.wso2.carbon.gateway.evaluators.jsonpathevaluator
+            org.wso2.carbon.gateway.evaluators.jsonpathevaluator;version="${carbon.gw.package.export.version}"
         </export.package>
         <import.package>
             org.wso2.carbon.kernel.startupresolver.*;version="${carbon.kernel.package.import.version.range}",
             org.osgi.framework.*;version="${osgi.framework.import.version.range}",
             org.sample.dsl.*;version="1.0.0",
             org.wso2.carbon.gateway.core.config.dsl.internal.*,
-            org.wso2.carbon.gateway.core.*,
+            org.wso2.carbon.gateway.core.*;version="${carbon.gw.package.export.version}",
             org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
             org.wso2.carbon.messaging,
             javax.xml.*;version=0.0.0,
