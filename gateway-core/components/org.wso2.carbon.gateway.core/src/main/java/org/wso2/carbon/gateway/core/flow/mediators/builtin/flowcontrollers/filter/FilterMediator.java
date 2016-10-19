@@ -108,4 +108,12 @@ public class FilterMediator extends AbstractFlowController {
         return true;
     }
 
+    public MediatorCollection getChildThenMediatorList () {
+        return childThenMediatorList;
+    }
+
+    public MediatorCollection getChildOtherwiseMediatorList () {
+        return childOtherwiseMediatorList;
+    }
+
 }
