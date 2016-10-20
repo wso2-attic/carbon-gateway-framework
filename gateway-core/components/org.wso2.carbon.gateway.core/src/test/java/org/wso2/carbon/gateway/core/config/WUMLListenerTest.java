@@ -7,11 +7,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.deployment.engine.Artifact;
 import org.wso2.carbon.deployment.engine.exception.CarbonDeploymentException;
 import org.wso2.carbon.gateway.core.config.dsl.external.deployer.IFlowDeployer;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.WUMLBaseListenerImpl;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLLexer;
+import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLListener;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLParser;
 import org.wso2.carbon.gateway.core.flow.Mediator;
 import org.wso2.carbon.gateway.core.flow.MediatorCollection;
@@ -40,6 +43,9 @@ import java.util.List;
  * Unit test case for WUMLListenerImpl
  */
 public class WUMLListenerTest {
+
+    private static final Logger log = LoggerFactory.getLogger(WUMLListenerTest.class);
+
 
     @Before
     public void setup() {
@@ -152,6 +158,7 @@ public class WUMLListenerTest {
         try {
             iFlowDeployer.deploy(testArtifact);
         } catch (CarbonDeploymentException e) {
+            log.error("Deployment failed for the configuration: " + iFlowResource, e);
             return false;
         }
         return true;
