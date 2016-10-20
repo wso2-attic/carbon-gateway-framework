@@ -31,26 +31,19 @@ import org.wso2.carbon.messaging.Constants;
  */
 public class HTTPInboundEP extends InboundEndpoint {
 
-    private String context;
-
-    private int port;
-
-    private String host = "localhost";
-
-    private String bindListenerId;
-
     private static final Logger log = LoggerFactory.getLogger(InboundEndpoint.class);
 
-    public HTTPInboundEP(int port) {
-        this.port = port;
-    }
+    private String context;
+
+    private String interfaceId;
 
     public HTTPInboundEP() {
     }
 
-    public HTTPInboundEP(String name, int port) {
+    public HTTPInboundEP(String name, String interfaceId) {
         setName(name);
-        this.port = port;
+        setInterfaceId(interfaceId);
+
     }
 
     public String getContext() {
@@ -61,24 +54,12 @@ public class HTTPInboundEP extends InboundEndpoint {
         this.context = context;
     }
 
-    public int getPort() {
-        return port;
+    public String getInterfaceId() {
+        return interfaceId;
     }
 
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public String getBindListenerId() {
-        return bindListenerId;
-    }
-
-    public void setBindListenerId(String bindListenerId) {
-        this.bindListenerId = bindListenerId;
+    public void setInterfaceId(String interfaceId) {
+        this.interfaceId = interfaceId;
     }
 
     public boolean canReceive(CarbonMessage cMsg) {
@@ -113,16 +94,18 @@ public class HTTPInboundEP extends InboundEndpoint {
 
     @Override
     public void setParameters(ParameterHolder parameters) {
-        port = Integer.parseInt(parameters.getParameter("port").getValue());
+
         context = parameters.getParameter("context").getValue();
-        Parameter host = parameters.getParameter("host");
-        if (host != null) {
-            this.host = host.getValue();
+        Parameter interfaceParam = parameters.getParameter("interface");
+        interfaceId = interfaceParam.getValue();
+        if (interfaceId == null) {
+            log.error("interface cannot be null");
         }
+
     }
 
     @Override
     public String getName() {
-        return host + port;
+        return " bounded interface :- " + interfaceId + " context :- " + context;
     }
 }
