@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class HTTPListenerManager implements TransportListenerManager, InboundEPDeployer {
 
-    private volatile  TransportListener transportListener;
+    private volatile TransportListener transportListener;
 
     private Map<String, InboundEndpoint> earlyInbounds = new ConcurrentHashMap<>();
 
@@ -68,16 +68,17 @@ public class HTTPListenerManager implements TransportListenerManager, InboundEPD
         }
     }
 
-    public  void deploy(InboundEndpoint inboundEndpoint) {
+    /**
+     * Deploy inbound endpoint in transport level by opening up ports
+     * @param inboundEndpoint
+     */
+    public void deploy(InboundEndpoint inboundEndpoint) {
         if (transportListener == null) {
             earlyInbounds.put(inboundEndpoint.getName(), inboundEndpoint);
             return;
         }
-
         String interfaceId = ((HTTPInboundEP) inboundEndpoint).getInterfaceId();
-
         List<HTTPInboundEP> inboundEndpointList = deployedInbounds.get(interfaceId);
-
         if (inboundEndpointList == null) {
             List<HTTPInboundEP> endpointList = new ArrayList<>();
             endpointList.add((HTTPInboundEP) inboundEndpoint);
@@ -90,11 +91,14 @@ public class HTTPListenerManager implements TransportListenerManager, InboundEPD
 
     }
 
+    /**
+     * Closing ports and undeploy inbound from transport level
+     * @param inboundEndpoint
+     */
     public void undeploy(InboundEndpoint inboundEndpoint) {
         String interfaceId = ((HTTPInboundEP) inboundEndpoint).getInterfaceId();
         List<HTTPInboundEP> endpointList = deployedInbounds.get(interfaceId);
         endpointList.remove(inboundEndpoint);
-
         if (endpointList.size() == 0) {
             transportListener.stopListening(interfaceId);
         }
