@@ -24,6 +24,7 @@ import org.wso2.carbon.gateway.core.inbound.Dispatcher;
 import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.Constants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,7 +51,7 @@ public class HTTPInboundEPDispatcher implements Dispatcher, ConfigRegistryObserv
     @Override
     public boolean dispatch(CarbonMessage cMsg, CarbonCallback callback) {
 
-        String interfaceId = (String) cMsg.getProperty("LISTENER_INTERFACE_ID");
+        String interfaceId = (String) cMsg.getProperty(Constants.LISTENER_INTERFACE_ID);
 
         ArrayList<HTTPInboundEP> endpointsOnPort = httpEPRegistry.get(interfaceId);
         if (endpointsOnPort == null) {

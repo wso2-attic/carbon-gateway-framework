@@ -95,8 +95,8 @@ public class HTTPInboundEP extends InboundEndpoint {
     @Override
     public void setParameters(ParameterHolder parameters) {
 
-        context = parameters.getParameter("context").getValue();
-        Parameter interfaceParam = parameters.getParameter("interface");
+        context = parameters.getParameter(org.wso2.carbon.gateway.core.Constants.CONTEXT).getValue();
+        Parameter interfaceParam = parameters.getParameter(org.wso2.carbon.gateway.core.Constants.INTERFACE);
         interfaceId = interfaceParam.getValue();
         if (interfaceId == null) {
             log.error("interface cannot be null");

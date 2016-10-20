@@ -110,6 +110,8 @@ public class Constants {
 
     public static final String CONTEXT = "context";
 
+    public static final String INTERFACE = "interface";
+
     /* Mediator parameters  */
 
     public static final String LOG_MEDIATOR = "log";
