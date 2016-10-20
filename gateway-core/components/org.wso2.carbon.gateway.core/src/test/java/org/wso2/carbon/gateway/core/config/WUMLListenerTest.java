@@ -59,12 +59,14 @@ public class WUMLListenerTest {
         Assert.assertTrue((parseIflow("/integration-flows/variable-assignment.iflow")));
     }
 
+    /**
+     * Testing whether the correct order of mediator objects are created according to the passthrough.xyz configuration
+     */
     @Test
     public void testPassThroughObjectModelCreation() {
         String iFlowResource = "/integration-flows/passthrough.xyz";
         String integrationName = "passthrough";
         String resourceName = "passthrough";
-        Boolean asExpected;
 
         Assert.assertTrue("Error while deploying config :" + iFlowResource, deployArtifacts(iFlowResource));
 
@@ -74,26 +76,26 @@ public class WUMLListenerTest {
         List<Mediator> mediatorList = generatedMediatorCollection.getMediators();
 
         // Evaluate the generated mediator collection
-        if (mediatorList.size() == 3) {
-            asExpected = (generatedMediatorCollection.getFirstMediator() instanceof PropertyMediator);
-            asExpected = (mediatorList.get(1) instanceof CallMediator) && asExpected;
-            asExpected = (mediatorList.get(2) instanceof RespondMediator) && asExpected;
-        } else {
-            asExpected = false;
-        }
+        Assert.assertTrue("Number of generated mediator objects is incorrect.", mediatorList.size() == 3);
+
+        Assert.assertTrue("First mediator is not a Property mediator.",
+                (generatedMediatorCollection.getFirstMediator() instanceof PropertyMediator));
+        Assert.assertTrue("Second mediator is not a Call mediator.", (mediatorList.get(1) instanceof CallMediator));
+        Assert.assertTrue("Third mediator is not a Respond mediator.",
+                (mediatorList.get(2) instanceof RespondMediator));
 
         // remove the created Integration
         IntegrationConfigRegistry.getInstance().removeIntegrationConfig(sampleIntegration);
-
-        Assert.assertTrue("Object generation according to the provided NEL configuration has failed.", asExpected);
     }
 
+    /**
+     * Testing whether the correct order of mediator objects are created according to the filter.xyz configuration
+     */
     @Test
     public void testFilterMediatorObjectCreation() {
         String iFlowResource = "/integration-flows/filter.xyz";
         String integrationName = "filter";
         String resourceName = "passthrough";
-        Boolean asExpected;
 
         Assert.assertTrue("Error while deploying config :" + iFlowResource, deployArtifacts(iFlowResource));
 
@@ -103,39 +105,45 @@ public class WUMLListenerTest {
         List<Mediator> mediatorList = generatedMediatorCollection.getMediators();
 
         // Evaluate the generated mediator collection
-        if (mediatorList.size() == 6) {
-            asExpected = (generatedMediatorCollection.getFirstMediator() instanceof PropertyMediator);
-            asExpected = (mediatorList.get(1) instanceof LogMediator) && asExpected;
-            asExpected = (mediatorList.get(2) instanceof FilterMediator) && asExpected;
-            asExpected = (mediatorList.get(3) instanceof LogMediator) && asExpected;
-            asExpected = (mediatorList.get(4) instanceof CallMediator) && asExpected;
-            asExpected = (mediatorList.get(5) instanceof RespondMediator) && asExpected;
+        Assert.assertTrue("Number of generated mediator objects is incorrect.", mediatorList.size() == 6);
 
-            // expand the filter mediator
-            List<Mediator> thenMediatorList = ((FilterMediator) mediatorList.get(2)).getChildThenMediatorList()
-                    .getMediators();
-            List<Mediator> elseMediatorList = ((FilterMediator) mediatorList.get(2)).getChildOtherwiseMediatorList()
-                    .getMediators();
+        Assert.assertTrue("Mediator object is not a Property mediator instance as expected. ",
+                (generatedMediatorCollection.getFirstMediator() instanceof PropertyMediator));
+        Assert.assertTrue("Mediator object is not a Log mediator instance as expected. ",
+                (mediatorList.get(1) instanceof LogMediator));
+        Assert.assertTrue("Mediator object is not a Filter mediator instance as expected. ",
+                (mediatorList.get(2) instanceof FilterMediator));
+        Assert.assertTrue("Mediator object is not a Log mediator instance as expected. ",
+                (mediatorList.get(3) instanceof LogMediator));
+        Assert.assertTrue("Mediator object is not a Call mediator instance as expected. ",
+                (mediatorList.get(4) instanceof CallMediator));
+        Assert.assertTrue("Mediator object is not a Respond mediator instance as expected. ",
+                (mediatorList.get(5) instanceof RespondMediator));
 
-            // expand the filter mediator inside if-then block
-            asExpected = (((FilterMediator) thenMediatorList.get(0)).getChildThenMediatorList()
-                    .getFirstMediator() instanceof LogMediator) && asExpected;
-            asExpected = (((FilterMediator) thenMediatorList.get(0)).getChildOtherwiseMediatorList()
-                    .getFirstMediator() instanceof LogMediator) && asExpected;
+        // expand the filter mediator
+        List<Mediator> thenMediatorList = ((FilterMediator) mediatorList.get(2)).getChildThenMediatorList()
+                .getMediators();
+        List<Mediator> elseMediatorList = ((FilterMediator) mediatorList.get(2)).getChildOtherwiseMediatorList()
+                .getMediators();
 
-            // expand the filter mediator inside else block
-            asExpected = (((FilterMediator) elseMediatorList.get(0)).getChildThenMediatorList()
-                    .getFirstMediator() instanceof LogMediator) && asExpected;
-            asExpected = (((FilterMediator) elseMediatorList.get(0)).getChildOtherwiseMediatorList()
-                    .getFirstMediator() instanceof LogMediator) && asExpected;
-        } else {
-            asExpected = false;
-        }
+        // expand the filter mediator inside if-then block
+        Assert.assertTrue("Mediator object is not a Log mediator instance as expected. ",
+                (((FilterMediator) thenMediatorList.get(0)).getChildThenMediatorList()
+                        .getFirstMediator() instanceof LogMediator));
+        Assert.assertTrue("Mediator object is not a Log mediator instance as expected. ",
+                (((FilterMediator) thenMediatorList.get(0)).getChildOtherwiseMediatorList()
+                        .getFirstMediator() instanceof LogMediator));
+
+        // expand the filter mediator inside else block
+        Assert.assertTrue("Mediator object is not a Log mediator instance as expected. ",
+                (((FilterMediator) elseMediatorList.get(0)).getChildThenMediatorList()
+                        .getFirstMediator() instanceof LogMediator));
+        Assert.assertTrue("Mediator object is not a Log mediator instance as expected. ",
+                (((FilterMediator) elseMediatorList.get(0)).getChildOtherwiseMediatorList()
+                        .getFirstMediator() instanceof LogMediator));
 
         // remove the created Integration
         IntegrationConfigRegistry.getInstance().removeIntegrationConfig(sampleIntegration);
-
-        Assert.assertTrue("Object generation according to the provided NEL configuration has failed.", asExpected);
     }
 
     private boolean deployArtifacts(String iFlowResource) {
