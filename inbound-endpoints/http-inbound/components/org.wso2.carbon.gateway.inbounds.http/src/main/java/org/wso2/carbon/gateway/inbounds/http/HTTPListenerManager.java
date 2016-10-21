@@ -83,9 +83,9 @@ public class HTTPListenerManager implements TransportListenerManager, InboundEPD
             List<HTTPInboundEP> endpointList = new ArrayList<>();
             endpointList.add((HTTPInboundEP) inboundEndpoint);
             deployedInbounds.put(interfaceId, endpointList);
-            transportListener.listen(interfaceId);
-        } else if (inboundEndpointList.size() == 0) {
-            transportListener.listen(interfaceId);
+            transportListener.bind(interfaceId);
+        } else if (inboundEndpointList.isEmpty()) {
+            transportListener.bind(interfaceId);
             inboundEndpointList.add((HTTPInboundEP) inboundEndpoint);
         }
 
@@ -99,8 +99,8 @@ public class HTTPListenerManager implements TransportListenerManager, InboundEPD
         String interfaceId = ((HTTPInboundEP) inboundEndpoint).getInterfaceId();
         List<HTTPInboundEP> endpointList = deployedInbounds.get(interfaceId);
         endpointList.remove(inboundEndpoint);
-        if (endpointList.size() == 0) {
-            transportListener.stopListening(interfaceId);
+        if (endpointList.isEmpty()) {
+            transportListener.unBind(interfaceId);
         }
 
     }
