@@ -158,6 +158,8 @@ public class IFlowDeployer implements Deployer {
             if (file.getName().endsWith(FILE_EXTENSION)) {
                 String integrationName = file.getName().replace(FILE_EXTENSION, EMPTY_STRING);
 
+                logger.info("Deploying Integration : " + integrationName);
+
                 CharStream cs = new ANTLRInputStream(inputStream);
 
                 // Passing the input to the lexer to create tokens
