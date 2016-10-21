@@ -24,22 +24,21 @@ import org.wso2.carbon.gateway.core.inbound.Dispatcher;
 import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.Constants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
 
 /**
  * This handles the message dispatching for HTTP Inbound Endpoints
  */
 public class HTTPInboundEPDispatcher implements Dispatcher, ConfigRegistryObserver {
 
-
     private static HTTPInboundEPDispatcher instance = new HTTPInboundEPDispatcher();
 
     private static final Logger log = LoggerFactory.getLogger(HTTPInboundEPDispatcher.class);
 
-    private HashMap<Integer, ArrayList<HTTPInboundEP>> httpEPRegistry;
+    private HashMap<String, ArrayList<HTTPInboundEP>> httpEPRegistry;
 
     public static HTTPInboundEPDispatcher getInstance() {
         return instance;
@@ -52,11 +51,11 @@ public class HTTPInboundEPDispatcher implements Dispatcher, ConfigRegistryObserv
     @Override
     public boolean dispatch(CarbonMessage cMsg, CarbonCallback callback) {
 
-        int port = (int) cMsg.getProperty("LISTENER_PORT");
+        String interfaceId = (String) cMsg.getProperty(Constants.LISTENER_INTERFACE_ID);
 
-        ArrayList<HTTPInboundEP> endpointsOnPort = httpEPRegistry.get(port);
+        ArrayList<HTTPInboundEP> endpointsOnPort = httpEPRegistry.get(interfaceId);
         if (endpointsOnPort == null) {
-            log.error("No endpoint found for http port : " + port);
+            log.error("No endpoint found for interface id : " + interfaceId);
             return false;
         }
 
@@ -74,7 +73,6 @@ public class HTTPInboundEPDispatcher implements Dispatcher, ConfigRegistryObserv
         return "http";
     }
 
-
     @Override
     public void endpointAdded(InboundEndpoint endpoint) {
         if (!(endpoint instanceof HTTPInboundEP)) { //If not an HTTPInboundEP just skip
@@ -83,12 +81,12 @@ public class HTTPInboundEPDispatcher implements Dispatcher, ConfigRegistryObserv
 
         HTTPInboundEP httpInboundEP = (HTTPInboundEP) endpoint;
 
-        int port = httpInboundEP.getPort();
-        ArrayList<HTTPInboundEP> endpointsForAPort = httpEPRegistry.get(port);
+        String interfaceId = httpInboundEP.getInterfaceId();
+        ArrayList<HTTPInboundEP> endpointsForAPort = httpEPRegistry.get(interfaceId);
 
         if (endpointsForAPort == null) {
             endpointsForAPort = new ArrayList<>();
-            httpEPRegistry.put(port, endpointsForAPort);
+            httpEPRegistry.put(interfaceId, endpointsForAPort);
         }
         endpointsForAPort.add(httpInboundEP);
     }
@@ -101,12 +99,12 @@ public class HTTPInboundEPDispatcher implements Dispatcher, ConfigRegistryObserv
 
         HTTPInboundEP httpInboundEP = (HTTPInboundEP) endpoint;
 
-        int port = httpInboundEP.getPort();
-        ArrayList<HTTPInboundEP> endpointsForAPort = httpEPRegistry.get(port);
+        String interfaceId = httpInboundEP.getInterfaceId();
+        ArrayList<HTTPInboundEP> endpointsForAPort = httpEPRegistry.get(interfaceId);
         if (endpointsForAPort != null) {
             endpointsForAPort.remove(httpInboundEP);
             if (endpointsForAPort.isEmpty()) {
-                httpEPRegistry.remove(port);
+                httpEPRegistry.remove(interfaceId);
             }
         }
 
