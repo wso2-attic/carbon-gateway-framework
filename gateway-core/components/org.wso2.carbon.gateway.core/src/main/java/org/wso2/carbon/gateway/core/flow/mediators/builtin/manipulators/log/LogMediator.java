@@ -96,6 +96,12 @@ public class LogMediator extends AbstractMediator {
      * Message ID
      */
     private String messageId;
+    /**
+     * Message reader is required only if the mediator tries to access the content of the message.
+     * In Log mediator, corresponding message reader is requested only if the log-level is full or an expression is
+     * present.
+     */
+    private Boolean readerRequired = false;
 
     private static final Logger log = LoggerFactory.getLogger(LogMediator.class);
 
@@ -112,7 +118,7 @@ public class LogMediator extends AbstractMediator {
         boolean trace = category == 2 ? true : false;
         MediatorLog mediatorLog = new MediatorLog(log, trace, carbonMessage);
         Reader reader = null;
-        if (!carbonMessage.isAlreadyRead()) {
+        if (readerRequired && !carbonMessage.isAlreadyRead()) {
             reader = ReaderRegistryImpl.getInstance().getReader(carbonMessage);
             if (reader == null) {
                 String errMsg = "Cannot find registered message reader for incoming content Type";
@@ -164,6 +170,7 @@ public class LogMediator extends AbstractMediator {
                 logLevel = HEADERS;
             } else if (levelParameter.getValue().toUpperCase(Locale.getDefault()).equals("FULL")) {
                 logLevel = FULL;
+                readerRequired = true;
             }
             parameterHolder.removeParameter(levelParameter.getName());
         }
@@ -216,6 +223,7 @@ public class LogMediator extends AbstractMediator {
                     LogMediatorProperty logMediatorProperty = new LogMediatorProperty(key, null, expression);
                     this.properties.add(logMediatorProperty);
                 }
+                readerRequired = true;
 
             } else if (!key.startsWith("namespace=")) {
                 LogMediatorProperty logMediatorProperty = new LogMediatorProperty(key, val, null);

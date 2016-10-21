@@ -41,7 +41,7 @@ public class ReaderRegistryImpl implements ReaderRegistry {
     public Reader getReader(CarbonMessage carbonMessage) {
         String contentType = carbonMessage.getHeader(Constants.HTTP_CONTENT_TYPE);
         contentType = ReaderUtil.parseContentType(contentType);
-        if (builderMap.containsKey(contentType)) {
+        if (contentType != null && builderMap.containsKey(contentType)) {
             return builderMap.get(contentType);
         }
         return null;
