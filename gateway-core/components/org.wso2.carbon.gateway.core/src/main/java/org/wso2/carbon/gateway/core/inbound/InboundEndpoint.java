@@ -18,7 +18,6 @@
 package org.wso2.carbon.gateway.core.inbound;
 
 //import org.wso2.carbon.gateway.core.config.ConfigConstants;
-import org.wso2.carbon.gateway.core.config.Integration;
 import org.wso2.carbon.gateway.core.config.IntegrationConfigRegistry;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.flow.Resource;
@@ -26,6 +25,8 @@ import org.wso2.carbon.gateway.core.flow.Resource;
 import org.wso2.carbon.gateway.core.util.VariableUtil;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
+
+import java.util.HashMap;
 
 /**
  * Base for InboundEndpoints. All Inbound Endpoint types must extend this.
@@ -71,8 +72,7 @@ public abstract class InboundEndpoint {
      */
     public boolean receive(CarbonMessage cMsg, CarbonCallback callback) {
 
-        Integration iConfig = IntegrationConfigRegistry.getInstance().getIntegrationConfig(configName);
-        VariableUtil.pushGlobalVariableStack(cMsg, iConfig.getConstants());
+        VariableUtil.pushGlobalVariableStack(cMsg, new HashMap<>());
 
         Resource resource = null;
 
