@@ -34,10 +34,10 @@
     <name>WSO2 Carbon - Gateway Parent</name>
 
     <scm>
-        <url>https://github.com/isudana/integration-bus.git</url>
-        <developerConnection>scm:git:https://github.com/isudana/integration-bus.git
+        <url>https://github.com/wso2/carbon-gateway-framework.git</url>
+        <developerConnection>scm:git:https://github.com/wso2/carbon-gateway-framework.git
         </developerConnection>
-        <connection>scm:git:https://github.com/isudana/integration-bus.git</connection>
+        <connection>scm:git:https://github.com/wso2/carbon-gateway-framework.git</connection>
         <tag>HEAD</tag>
     </scm>
 
