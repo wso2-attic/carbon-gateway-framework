@@ -79,14 +79,14 @@ public class Resource {
     }
 
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) {
-        log.info("Resource " + name + " received a message.");
+        log.debug("Resource " + name + " received a message.");
 
         Map<String, Observable> observableMap = new LinkedHashMap<>();
         carbonMessage.setProperty("OBSERVABLES", observableMap);
 
         VariableUtil.addVariable(carbonMessage, inputParamIdentifier, carbonMessage);
 
-        defaultWorker.submit(UUID.randomUUID(), carbonMessage, carbonCallback).subscribe(r -> log.info(
+        defaultWorker.submit(UUID.randomUUID(), carbonMessage, carbonCallback).subscribe(r -> log.debug(
                 "Resource subscribe event " + ((RxContext) r).getId())); // we don't need subscriber to return here?
 
         return true;
