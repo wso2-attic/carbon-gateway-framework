@@ -59,7 +59,7 @@ import static org.wso2.carbon.gateway.core.Constants.EMPTY_STRING;
 public class IFlowDeployer implements Deployer {
 
     public static final String EXTERNAL_DSL_CONFIGS_DIRECTORY = "integration-flows";
-    private static final String FILE_EXTENSION = ".xyz";
+    private static final String FILE_EXTENSION = ".ballerina";
     private static final Logger logger = LoggerFactory.getLogger(IFlowDeployer.class);
     private ArtifactType artifactType;
     private URL directoryLocation;

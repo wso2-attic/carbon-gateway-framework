@@ -46,13 +46,13 @@ public class GatewayServiceComponent {
     @Activate
     protected void start(BundleContext bundleContext) {
         try {
-            log.info("Starting Gateway...!");
+            log.info("Starting WSO2 Integration...!");
 
             //Creating the processor and registering the service
             bundleContext.registerService(CarbonMessageProcessor.class, new MessageProcessor(), null);
 
         } catch (Exception ex) {
-            String msg = "Error while loading Gateway";
+            String msg = "Error while loading WSO2 Integration";
             log.error(msg, ex);
             throw new RuntimeException(msg, ex);
         }
