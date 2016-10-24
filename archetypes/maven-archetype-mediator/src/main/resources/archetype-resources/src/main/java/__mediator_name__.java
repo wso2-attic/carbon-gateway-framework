@@ -62,7 +62,7 @@ public class ${mediator_name} extends AbstractMediator {
   */
   @Override
   public void setParameters(ParameterHolder parameterHolder) {
-    logMessage = parameterHolder.getParameter("parameters").getValue();
+    // Read paremeters send as key value pairs here.
   }
 
 
