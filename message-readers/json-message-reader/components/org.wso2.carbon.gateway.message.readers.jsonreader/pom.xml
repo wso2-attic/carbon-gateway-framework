@@ -21,13 +21,13 @@
     <parent>
         <artifactId>org.wso2.carbon.gateway.message.readers.jsonreader.parent</artifactId>
         <groupId>org.wso2.carbon.gateway</groupId>
-        <version>1.0.0-M0</version>
+        <version>1.0.0-M1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <name>WSO2 Gateway - JSON Message Reader</name>
     <groupId>org.wso2.carbon.gateway</groupId>
     <artifactId>org.wso2.carbon.gateway.message.readers.jsonreader</artifactId>
-    <version>1.0.0-M0</version>
+    <version>1.0.0-M1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <modelVersion>4.0.0</modelVersion>
 

@@ -21,14 +21,14 @@
     <parent>
         <groupId>org.wso2.carbon.gateway</groupId>
         <artifactId>org.wso2.carbon.gateway.inbounds.http.parent</artifactId>
-        <version>1.0.0-M0</version>
+        <version>1.0.0-M1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <name>HTTP Inbound Endpoint</name>
     <groupId>org.wso2.carbon.gateway.inbounds</groupId>
     <artifactId>org.wso2.carbon.gateway.inbounds.http</artifactId>
-    <version>1.0.0-M0</version>
+    <version>1.0.0-M1-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <dependencies>
