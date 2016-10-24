@@ -83,8 +83,8 @@ public class HTTPInboundEP extends InboundEndpoint {
         cMsg.setProperty(org.wso2.carbon.gateway.core.Constants.SERVICE_SUB_GROUP_PATH, subPath);
 
         cMsg.setProperty(org.wso2.carbon.gateway.core.Constants.SERVICE_METHOD, cMsg.getProperty("HTTP_METHOD"));
-        super.receive(cMsg, callback);
-        return true;
+        return  super.receive(cMsg, callback);
+
     }
 
     @Override
