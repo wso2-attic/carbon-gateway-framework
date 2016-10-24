@@ -25,7 +25,6 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <version>1.0.0-SNAPSHOT</version>
     <groupId>org.wso2.carbon.gateway.mediators</groupId>
     <artifactId>org.wso2.carbon.gateway.mediators.parent</artifactId>
     <packaging>pom</packaging>
@@ -36,5 +35,6 @@
         <module>jsontoxmltestmediator</module>
         <module>xmltojsontestmediator</module>
         <module>header-mediator</module>
+        <module>datamapper</module>
     </modules>
 </project>

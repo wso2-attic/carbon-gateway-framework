@@ -1,0 +1,91 @@
+<?xml version="1.0" ?>
+<!--
+  ~ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~
+  ~ WSO2 Inc. licenses this file to you under the Apache License,
+  ~ Version 2.0 (the "License"); you may not use this file except
+  ~ in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+  
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.wso2.carbon.gateway.mediators</groupId>
+        <artifactId>org.wso2.carbon.gateway.mediators.datamapper.parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>org.wso2.carbon.gateway.mediators.datamapper.engine</artifactId>
+    <packaging>bundle</packaging>
+    <name>WSO2 Carbon - DataMapper Mediator Engine</name>
+    <url>http://wso2.org</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang.wso2</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.json.wso2</groupId>
+            <artifactId>json</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ws.commons.axiom</groupId>
+            <artifactId>axiom-api</artifactId>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <export.package>
+            org.wso2.carbon.gateway.mediators.datamapper.engine.*;version="${carbon.gw.package.export.version}",
+            org.wso2.carbon.gateway.mediators.datamapper.engine;version="${carbon.gw.package.export.version}"
+        </export.package>
+        <import.package>
+            org.osgi.framework.*;version="${osgi.framework.import.version.range}",
+            org.wso2.carbon.gateway.core.*;version="${carbon.gw.import.version.range}",
+            org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
+            org.apache.commons.logging.*;version="${commons.logging.import.version.range}",
+            com.fasterxml.jackson.*; version="${fasterxml.jackson.import.version.range}",
+            org.apache.ws.commons.axiom.*;version="${axiom.version}",
+            javax.xml.*;version=0.0.0,
+            org.apache.axiom.om;version=0.0.0,
+            javax.script; version="0.0.0",
+            org.apache.commons.lang;version="${commons.lang.import.version.range}"
+        </import.package>
+    </properties>
+</project>
