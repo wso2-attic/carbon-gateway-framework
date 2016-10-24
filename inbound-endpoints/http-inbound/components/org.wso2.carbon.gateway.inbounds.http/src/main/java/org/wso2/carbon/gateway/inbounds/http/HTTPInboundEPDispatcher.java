@@ -25,9 +25,12 @@ import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.Constants;
+import org.wso2.carbon.messaging.DefaultCarbonMessage;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This handles the message dispatching for HTTP Inbound Endpoints
@@ -59,10 +62,17 @@ public class HTTPInboundEPDispatcher implements Dispatcher, ConfigRegistryObserv
             return false;
         }
 
+        boolean foundMatchingEndpoint = false;
+
         for (HTTPInboundEP endpoint : endpointsOnPort) {
             if (endpoint.canReceive(cMsg)) {
-                endpoint.receive(cMsg, callback);
+                foundMatchingEndpoint = endpoint.receive(cMsg, callback);
+                break;
             }
+        }
+
+        if (!foundMatchingEndpoint) {
+            callback.done(createErrorMessage("Cannot found matching  Resource", 404));
         }
 
         return false;
@@ -107,6 +117,31 @@ public class HTTPInboundEPDispatcher implements Dispatcher, ConfigRegistryObserv
                 httpEPRegistry.remove(interfaceId);
             }
         }
+
+    }
+
+    private CarbonMessage createErrorMessage(String payload, int statusCode) {
+        DefaultCarbonMessage response = new DefaultCarbonMessage();
+
+        response.setStringMessageBody(payload);
+        byte[] errorMessageBytes = payload.getBytes(Charset.defaultCharset());
+
+        Map<String, String> transportHeaders = new HashMap<>();
+        transportHeaders.put(org.wso2.carbon.transport.http.netty.common.Constants.HTTP_CONNECTION,
+                org.wso2.carbon.transport.http.netty.common.Constants.KEEP_ALIVE);
+        transportHeaders.put(org.wso2.carbon.transport.http.netty.common.Constants.HTTP_CONTENT_ENCODING,
+                org.wso2.carbon.transport.http.netty.common.Constants.GZIP);
+        transportHeaders.put(org.wso2.carbon.transport.http.netty.common.Constants.HTTP_CONTENT_TYPE,
+                org.wso2.carbon.transport.http.netty.common.Constants.TEXT_PLAIN);
+        transportHeaders.put(org.wso2.carbon.transport.http.netty.common.Constants.HTTP_CONTENT_LENGTH,
+                (String.valueOf(errorMessageBytes.length)));
+
+        response.setHeaders(transportHeaders);
+
+        response.setProperty(org.wso2.carbon.transport.http.netty.common.Constants.HTTP_STATUS_CODE, statusCode);
+        response.setProperty(org.wso2.carbon.messaging.Constants.DIRECTION,
+                org.wso2.carbon.messaging.Constants.DIRECTION_RESPONSE);
+        return response;
 
     }
 }
