@@ -3,7 +3,7 @@
     <parent>
         <artifactId>org.wso2.carbon.gateway.parent</artifactId>
         <groupId>org.wso2.carbon.gateway</groupId>
-        <version>1.0.0-M1-SNAPSHOT</version>
+        <version>1.0.0-M0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <name>WSO2 Gateway - Message Reader Parent</name>

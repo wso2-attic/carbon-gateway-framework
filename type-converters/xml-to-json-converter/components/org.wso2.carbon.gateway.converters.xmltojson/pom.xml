@@ -3,7 +3,7 @@
     <parent>
         <artifactId>org.wso2.carbon.gateway.converters.xmltojson.parent</artifactId>
         <groupId>org.wso2.carbon.gateway</groupId>
-        <version>1.0.0-M1-SNAPSHOT</version>
+        <version>1.0.0-M0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -11,7 +11,7 @@
     <name>XML to JSON Converter</name>
     <groupId>org.wso2.carbon.gateway.converters</groupId>
     <artifactId>org.wso2.carbon.gateway.converters.xmltojson</artifactId>
-    <version>1.0.0-M1-SNAPSHOT</version>
+    <version>1.0.0-M0</version>
     <packaging>bundle</packaging>
 
     <dependencies>

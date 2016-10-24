@@ -20,13 +20,13 @@
     <parent>
         <artifactId>org.wso2.carbon.gateway.converters.parent</artifactId>
         <groupId>org.wso2.carbon.gateway</groupId>
-        <version>1.0.0-M1-SNAPSHOT</version>
+        <version>1.0.0-M0</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.gateway.converters.jsontoxml.parent</artifactId>
     <name>WSO2 Gateway - JSON to XML Converter</name>
-    <version>1.0.0-M1-SNAPSHOT</version>
+    <version>1.0.0-M0</version>
     <packaging>pom</packaging>
 
     <modules>

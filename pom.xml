@@ -28,7 +28,7 @@
     <groupId>org.wso2.carbon.gateway</groupId>
     <artifactId>org.wso2.carbon.gateway.parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-M1-SNAPSHOT</version>
+    <version>1.0.0-M0</version>
     <name>WSO2 Carbon - Gateway Parent</name>
 
     <scm>
@@ -36,7 +36,7 @@
         <developerConnection>scm:git:https://github.com/wso2/carbon-gateway-framework.git
         </developerConnection>
         <connection>scm:git:https://github.com/wso2/carbon-gateway-framework.git</connection>
-        <tag>HEAD</tag>
+        <tag>1.0.0-M0</tag>
     </scm>
 
     <pluginRepositories>
@@ -351,7 +351,7 @@
         <carbon.kernel.package.import.version.range>[5.0.0, 6.0.0)
         </carbon.kernel.package.import.version.range>
 
-        <carbon.gw.version>1.0.0-M1-SNAPSHOT</carbon.gw.version>
+        <carbon.gw.version>1.0.0-M0</carbon.gw.version>
         <carbon.gw.package.export.version>1.0.0</carbon.gw.package.export.version>
 
         <osgi.api.version>6.0.0</osgi.api.version>
