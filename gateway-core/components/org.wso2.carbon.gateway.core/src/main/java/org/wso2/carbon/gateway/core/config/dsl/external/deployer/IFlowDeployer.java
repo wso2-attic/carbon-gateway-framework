@@ -118,24 +118,22 @@ public class IFlowDeployer implements Deployer {
 
     @Override
     public Object deploy(Artifact artifact) throws CarbonDeploymentException {
-        logger.info("Deploying artifact " + artifact.getFile().getName());
         updateESBConfig(artifact);
         return artifact.getFile().getName();
     }
 
     @Override
     public void undeploy(Object o) throws CarbonDeploymentException {
-        logger.info("Undeploying artifact " + (String) o);
         Integration configHolder = IntegrationConfigRegistry.getInstance()
                 .getIntegrationConfig(((String) o).replace(FILE_EXTENSION, EMPTY_STRING));
         if (configHolder != null) {
+            logger.info("Undeploying Integration : " + configHolder.getName());
             IntegrationConfigRegistry.getInstance().removeIntegrationConfig(configHolder);
         }
     }
 
     @Override
     public Object update(Artifact artifact) throws CarbonDeploymentException {
-        logger.info("Updating artifact " + artifact.getFile().getName());
         undeploy(artifact.getKey());
         updateESBConfig(artifact);
         return artifact.getFile().getName();
