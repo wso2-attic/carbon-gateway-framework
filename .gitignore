@@ -19,3 +19,6 @@ target
 *.i??
 .idea
 .iml
+
+# OS X temp files
+.DS_Store
