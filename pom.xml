@@ -143,6 +143,28 @@
                 <type>zip</type>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.gateway.evaluators</groupId>
+                <artifactId>org.wso2.carbon.gateway.evaluators.jsonpathevaluator</artifactId>
+                <version>${carbon.gw.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.gateway.evaluators</groupId>
+                <artifactId>org.wso2.carbon.gateway.evaluators.jsonpathevaluator.feature</artifactId>
+                <version>${carbon.gw.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.gateway.evaluators</groupId>
+                <artifactId>org.wso2.carbon.gateway.evaluators.xpathevaluator</artifactId>
+                <version>${carbon.gw.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.gateway.evaluators</groupId>
+                <artifactId>org.wso2.carbon.gateway.evaluators.xpathevaluator.feature</artifactId>
+                <version>${carbon.gw.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
                 <version>${osgi.api.version}</version>
@@ -262,6 +284,12 @@
                 <groupId>org.wso2.carbon.transport</groupId>
                 <artifactId>org.wso2.carbon.transport.http.netty</artifactId>
                 <version>${carbon.transport.version}</version>
+            </dependency>
+            <!-- An orbit should be created -->
+            <dependency>
+                <groupId>org.wso2.orbit.net.sf.saxon</groupId>
+                <artifactId>Saxon-HE</artifactId>
+                <version>${saxon.wso2.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -399,6 +427,7 @@
         <carbon.deployment.version>5.0.0</carbon.deployment.version>
         <carbon.deployment.export.version>5.0.0</carbon.deployment.export.version>
         <rxjava.export.version>1.2.0.wso2v1</rxjava.export.version>
+        <saxon.wso2.version>9.7.0.wso2v1</saxon.wso2.version>
 
         <commons.io.version>2.0</commons.io.version>
         <rx.java.version>1.2.0.wso2v1</rx.java.version>
@@ -413,5 +442,6 @@
         <module>archetypes</module>
         <module>type-converters</module>
         <module>message-readers</module>
+        <module>evaluators</module>
     </modules>
 </project>
