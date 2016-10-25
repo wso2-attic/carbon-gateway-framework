@@ -16,25 +16,23 @@
   ~ * limitations under the License.
   ~ */
   -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>org.wso2.carbon.gateway.parent</artifactId>
+        <artifactId>org.wso2.carbon.gateway.evaluators.parent</artifactId>
         <groupId>org.wso2.carbon.gateway</groupId>
         <version>1.0.1-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>org.wso2.carbon.gateway.evaluators.parent</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>org.wso2.carbon.gateway.evaluators.jsonpathevaluator.parent</artifactId>
+    <name>WSO2 Gateway - JSONPath Evaluator</name>
     <packaging>pom</packaging>
-    <name>WSO2 Gateway - Evaluator Module</name>
 
     <modules>
-        <module>xpath-evaluator</module>
-        <module>jsonpath-evaluator</module>
+        <module>components/org.wso2.carbon.gateway.evaluators.jsonpathevaluator</module>
+        <module>features/org.wso2.carbon.gateway.evaluators.jsonpathevaluator.feature</module>
     </modules>
-
 
 </project>

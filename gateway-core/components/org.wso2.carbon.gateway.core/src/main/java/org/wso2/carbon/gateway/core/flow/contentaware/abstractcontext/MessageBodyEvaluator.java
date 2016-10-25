@@ -40,6 +40,7 @@ public interface MessageBodyEvaluator {
     String getPathLanguage();
 
     /**
+     * Returns a boolean depending on whether the provided mime type is supported in this Path Evaluator
      *
      * @param mimeType The mime type that need to be checked if it is supported
      * @return A boolean representing whether the passed mime type is supported
