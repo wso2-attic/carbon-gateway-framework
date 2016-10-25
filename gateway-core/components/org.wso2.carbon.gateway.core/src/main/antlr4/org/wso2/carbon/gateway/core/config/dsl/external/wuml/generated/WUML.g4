@@ -321,7 +321,11 @@ expression
     ;
 
 evalExpression
-    :   'eval' '(' Identifier '=' Identifier ',' 'path' '=' StringLiteral ')'
+    :   'eval' '(' Identifier '=' Identifier ',' 'path' '=' (StringLiteral | pathExpression) ')'
+    ;
+
+pathExpression
+    : Identifier '(' StringLiteral ')'
     ;
 
 literal

@@ -688,9 +688,6 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
             if (expressions != null && expressions.size() == 2) {
                 // if the format is : "eval("$p1.p2")=="abc""
                 if (expressions.get(0).evalExpression() != null && expressions.get(1).literal() != null) {
-                    String sourceDefinition = StringParserUtil
-                            .getValueWithinDoubleQuotes(expressions.get(0).evalExpression().StringLiteral().getText());
-
                     // if the messageRef is given, extract the message variable name
                     String messageIdentifier = null;
                     if (expressions.get(0).evalExpression().Identifier().size() == 2 && Constants.MESSAGE_KEY
@@ -700,7 +697,19 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
                         log.error("messageRef value is not set in the eval expression.");
                     }
 
-                    Source source = new Source(sourceDefinition);
+                    String sourceDefinition;
+                    Source source;
+                    if (expressions.get(0).evalExpression().StringLiteral() != null) {
+                        sourceDefinition = StringParserUtil
+                                .getValueWithinDoubleQuotes(expressions.get(0).evalExpression().StringLiteral().getText());
+                        source = new Source(sourceDefinition);
+                    } else {
+                        String pathLanguage = expressions.get(0).evalExpression().pathExpression().Identifier()
+                                .getText();
+                        sourceDefinition = StringParserUtil.getValueWithinDoubleQuotes(
+                                expressions.get(0).evalExpression().pathExpression().StringLiteral().getText());
+                        source = new Source(sourceDefinition, pathLanguage);
+                    }
                     String conditionValue = StringParserUtil
                             .getValueWithinDoubleQuotes(expressions.get(1).literal().StringLiteral().getText());
 
