@@ -19,6 +19,7 @@ package org.wso2.carbon.gateway.inbounds.http;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.gateway.core.config.ConfigRegistryObserver;
 import org.wso2.carbon.gateway.core.inbound.Dispatcher;
 import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
@@ -80,7 +81,7 @@ public class HTTPInboundEPDispatcher implements Dispatcher, ConfigRegistryObserv
 
     @Override
     public String getProtocol() {
-        return "http";
+        return Constants.PROTOCOL_HTTP;
     }
 
     @Override

@@ -104,6 +104,8 @@ public class Constants {
     /* URL sections */
     public static final String PROTOCOL = "protocol";
 
+    public static final String PROTOCOL_HTTP = "http";
+
     public static final String HOST = "host";
 
     public static final String PORT = "port";

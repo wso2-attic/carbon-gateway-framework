@@ -28,16 +28,17 @@ import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.CarbonMessageProcessor;
 import org.wso2.carbon.messaging.TransportSender;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
 
 /**
- *  Message Processor Implementation for Gateway
- *
+ * Message Processor Implementation for Gateway
  */
 public class MessageProcessor implements CarbonMessageProcessor {
 
     private static final Logger log = LoggerFactory.getLogger(MessageProcessor.class);
+    private static final String PROTOCOL = "PROTOCOL";
 
     @Override
     public boolean receive(CarbonMessage cMsg, CarbonCallback callback) throws Exception {
@@ -48,7 +49,15 @@ public class MessageProcessor implements CarbonMessageProcessor {
 
         cMsg.setProperty(Constants.VARIABLE_STACK, new Stack<Map<String, Object>>());
 
-        String protocol = "http";  //TODO: Take from cMsg
+        // Always convert to lowercase as protocol is defined in lowercase letters in iflow
+        String protocol = ((String) cMsg.getProperty(PROTOCOL));
+
+        if (protocol != null && !"".equals(protocol)) {
+            protocol = protocol.toLowerCase(Locale.US);
+        } else {
+            log.error("Transport protocol property not found in incoming carbon message");
+            return false;
+        }
 
         Provider provider = InboundEPProviderRegistry.getInstance().getProvider(protocol);
 

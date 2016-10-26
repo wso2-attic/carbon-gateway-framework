@@ -21,6 +21,7 @@ package org.wso2.carbon.gateway.outbounds.http;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.gateway.core.outbound.OutboundEPProvider;
 import org.wso2.carbon.gateway.core.outbound.OutboundEndpoint;
 
@@ -43,7 +44,7 @@ public class HTTPOutboundProvider implements OutboundEPProvider {
 
     @Override
     public String getProtocol() {
-        return "http";
+        return Constants.PROTOCOL_HTTP;
     }
 
     @Override
