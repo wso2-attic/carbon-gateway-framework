@@ -69,7 +69,7 @@ public class WUMLListenerTest {
      */
     @Test
     public void testPassThroughObjectModelCreation() {
-        String iFlowResource = "/integration-flows/passthrough.xyz";
+        String iFlowResource = "/integration-flows/passthrough.ballerina";
         String integrationName = "passthrough";
         String resourceName = "passthrough";
 
@@ -98,7 +98,7 @@ public class WUMLListenerTest {
      */
     @Test
     public void testFilterMediatorObjectCreation() {
-        String iFlowResource = "/integration-flows/filter.xyz";
+        String iFlowResource = "/integration-flows/filter.ballerina";
         String integrationName = "filter";
         String resourceName = "passthrough";
 
