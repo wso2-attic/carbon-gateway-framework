@@ -93,14 +93,20 @@ public class FilterMediator extends AbstractFlowController {
         if (source.getScope().equals(Scope.HEADER)) {
 
             if (Evaluator.isHeaderMatched(carbonMessage, source, pattern)) {
-                childThenMediatorList.getFirstMediator().
-                           receive(carbonMessage, new FlowControllerMediateCallback(carbonCallback, this,
-                                   VariableUtil.getVariableStack(carbonMessage)));
+                if (!(childThenMediatorList.getMediators().isEmpty())) {
+                    childThenMediatorList.getFirstMediator().
+                            receive(carbonMessage, new FlowControllerMediateCallback(carbonCallback, this,
+                                    VariableUtil.getVariableStack(carbonMessage)));
+                } else {
+                    next(carbonMessage, carbonCallback);
+                }
             } else {
-                if (childOtherwiseMediatorList.getMediators().size() != 0) {
+                if (!(childOtherwiseMediatorList.getMediators().isEmpty())) {
                     childOtherwiseMediatorList.getFirstMediator().
                             receive(carbonMessage, new FlowControllerMediateCallback(carbonCallback, this,
                                     VariableUtil.getVariableStack(carbonMessage)));
+                } else {
+                   next(carbonMessage, carbonCallback);
                 }
             }
         }
