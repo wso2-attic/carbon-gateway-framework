@@ -707,18 +707,26 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
             // log.info(Integer.toString(expressions.size()));
             // Works only for formats: "eval("$p1.p2")=="abc""
             if (expressions != null && expressions.size() == 2) {
-                String sourceDefinition = StringParserUtil
-                        .getValueWithinDoubleQuotes(expressions.get(0).evalExpression().StringLiteral().getText());
-                Source source = new Source(sourceDefinition);
-                String conditionValue = StringParserUtil
-                        .getValueWithinDoubleQuotes(expressions.get(1).literal().StringLiteral().getText());
+                // if the format is : "eval("$p1.p2")=="abc""
+                if (expressions.get(0).evalExpression() != null && expressions.get(1).literal() != null) {
+                    String sourceDefinition = StringParserUtil
+                            .getValueWithinDoubleQuotes(expressions.get(0).evalExpression().StringLiteral().getText());
+                    String messageIdentifier = expressions.get(0).evalExpression().Identifier().getText();
 
-                Condition condition = new Condition(source, Pattern.compile(conditionValue));
+                    Source source = new Source(sourceDefinition);
+                    String conditionValue = StringParserUtil
+                            .getValueWithinDoubleQuotes(expressions.get(1).literal().StringLiteral().getText());
 
-                FilterMediator filterMediator = new FilterMediator(condition);
-                dropMediatorFilterAware(filterMediator);
-                flowControllerStack.push(filterMediator);
-                this.flowControllerMediatorSection.push(FlowControllerMediatorSection.ifBlock);
+                    Condition condition = new Condition(source, Pattern.compile(conditionValue));
+
+                    FilterMediator filterMediator = new FilterMediator(condition, messageIdentifier);
+                    dropMediatorFilterAware(filterMediator);
+                    flowControllerStack.push(filterMediator);
+                    this.flowControllerMediatorSection.push(FlowControllerMediatorSection.ifBlock);
+                } else {
+                    //TODO: Support other types of expressions. eg: ("aa"=="bb"), ("bb"==eval(...))
+                    log.error("Unsupported expression: " + ctx.getText());
+                }
             }
         }
     }
@@ -949,7 +957,7 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     private void dropMediatorFilterAware(Mediator mediator) {
         if (isInitializationFired) {
             initializerMediator = mediator;
-        } else if (!flowControllerMediatorSection.empty()) {
+        } else if (!flowControllerMediatorSection.empty() && !flowControllerStack.empty()) {
             switch (flowControllerMediatorSection.peek()) {
             case ifBlock:
                 ((FilterMediator) flowControllerStack.peek()).addThenMediator(mediator);

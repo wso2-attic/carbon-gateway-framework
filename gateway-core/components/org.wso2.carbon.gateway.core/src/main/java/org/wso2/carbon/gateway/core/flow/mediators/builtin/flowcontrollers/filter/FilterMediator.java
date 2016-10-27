@@ -47,12 +47,15 @@ public class FilterMediator extends AbstractFlowController {
 
     private Condition condition;
 
+    private String messageRef;
+
     public FilterMediator() {};
 
-    public FilterMediator(Condition condition) {
+    public FilterMediator(Condition condition, String messageRef) {
         this.condition = condition;
         this.source = condition.getSource();
         this.pattern = condition.getPattern();
+        this.messageRef = messageRef;
     }
 
     public FilterMediator(Source source, Pattern pattern) {
@@ -88,11 +91,15 @@ public class FilterMediator extends AbstractFlowController {
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback)
                throws Exception {
 
-        super.receive(carbonMessage, carbonCallback);
+        Object referredCMsg = getObjectFromContext(carbonMessage, messageRef);
+        // if the messageRef is not found as a CarbonMessage skip the filter mediator
+        if (!(referredCMsg instanceof CarbonMessage)) {
+            return next(carbonMessage, carbonCallback);
+        }
 
         if (source.getScope().equals(Scope.HEADER)) {
-
-            if (Evaluator.isHeaderMatched(carbonMessage, source, pattern)) {
+            if (Evaluator.isHeaderMatched((CarbonMessage) referredCMsg, source, pattern)) {
+                super.receive(carbonMessage, carbonCallback);
                 if (!(childThenMediatorList.getMediators().isEmpty())) {
                     childThenMediatorList.getFirstMediator().
                             receive(carbonMessage, new FlowControllerMediateCallback(carbonCallback, this,
@@ -102,6 +109,7 @@ public class FilterMediator extends AbstractFlowController {
                 }
             } else {
                 if (!(childOtherwiseMediatorList.getMediators().isEmpty())) {
+                    super.receive(carbonMessage, carbonCallback);
                     childOtherwiseMediatorList.getFirstMediator().
                             receive(carbonMessage, new FlowControllerMediateCallback(carbonCallback, this,
                                     VariableUtil.getVariableStack(carbonMessage)));
