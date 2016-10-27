@@ -31,45 +31,45 @@ import org.wso2.carbon.messaging.CarbonMessage;
 */
 public class ${mediator_name} extends AbstractMediator {
 
-  private static final Logger log = LoggerFactory.getLogger(${mediator_name}.class);
-  private String logMessage = "Message received at Sample Mediator";   // Sample Mediator specific variable
+    private static final Logger log = LoggerFactory.getLogger(${mediator_name}.class);
+    private String logMessage = "Message received at Sample Mediator";   // Sample Mediator specific variable
 
 
-  @Override
-  public String getName() {
-    return "${mediator_name}";
-  }
+    @Override
+    public String getName() {
+        return "${mediator_name}";
+    }
 
-  /**
-  * Mediate the message.
-  *
-  * This is the execution point of the mediator.
-  * @param carbonMessage MessageContext to be mediated
-  * @param carbonCallback Callback which can be use to call the previous step
-  * @return whether mediation is success or not
-  **/
-  @Override
-  public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
-    log.info("Invoking ${mediator_name} Mediator");
-    log.info(logMessage);
-    return next(carbonMessage, carbonCallback); //Move forward
-  }
+    /**
+    * Mediate the message.
+    *
+    * This is the execution point of the mediator.
+    * @param carbonMessage MessageContext to be mediated
+    * @param carbonCallback Callback which can be use to call the previous step
+    * @return whether mediation is success or not
+    **/
+    @Override
+    public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
+        log.info("Invoking ${mediator_name} Mediator");
+        log.info(logMessage);
+        return next(carbonMessage, carbonCallback); //Move forward
+    }
 
- /**
-  * Set Parameters
-  *
-  * @param parameterHolder holder which contains key-value pairs of parameters
-  */
-  @Override
-  public void setParameters(ParameterHolder parameterHolder) {
-    // Read paremeters send as key value pairs here.
-  }
+    /**
+    * Set Parameters
+    *
+    * @param parameterHolder holder which contains key-value pairs of parameters
+    */
+    @Override
+    public void setParameters(ParameterHolder parameterHolder) {
+        // Read paremeters send as key value pairs here.
+        // String testParamValue = parameterHolder.getParameter("testValue").getValue();
+    }
 
 
-  /** This is a sample mediator specific method */
-  public void setLogMessage(String logMessage) {
-     this.logMessage = logMessage;
-  }
-
+    /** This is a sample mediator specific method */
+    public void setLogMessage(String logMessage) {
+        this.logMessage = logMessage;
+    }
 
 }
