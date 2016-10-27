@@ -704,14 +704,20 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         // For expressions with pattern "exp1" == "exp2"
         if (ctx.EQUAL() != null) {
             List<WUMLParser.ExpressionContext> expressions = ((WUMLParser.ParExpressionContext) ctx).expression();
-            // log.info(Integer.toString(expressions.size()));
-            // Works only for formats: "eval("$p1.p2")=="abc""
             if (expressions != null && expressions.size() == 2) {
                 // if the format is : "eval("$p1.p2")=="abc""
                 if (expressions.get(0).evalExpression() != null && expressions.get(1).literal() != null) {
                     String sourceDefinition = StringParserUtil
                             .getValueWithinDoubleQuotes(expressions.get(0).evalExpression().StringLiteral().getText());
-                    String messageIdentifier = expressions.get(0).evalExpression().Identifier().getText();
+
+                    // if the messageRef is given, extract the message variable name
+                    String messageIdentifier = null;
+                    if (expressions.get(0).evalExpression().Identifier().size() == 2 && Constants.MESSAGE_KEY
+                            .equals(expressions.get(0).evalExpression().Identifier().get(0).getText())) {
+                        messageIdentifier = expressions.get(0).evalExpression().Identifier().get(1).getText();
+                    } else {
+                        log.error("messageRef value is not set in the eval expression.");
+                    }
 
                     Source source = new Source(sourceDefinition);
                     String conditionValue = StringParserUtil

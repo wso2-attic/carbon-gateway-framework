@@ -1,6 +1,6 @@
 @Path("/stock")
 @Source(protocol = "http", host = "localhost", port = 8280)
-@Api(tags = {
+@Service(tags = {
     "stock_info",
     "stock_update"
 }, description = "Rest api for do operations on admin", produces = MediaType.APPLICATION_JSON)
@@ -29,6 +29,6 @@ resource passthrough(message m) {
         }
     }
     log(level="custom", status="Message sent to Endpoint...");
-    response = invoke(endpointKey=stockEP, messageKey=m);
+    response = invoke(endpointRef=stockEP, messageRef=m);
     reply response;
 }

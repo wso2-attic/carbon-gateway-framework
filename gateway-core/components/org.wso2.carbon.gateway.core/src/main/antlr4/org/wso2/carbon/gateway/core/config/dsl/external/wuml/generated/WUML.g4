@@ -295,7 +295,7 @@ expression
     ;
 
 evalExpression
-    :   'eval' '(' 'messageRef' '=' Identifier ',' 'path' '=' StringLiteral ')'
+    :   'eval' '(' Identifier '=' Identifier ',' 'path' '=' StringLiteral ')'
     ;
 
 literal
