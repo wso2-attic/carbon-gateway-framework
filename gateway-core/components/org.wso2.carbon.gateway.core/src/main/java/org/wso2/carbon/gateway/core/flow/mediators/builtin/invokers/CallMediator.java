@@ -59,12 +59,22 @@ public class CallMediator extends AbstractMediator implements Invoker {
     }
 
     public void setParameters(ParameterHolder parameterHolder) {
-        outboundEPKey = parameterHolder.getParameter(ENDPOINT_KEY).getValue();
-        integrationKey = parameterHolder.getParameter(INTEGRATION_KEY).getValue();
-        messageKey = parameterHolder.getParameter(MESSAGE_KEY).getValue();
+        if (parameterHolder.getParameter(ENDPOINT_KEY) != null) {
+            outboundEPKey = parameterHolder.getParameter(ENDPOINT_KEY).getValue();
+        } else {
+            log.error(ENDPOINT_KEY + " is not set in the configuration.");
+        }
+        if (parameterHolder.getParameter(MESSAGE_KEY) != null) {
+            messageKey = parameterHolder.getParameter(MESSAGE_KEY).getValue();
+        } else {
+            log.error(MESSAGE_KEY + " is not set in the configuration.");
+        }
         if (parameterHolder.getParameter(RETURN_VALUE) != null) {
             returnedOutput = parameterHolder.getParameter(RETURN_VALUE).getValue();
+        } else {
+            log.error(RETURN_VALUE + " is not set in the configuration.");
         }
+        integrationKey = parameterHolder.getParameter(INTEGRATION_KEY).getValue();
     }
 
     @Override
@@ -81,7 +91,7 @@ public class CallMediator extends AbstractMediator implements Invoker {
                     .getIntegrationConfig(integrationKey).getOutbound(outboundEPKey);
 
             if (endpoint == null) {
-                log.error("Outbound Endpoint : " + outboundEPKey + "not found ");
+                log.error("Outbound Endpoint : " + outboundEPKey + " not found ");
                 return false;
             }
         }

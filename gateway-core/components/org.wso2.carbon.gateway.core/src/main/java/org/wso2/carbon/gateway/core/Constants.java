@@ -138,9 +138,9 @@ public class Constants {
 
     public static final String INTEGRATION_KEY = "integrationKey";
 
-    public static final String MESSAGE_KEY = "messageKey";
+    public static final String MESSAGE_KEY = "messageRef";
 
-    public static final String ENDPOINT_KEY = "endpointKey";
+    public static final String ENDPOINT_KEY = "endpointRef";
 
     /* Exception Types */
 

@@ -1,6 +1,6 @@
 @Path("/stock")
 @Source(protocol = "http", host = "localhost", port = 8280)
-@Api(tags = {
+@Service(tags = {
     "stock_info",
     "stock_update"
 }, description = "Rest api for do operations on admin", produces = MediaType.APPLICATION_JSON)
@@ -15,20 +15,20 @@ constant endpoint stockEP = new HTTPEndPoint("http://localhost:8080/stockquote/a
 resource passthrough(message m) {
     message response;
     log(level="custom", status="Message Received...");
-    if (eval("$header.exchange", m) == "NYSE") {
-        if (eval("$header.sub.exchange", m) == "ONE") {
+    if (eval(messageRef=m, path="$header.exchange") == "NYSE") {
+        if (eval(messageRef=m, path="$header.sub.exchange") == "ONE") {
             log(level="custom", status="Exchange NYSE, sub-exchange ONE");
         } else {
             log(level="custom", status="Exchange NYSE, sub-exchange not ONE");
         }
     } else {
-        if (eval("$header.sub.exchange", m) == "ONE") {
+        if (eval(messageRef=m, path="$header.sub.exchange") == "ONE") {
             log(level="custom", status="Exchange not NYSE, sub-exchange ONE");
         } else {
             log(level="custom", status="Exchange not NYSE, sub-exchange not ONE");
         }
     }
     log(level="custom", status="Message sent to Endpoint...");
-    response = invoke(endpointKey=stockEP, messageKey=m);
+    response = invoke(endpointRef=stockEP, messageRef=m);
     reply response;
 }
