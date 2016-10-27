@@ -623,6 +623,8 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         // call mediator is specified in the language as "invoke". This is a special case.
         if (Constants.INVOKE_STATEMENT.equals(mediatorId)) {
             mediatorId = Constants.CALL_MEDIATOR_NAME;
+        } else if (Constants.HEADER_MEDIATOR_STATEMENT.equals(mediatorId)) {
+            mediatorId = Constants.HEADER_MEDIATOR_NAME;
         }
 
         Mediator mediator = MediatorProviderRegistry.getInstance().getMediator(mediatorId);

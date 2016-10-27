@@ -126,6 +126,10 @@ public class Constants {
 
     public static final String INVOKE_STATEMENT = "invoke";
 
+    public static final String HEADER_MEDIATOR_STATEMENT = "setHeader";
+
+    public static final String HEADER_MEDIATOR_NAME = "header";
+
     public static final String CALL_MEDIATOR_NAME = "call";
 
     public static final String RESPOND_MEDIATOR_NAME = "respond";

@@ -41,6 +41,8 @@ import java.util.Map;
 import javax.xml.soap.SOAPException;
 import javax.xml.stream.XMLStreamException;
 
+import static org.wso2.carbon.gateway.core.Constants.MESSAGE_KEY;
+
 /**
  * A Header Mediator uses to mediate headers in transport level and soap header
  */
@@ -54,6 +56,7 @@ public class HeaderMediator extends AbstractMediator {
     private Scope scope = Scope.TRANSPORT;
     private Action action = Action.SET;
     private String inlineXMLValue;
+    private String messageKey;
     private Map<String, String> properties = new HashMap<>();
 
     @Override
@@ -63,29 +66,30 @@ public class HeaderMediator extends AbstractMediator {
 
     @Override
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
+        CarbonMessage inputCarbonMessage = (CarbonMessage) getObjectFromContext(carbonMessage, messageKey);
         if (action == Action.REMOVE && scope == Scope.TRANSPORT) {
-            carbonMessage.removeHeader(name);
+            inputCarbonMessage.removeHeader(name);
         } else if (action == Action.SET && scope == Scope.TRANSPORT) {
-            carbonMessage.setHeader(name, value);
+            inputCarbonMessage.setHeader(name, value);
         } else if (action == Action.REMOVE && scope == Scope.SOAP) {
-            MessageDataSource messageDataSource = carbonMessage.getMessageDataSource();
+            MessageDataSource messageDataSource = inputCarbonMessage.getMessageDataSource();
             if (messageDataSource != null && messageDataSource.getDataObject() instanceof SOAPEnvelope) {
                 removeSOAPHeader(messageDataSource);
             } else {
-                Reader reader = ReaderRegistryImpl.getInstance().getReader(carbonMessage);
-                messageDataSource = reader.makeMessageReadable(carbonMessage);
+                Reader reader = ReaderRegistryImpl.getInstance().getReader(inputCarbonMessage);
+                messageDataSource = reader.makeMessageReadable(inputCarbonMessage);
                 removeSOAPHeader(messageDataSource);
             }
         } else if (action == Action.SET && scope == Scope.SOAP) {
-            MessageDataSource messageDataSource = carbonMessage.getMessageDataSource();
+            MessageDataSource messageDataSource = inputCarbonMessage.getMessageDataSource();
             SOAPEnvelope soapEnvelope = null;
             if (messageDataSource == null) {
-                Reader reader = ReaderRegistryImpl.getInstance().getReader(carbonMessage);
+                Reader reader = ReaderRegistryImpl.getInstance().getReader(inputCarbonMessage);
                 if (reader == null) {
                     logger.error("Cannot find registered message reader for the incoming content type");
                     return false;
                 }
-                messageDataSource = reader.makeMessageReadable(carbonMessage);
+                messageDataSource = reader.makeMessageReadable(inputCarbonMessage);
 
             }
             if (messageDataSource.getDataObject() != null && messageDataSource
@@ -145,7 +149,7 @@ public class HeaderMediator extends AbstractMediator {
                 properties.put(modifiedKey, val);
             }
         }
-
+        messageKey = parameterHolder.getParameter(MESSAGE_KEY).getValue();
     }
 
     private void removeSOAPHeader(MessageDataSource messageDataSource) throws SOAPException {
