@@ -47,6 +47,7 @@ public class FilterMediator extends AbstractFlowController {
 
     private Condition condition;
 
+    /* This field will contain the value that is passed from the Integration config as messageRef */
     private String messageRef;
 
     public FilterMediator() {};
