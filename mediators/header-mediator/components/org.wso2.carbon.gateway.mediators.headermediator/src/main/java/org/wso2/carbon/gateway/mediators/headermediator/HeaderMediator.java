@@ -104,11 +104,11 @@ public class HeaderMediator extends AbstractMediator {
 
     @Override
     public void setParameters(ParameterHolder parameterHolder) {
-        Parameter parameter = parameterHolder.getParameter("name");
+        Parameter parameter = parameterHolder.getParameter("headerName");
         if (parameter != null) {
             name = parameter.getValue();
         }
-        Parameter parameterValue = parameterHolder.getParameter("value");
+        Parameter parameterValue = parameterHolder.getParameter("headerValue");
         if (parameterValue != null) {
             value = parameterValue.getValue();
         }
