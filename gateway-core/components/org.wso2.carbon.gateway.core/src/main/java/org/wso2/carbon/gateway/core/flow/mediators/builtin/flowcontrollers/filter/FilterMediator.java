@@ -99,8 +99,8 @@ public class FilterMediator extends AbstractFlowController {
 
         if (source.getScope().equals(Scope.HEADER)) {
             if (Evaluator.isHeaderMatched((CarbonMessage) referredCMsg, source, pattern)) {
-                super.receive(carbonMessage, carbonCallback);
                 if (!(childThenMediatorList.getMediators().isEmpty())) {
+                    super.receive(carbonMessage, carbonCallback);
                     childThenMediatorList.getFirstMediator().
                             receive(carbonMessage, new FlowControllerMediateCallback(carbonCallback, this,
                                     VariableUtil.getVariableStack(carbonMessage)));
