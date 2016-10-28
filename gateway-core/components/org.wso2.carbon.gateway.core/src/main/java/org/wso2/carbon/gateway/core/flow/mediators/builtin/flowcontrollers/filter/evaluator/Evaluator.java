@@ -20,6 +20,7 @@ package org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filt
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.gateway.core.flow.contentaware.MessageBodyEvaluatorRegistry;
 import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.MessageBodyEvaluator;
 import org.wso2.carbon.gateway.core.flow.contentaware.exceptions.MessageBodyEvaluationException;
@@ -65,18 +66,28 @@ public class Evaluator {
     public static boolean isPathMatched(CarbonMessage carbonMessage, Source source, Pattern pattern) throws Exception {
         MessageBodyEvaluator messageBodyEvaluator = MessageBodyEvaluatorRegistry.getInstance()
                 .getMessageBodyEvaluator(source.getPathLanguage());
-        Reader reader = ReaderRegistryImpl.getInstance().getReader(carbonMessage);
-        String contentType = reader.getContentType();
-        if (messageBodyEvaluator.isContentTypeSupported(contentType)) {
-            MessageDataSource messageDataSource = carbonMessage.getMessageDataSource();
-            Object dataObject = messageDataSource != null ? messageDataSource.getDataObject()
-                    : reader.makeMessageReadable(carbonMessage).getDataObject();
-            Object result = messageBodyEvaluator.evaluate(dataObject, source.getKey());
-            return result != null && pattern.matcher(result.toString()).matches();
+        if (messageBodyEvaluator != null) {
+            Reader reader = ReaderRegistryImpl.getInstance().getReader(carbonMessage);
+            if (reader != null) {
+                String contentType = reader.getContentType();
+                if (messageBodyEvaluator.isContentTypeSupported(contentType)) {
+                    MessageDataSource messageDataSource = carbonMessage.getMessageDataSource();
+                    Object dataObject = messageDataSource != null ?
+                            messageDataSource.getDataObject() :
+                            reader.makeMessageReadable(carbonMessage).getDataObject();
+                    Object result = messageBodyEvaluator.evaluate(dataObject, source.getKey());
+                    return result != null && pattern.matcher(result.toString()).matches();
+                } else {
+                    throw new MessageBodyEvaluationException(messageBodyEvaluator.getPathLanguage()
+                            + " cannot be applied for a message body of the type " + contentType);
+                }
+            } else {
+                throw new MessageBodyEvaluationException("A Reader is not found for the content type: "
+                        + carbonMessage.getHeader(Constants.HTTP_CONTENT_TYPE));
+            }
         } else {
-            throw new MessageBodyEvaluationException(
-                    messageBodyEvaluator.getPathLanguage() + " cannot be applied for a message body of the type "
-                            + contentType);
+            throw new MessageBodyEvaluationException("A Message Body Evaluator is not found for the path language "
+                    + source.getPathLanguage());
         }
     }
 }
