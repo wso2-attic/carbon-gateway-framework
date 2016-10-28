@@ -49,7 +49,7 @@ public class MessageBodyEvaluatorServiceComponent {
             unbind = "removeMessageBodyEvaluator")
     protected void addMessageBodyEvaluator(MessageBodyEvaluator messageBodyEvaluator) {
         if (log.isDebugEnabled()) {
-            log.debug("Adding" + messageBodyEvaluator.toString() + "to BaseMessageBodyEvaluatorRegistry");
+            log.debug("Adding" + messageBodyEvaluator.toString() + "to MessageBodyEvaluatorRegistry");
         }
         MessageBodyEvaluatorRegistry.getInstance()
                 .addMessageBodyEvaluator(messageBodyEvaluator.getPathLanguage(), messageBodyEvaluator);
@@ -62,7 +62,7 @@ public class MessageBodyEvaluatorServiceComponent {
      */
     protected void removeMessageBodyEvaluator(MessageBodyEvaluator messageBodyEvaluator) {
         if (log.isDebugEnabled()) {
-            log.debug("Removing" + messageBodyEvaluator.toString() + "from BaseMessageBodyEvaluatorRegistry");
+            log.debug("Removing" + messageBodyEvaluator.toString() + "from MessageBodyEvaluatorRegistry");
         }
         MessageBodyEvaluatorRegistry.getInstance()
                 .removeMessageBodyEvaluator(messageBodyEvaluator.getPathLanguage());

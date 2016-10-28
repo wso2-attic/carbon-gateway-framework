@@ -700,8 +700,8 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
                     String sourceDefinition;
                     Source source;
                     if (expressions.get(0).evalExpression().StringLiteral() != null) {
-                        sourceDefinition = StringParserUtil
-                                .getValueWithinDoubleQuotes(expressions.get(0).evalExpression().StringLiteral().getText());
+                        sourceDefinition = StringParserUtil.getValueWithinDoubleQuotes(expressions.get(0)
+                                .evalExpression().StringLiteral().getText());
                         source = new Source(sourceDefinition);
                     } else {
                         String pathLanguage = expressions.get(0).evalExpression().pathExpression().Identifier()

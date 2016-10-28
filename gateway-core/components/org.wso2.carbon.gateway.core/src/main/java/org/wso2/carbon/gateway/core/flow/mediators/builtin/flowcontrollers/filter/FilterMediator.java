@@ -117,7 +117,7 @@ public class FilterMediator extends AbstractFlowController {
         } else if (scope.equals(Scope.BODY)) {
             String pathlanguage = source.getPathLanguage();
             if (pathlanguage != null) {
-                if (Evaluator.isPathMatched(carbonMessage, source, pattern)) {
+                if (Evaluator.isPathMatched((CarbonMessage) referredCMsg, source, pattern)) {
                     if (!(childThenMediatorList.getMediators().isEmpty())) {
                         super.receive(carbonMessage, carbonCallback);
                         childThenMediatorList.getFirstMediator().
