@@ -194,6 +194,32 @@ blockStatement
     |   mediatorCallStatement // eg: log(level="custom", log_value="log message");
     |   tryCatchBlock   // flowControl Mediator
     |   ifElseBlock // flowControl Mediator
+    |   forkBlock //fork block
+    ;
+
+//fork definition
+/*forkClause
+    :   'fork' block
+    ;*/
+
+forkBlock
+    :   'fork' forkBlockName '(' ( keyValuePairs )? ')' '{' ( workerBlock )+ '}'
+    ;
+
+forkBlockName
+    :   Identifier
+    ;
+
+workerBlock
+    :   'worker' workerBlockName '(' 'message' Identifier ')' block
+    ;
+
+workerBlockName
+    :   Identifier
+    ;
+
+joinCall
+    :   'join' '(' keyValuePairs ')'
     ;
 
 // try catch definition
@@ -248,6 +274,7 @@ localVariableAssignmentStatement
     :   Identifier  '='   literal ';'
     |   newTypeObjectCreation ';'
     |   Identifier '=' mediatorCall ';'
+    |   Identifier '=' joinCall ';'
     ;
 
 mediatorCallStatement
