@@ -38,8 +38,8 @@ import org.wso2.carbon.messaging.TransportSender;
  * Service component for Gateway.
  */
 @Component(
-           name = "GatewayServiceComponent",
-           immediate = true
+        name = "org.wso2.carbon.gateway.core.service.GatewayServiceComponent",
+        immediate = true
 )
 public class GatewayServiceComponent {
 
@@ -48,14 +48,14 @@ public class GatewayServiceComponent {
     @Activate
     protected void start(BundleContext bundleContext) {
         try {
-            log.info("Starting Gateway...!");
+            log.info("Starting WSO2 Integration...!");
 
             //Creating the processor and registering the service
             bundleContext.registerService(CarbonMessageProcessor.class, new MessageProcessor(), null);
             ThreadModelConfiguration threadModelConfiguration = YAMLEngineConfigurationBuilder.build();
             threadModelConfiguration.configure();
         } catch (Exception ex) {
-            String msg = "Error while loading Gateway";
+            String msg = "Error while loading WSO2 Integration";
             log.error(msg, ex);
             throw new RuntimeException(msg, ex);
         }

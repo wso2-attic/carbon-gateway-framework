@@ -1,446 +1,746 @@
-/*
- * Copyright (c) 2005-2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
- *
- * WSO2 Inc. licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-
 grammar WUML;
 
-/* --- PARSER RULES --- */
-
-// Definition of the script
-
-script
-    : ( handler | NEWLINE )* EOF;
-
-/* Definition of the handler which contains the comments, @startuml,
-statements, @enduml */
-
-handler
-    : (commentStatement NEWLINE+)?
-        STARTUMLX NEWLINE+
-          statementList
-      ENDUMLX ;
-
-// Definition of the statement list in the script
-statementList
-    : ( statement NEWLINE+ )* ;
-
-// Definition of different types of statements
-statement
-    : titleStatement
-    | participantStatement
-    | groupStatement
-    | messageflowStatementList
-    | variableStatement
-    | commentStatement;
-
-// Definition of the high level name for this message flow
-titleStatement
-    : IDENTIFIER WS+ COLON WS+ INTEGRATIONFLOWX;
-
-/* Definition of the participating components which represents a
-lifeline in the visual representation */
-participantStatement
-    : integrationFlowDefStatement
-    | inboundEndpointDefStatement
-    | pipelineDefStatement
-    | outboundEndpointDefStatement
+// starting point for parsing a java file
+sourceFile
+    :   definition
+        constants?
+        resources
+        EOF
     ;
 
-// Definition for a IntegrationFlow
-integrationFlowDefStatement
-    : PARTICIPANT WS+ IDENTIFIER WS+ COLON WS+ integrationFlowDef;
-
-// Definition for a Inbound Endpoint
-inboundEndpointDefStatement
-    : PARTICIPANT WS+ IDENTIFIER WS+ COLON WS+ inboundEndpointDef;
-
-// Definition for a pipeline
-pipelineDefStatement
-    : PARTICIPANT WS+ IDENTIFIER WS+ COLON WS+ pipelineDef;
-
-// Definition for an Outbound Endpoint
-outboundEndpointDefStatement
-    : PARTICIPANT WS+ IDENTIFIER WS+ COLON WS+ outboundEndpointDef;
-
-groupStatement: groupDefStatement
-                messageflowStatementList
-                END;
-
-groupDefStatement: GROUP WS+  GROUP_NAME_DEF WS*
-                                 COMMA_SYMBOL WS* GROUP_PATH_DEF
-                                 COMMA_SYMBOL WS* GROUP_METHOD_DEF NEWLINE+;
-
-GROUP_NAME_DEF: NAME WS* EQ_SYMBOL STRINGX;
-GROUP_PATH_DEF: PATH WS* EQ_SYMBOL WS* URLSTRINGX;
-GROUP_METHOD_DEF: METHOD WS* EQ_SYMBOL WS* STRINGX;
-
-messageflowStatementList: (messageflowStatement NEWLINE+)*;
-
-messageflowStatement: routingStatement
-                          | mediatorStatement
-                          | parallelStatement
-                          | ifStatement
-                          | loopStatement
-                          | refStatement
-                          | variableStatement
-                          | commentStatement;
-
-// Definition of a mediator statement
-mediatorStatement : mediatorStatementDef;
-
-mediatorStatementDef: MEDIATORDEFINITIONX ARGUMENTLISTDEF;
-
-// Integration Flow constructor statement
-integrationFlowDef: INTEGRATIONFLOWX LPAREN STRINGX RPAREN;
-
-// Inbound Endpoint constructor statement
-//inboundEndpointDef: INBOUNDENDPOINTX LPAREN PROTOCOLDEF COMMA_SYMBOL PORTDEF
-//                    COMMA_SYMBOL CONTEXTDEF RPAREN;
-inboundEndpointDef: INBOUNDENDPOINTX LPAREN PROTOCOLDEF PARAMX* RPAREN;
-
-// Pipeline constructor statement
-pipelineDef: PIPELINEX LPAREN COMMENTSTRINGX RPAREN;
-
-// Outbound Endpoint constructor statement
-outboundEndpointDef: OUTBOUNDENDPOINTX LPAREN PROTOCOLDEF PARAMX* RPAREN;
-
-routingStatement: routingStatementDef;
-
-routingStatementDef: IDENTIFIER WS+ ARROWX WS+ IDENTIFIER WS+
-                  COLON WS+ COMMENTSTRINGX;
-
-// Variable definition statement
-variableStatement: VARX WS+ TYPEDEFINITIONX WS+ IDENTIFIER WS* EQ_SYMBOL WS*  COMMENTSTRINGX;
-
-// Message routing statement
-/*
-routingStatement
-    : genericRoutingStatement;
-
-genericRoutingStatement: IDENTIFIER WS+ ARROW WS+ IDENTIFIER WS+ COMMENTX
-                         WS+ STRINGX;
-*/
-
-// Definition of 'par' statement for parallel execution
-parallelStatement
-    : PAR NEWLINE?
-      NEWLINE parMultiThenBlock
-      END
+definition
+    :   path?
+        source
+        api?
+        packageDef
     ;
 
-parMultiThenBlock
-    : messageflowStatementList NEWLINE (parElseBlock)? ;
-
-
-parElseBlock
-    : (ELSE NEWLINE messageflowStatementList)+ ;
-
-// Definition of 'if' statement for if condition
-ifStatement
-    : IF WS WITH WS conditionStatement NEWLINE
-      NEWLINE? ifMultiThenBlock
-      END
+constants
+    :   constant*
     ;
 
-conditionStatement
-    : conditionDef;
+resources
+    :   resource+
+    ;
 
-conditionDef: CONDITIONX LPAREN SOURCEDEF PARAMX* RPAREN;
+packageDef
+    :   PACKAGE qualifiedName ';'
+    ;
 
-ifMultiThenBlock
-    : messageflowStatementList NEWLINE (ifElseBlock)? ;
+path
+    :   AT 'Path'  LPAREN  StringLiteral RPAREN
+    ;
+
+source
+    :   AT 'Source'  LPAREN sourceElementValuePairs RPAREN
+    ;
+
+api
+    :   '@' 'Service'  ( '(' ( apiElementValuePairs ) ')' )
+    ;
+
+resourcePath
+    :   '@' 'Path' ( '(' StringLiteral ')' )
+    ;
 
 
+getMethod
+    :   '@' 'GET' ( '(' ')' )?
+    ;
+
+postMethod
+    :   '@' 'POST' ( '('  ')' )?
+    ;
+
+putMethod
+    :   '@' 'PUT' ( '(' ')' )?
+    ;
+
+deleteMethod
+    :   '@' 'DELETE' ( '(' ')' )?
+    ;
+
+headMethod
+    :   '@' 'HEAD' ( '(' ')' )?
+    ;
+
+prodAnt
+    :   '@' 'Produces' ( '(' elementValue ? ')' )?
+    ;
+
+conAnt
+    :   '@' 'Consumes' ( '(' elementValue ? ')' )?
+    ;
+
+antApiOperation
+    :   '@' 'ApiOperation' ( '(' ( elementValuePairs | elementValue )? ')' )?
+    ;
+
+antApiResponses
+    :   '@' 'ApiResponses' '(' ( antApiResponseSet )? ')'
+    ;
+
+antApiResponseSet
+    :   antApiResponse (',' antApiResponse)*
+    ;
+
+antApiResponse
+    :   '@' 'ApiResponse' '(' ( elementValuePairs | elementValue )? ')'
+    ;
+
+elementValuePairs
+    :   elementValuePair (',' elementValuePair)*
+    ;
+
+sourceElementValuePairs
+    :   interfaceDeclaration
+    |   protocol (',' host)?  (','  port)?
+    ;
+
+interfaceDeclaration
+    :   'interface' '=' StringLiteral
+    ;
+
+apiElementValuePairs
+    :  (tags ',')?  (descripton ',')? producer
+    ;
+
+protocol
+    :   'protocol' '=' StringLiteral
+    ;
+
+host
+    :   'host' '=' StringLiteral
+    ;
+
+port
+    :   'port' '=' IntegerLiteral
+    ;
+
+tags
+    :   'tags' '=' tag+
+    ;
+
+tag
+    :   '{' StringLiteral (',' StringLiteral)* '}'
+    ;
+
+descripton
+    :   'description' '=' StringLiteral
+    ;
+
+producer
+    :   'produces' '=' mediaType
+    ;
+
+constant
+    :   CONSTANT type Identifier  '=' literal ';'
+    |   CONSTANT classType Identifier  '=' 'new' Identifier '(' (StringLiteral)? ')' ';'
+    ;
+
+
+elementValuePair
+    :   Identifier '=' elementValue
+    ;
+
+elementValue
+    :   StringLiteral
+    |   IntegerLiteral
+;
+
+// Resource Level
+resource
+    :   httpMethods
+        prodAnt?
+        conAnt ?
+        antApiOperation?
+        antApiResponses?
+        resourcePath
+        resourceDeclaration
+    ;
+
+httpMethods
+    :(getMethod
+    | postMethod
+    | putMethod
+    | deleteMethod
+    | headMethod)*
+    ;
+
+qualifiedName
+    :   Identifier ('.' Identifier)*
+    ;
+
+resourceDeclaration
+    :   'resource' resourceName '(' 'message' Identifier ')' block
+    ;
+
+resourceName
+    :   Identifier
+    ;
+
+// block is anything that starts with '{' and and ends with '}'
+block
+    :   '{' blockStatement* '}'
+    ;
+
+//Anything that contains inside a block
+blockStatement
+    :   localVariableDeclarationStatement   //  eg: int i;
+    |   localVariableInitializationStatement    // eg: string endpoint = "my_endpoint";
+    |   localVariableAssignmentStatement    //  eg: i =45; msgModification mediators also falls under this
+    |   messageModificationStatement    //  eg: response.setHeader(HTTP.StatusCode, 500);
+    |   returnStatement //  eg: reply response;
+    |   mediatorCallStatement // eg: log(level="custom", log_value="log message");
+    |   tryCatchBlock   // flowControl Mediator
+    |   ifElseBlock // flowControl Mediator
+    ;
+
+// try catch definition
+tryCatchBlock
+    :   tryClause   catchClause+
+    ;
+
+tryClause
+    :   'try' block
+    ;
+
+catchClause
+    :   'catch' '(' exceptionHandler ')' block
+    ;
+
+exceptionHandler
+    :   exceptionType   Identifier
+    ;
+
+exceptionType   //Identifier can be added to give custom exception handling
+    : 'ConnectionClosedException'
+    | 'ConnectionFailedException'
+    | 'ConnectionTimeoutException'
+    | 'Exception'  //default exception
+    ;
+
+// if else definition
 ifElseBlock
-    : (ELSE NEWLINE messageflowStatementList)+ ;
-
-// Definition of loop statement
-loopStatement
-    : LOOP WS expression NEWLINE
-      NEWLINE? messageflowStatementList
-      END
+    :   ifBlock ( elseBlock )?
     ;
-// Definition of reference statement
-refStatement
-    : REF WS IDENTIFIER NEWLINE?;
 
+ifBlock
+    :   'if' parExpression block
+    ;
 
-// Definition of internal comment statement
-commentStatement
-    : COMMENTST
-    | HASHCOMMENTST
-    | DOUBLESLASHCOMMENTST;
+elseBlock
+    :   'else'  block
+    ;
 
+// local varibale handling statements
+localVariableDeclarationStatement
+    :   (type|classType)    Identifier  ';'
+    ;
+
+localVariableInitializationStatement
+    :   type    Identifier  '='   literal ';'
+    |   classType newTypeObjectCreation ';'
+    |   classType Identifier '=' mediatorCall ';' // calling a mediator that will return a message
+    ;
+
+localVariableAssignmentStatement
+    :   Identifier  '='   literal ';'
+    |   newTypeObjectCreation ';'
+    |   Identifier '=' mediatorCall ';'
+    ;
+
+mediatorCallStatement
+    :   mediatorCall ';'
+    ;
+
+ // this is only used when "m = new message ()" called
+newTypeObjectCreation
+    : Identifier '=' 'new' classType '('   ')'
+    ;
+
+//mediator calls
+mediatorCall
+    :   Identifier '(' ( keyValuePairs )? ')'
+    ;
+
+keyValuePairs
+    : keyValuePair ( ',' keyValuePair )*
+    ;
+
+// classType is also used as a parameter identifier because, 'endpoint' and 'message' is also commenly used as
+// method argument identifiers
+keyValuePair
+    :   (Identifier | classType) '='  ( literal | Identifier )
+    ;
+
+// Message Modification statements
+messageModificationStatement
+    :   Identifier  '.' Identifier '('  messagePropertyName ','  literal ')' ';'
+    ;
+
+//return (reply) Statement specification
+returnStatement
+    :   'reply' (Identifier | mediatorCall)? ';'
+    ;
+
+// expression, which will be used to build the parExpression used inside if condition
+parExpression
+    :   '(' expression ( ( GT | LT | EQUAL | LE | GE | NOTEQUAL | AND | OR ) expression )? ')'
+    ;
 
 expression
-    : EXPRESSIONX;
-
-
-/* --- LEXER rules --- */
-
-/* LEXER: keyword rules */
-
-COMMENTST
-    :  '/*' .*? '*/'
+    :   evalExpression
+    |   literal
     ;
 
-HASHCOMMENTST
-    : '#' COMMENTPARAMS
+evalExpression
+    :   'eval' '(' Identifier '=' Identifier ',' 'path' '=' StringLiteral ')'
     ;
 
-DOUBLESLASHCOMMENTST
-    : '//' COMMENTPARAMS
+literal
+      :   IntegerLiteral
+      |   FloatingPointLiteral
+      |   CharacterLiteral
+      |   StringLiteral
+      |   BooleanLiteral
+      |   'null'
+ ;
+
+mediaType
+      : 'MediaType.APPLICATION_JSON'
+      | 'MediaType.APPLICATION_XML'
+;
+
+type
+      :   'boolean'
+      |   'char'
+      |   'byte'
+      |   'short'
+      |   'int'
+      |   'long'
+      |   'float'
+      |   'double'
+      |   'string'
+      ;
+
+classType
+      :   'endpoint'
+      |   'message'
+      ;
+
+messagePropertyName
+    :   Identifier ('.' Identifier)*
     ;
 
-TYPEDEFINITIONX: TYPEDEFINITION;
+// LEXER
 
-//ROUTINGSTATEMENTX: ROUTINGSTATEMENT;
+// §3.9 Keywords
 
-SOURCEDEF: SOURCE LPAREN CONFIGPARAMS RPAREN;
+ABSTRACT      : 'abstract';
+ASSERT        : 'assert';
+BOOLEAN       : 'boolean';
+BREAK         : 'break';
+BYTE          : 'byte';
+CASE          : 'case';
+CATCH         : 'catch';
+CHAR          : 'char';
+CLASS         : 'class';
+CONST         : 'const';
+CONTINUE      : 'continue';
+CONSTANT      : 'constant';
+DEFAULT       : 'default';
+DO            : 'do';
+DOUBLE        : 'double';
+ELSE          : 'else';
+ENUM          : 'enum';
+EXTENDS       : 'extends';
+FINAL         : 'final';
+FINALLY       : 'finally';
+FLOAT         : 'float';
+FOR           : 'for';
+IF            : 'if';
+GOTO          : 'goto';
+IMPLEMENTS    : 'implements';
+IMPORT        : 'import';
+INSTANCEOF    : 'instanceof';
+INT           : 'int';
+INTERFACE     : 'interface';
+LONG          : 'long';
+NATIVE        : 'native';
+NEW           : 'new';
+PACKAGE       : 'package';
+PRIVATE       : 'private';
+PROTECTED     : 'protected';
+PUBLIC        : 'public';
+RETURN        : 'return';
+SHORT         : 'short';
+STATIC        : 'static';
+STRICTFP      : 'strictfp';
+SUPER         : 'super';
+SWITCH        : 'switch';
+SYNCHRONIZED  : 'synchronized';
+THIS          : 'this';
+THROW         : 'throw';
+THROWS        : 'throws';
+TRANSIENT     : 'transient';
+TRY           : 'try';
+VOID          : 'void';
+VOLATILE      : 'volatile';
+WHILE         : 'while';
 
-//PATTERNDEF: PATTERN LPAREN STRINGX RPAREN;
+// §3.10.1 Integer Literals
 
-PROTOCOLDEF: PROTOCOL LPAREN STRINGX RPAREN;
+IntegerLiteral
+    :   DecimalIntegerLiteral
+    |   HexIntegerLiteral
+    |   OctalIntegerLiteral
+    |   BinaryIntegerLiteral
+    |   VaribaleLiteral
+    ;
 
-//PORTDEF: PORT LPAREN NUMBER RPAREN;
-PARAMX: COMMA_SYMBOL IDENTIFIER LPAREN DOUBLEQUOTES ANY_STRING DOUBLEQUOTES RPAREN;
+fragment
+DecimalIntegerLiteral
+    :   DecimalNumeral IntegerTypeSuffix?
+    ;
 
-CONTEXTDEF: CONTEXT LPAREN URLSTRINGX RPAREN;
+fragment
+HexIntegerLiteral
+    :   HexNumeral IntegerTypeSuffix?
+    ;
 
-HOSTDEF: HOST LPAREN URLSTRINGX RPAREN;
+fragment
+OctalIntegerLiteral
+    :   OctalNumeral IntegerTypeSuffix?
+    ;
 
-CONFIGSDEF: CONFIGS LPAREN (CONFIGPARAMS COMMA_SYMBOL)* (CONFIGPARAMS)* RPAREN;
+fragment
+BinaryIntegerLiteral
+    :   BinaryNumeral IntegerTypeSuffix?
+    ;
 
-ARGUMENTLISTDEF: LPAREN (CONFIGPARAMS COMMA_SYMBOL)* (CONFIGPARAMS)* RPAREN;
+fragment
+IntegerTypeSuffix
+    :   [lL]
+    ;
 
-EXPRESSIONX: EXPRESSION;
+fragment
+DecimalNumeral
+    :   '0'
+    |   NonZeroDigit (Digits? | Underscores Digits)
+    ;
 
-CONDITIONX: CONDITION;
+fragment
+Digits
+    :   Digit (DigitOrUnderscore* Digit)?
+    ;
 
-TIMEOUTDEF: TIMEOUT LPAREN NUMBER RPAREN;
+fragment
+Digit
+    :   '0'
+    |   NonZeroDigit
+    ;
 
-INTEGRATIONFLOWX: INTEGRATIONFLOW;
+fragment
+NonZeroDigit
+    :   [1-9]
+    ;
 
-INBOUNDENDPOINTX: INBOUNDENDPOINT;
+fragment
+DigitOrUnderscore
+    :   Digit
+    |   '_'
+    ;
 
-PIPELINEX: PIPELINE;
+fragment
+Underscores
+    :   '_'+
+    ;
 
-MEDIATORDEFINITIONX: MEDIATORDEFINITION;
+fragment
+HexNumeral
+    :   '0' [xX] HexDigits
+    ;
 
-OUTBOUNDENDPOINTX: OUTBOUNDENDPOINT;
+fragment
+HexDigits
+    :   HexDigit (HexDigitOrUnderscore* HexDigit)?
+    ;
 
-PROCESS_MESSAGEX: PROCESS_MESSAGE;
+fragment
+HexDigit
+    :   [0-9a-fA-F]
+    ;
 
-ASX: AS;
+fragment
+HexDigitOrUnderscore
+    :   HexDigit
+    |   '_'
+    ;
 
-COMMENTX: COMMENT;
+fragment
+OctalNumeral
+    :   '0' Underscores? OctalDigits
+    ;
 
-COMMENTSTRINGX: COMMENTSTRING | NUMBER;
+fragment
+OctalDigits
+    :   OctalDigit (OctalDigitOrUnderscore* OctalDigit)?
+    ;
 
-STRINGX: STRING;
+fragment
+OctalDigit
+    :   [0-7]
+    ;
 
-URLSTRINGX: URLSTRING;
+fragment
+OctalDigitOrUnderscore
+    :   OctalDigit
+    |   '_'
+    ;
 
-ARROWX: ARROW;
+fragment
+BinaryNumeral
+    :   '0' [bB] BinaryDigits
+    ;
 
-STRINGTYPEX: STRINGTYPE;
-INTEGERTYPEX: INTEGERTYPE;
-BOOLEANTYPEX: BOOLEANTYPE;
-DOUBLETYPEX: DOUBLETYPE;
-FLOATTYPEX: FLOATTYPE;
-LONGTYPEX: LONGTYPE;
-SHORTTYPEX: SHORTTYPE;
-XMLTYPEX: XMLTYPE;
-JSONTYPEX: JSONTYPE;
+fragment
+BinaryDigits
+    :   BinaryDigit (BinaryDigitOrUnderscore* BinaryDigit)?
+    ;
 
-VARX: VAR;
+fragment
+BinaryDigit
+    :   [01]
+    ;
 
-// LEXER: Keywords
+fragment
+BinaryDigitOrUnderscore
+    :   BinaryDigit
+    |   '_'
+    ;
 
-STARTUMLX: STARTUML;
-ENDUMLX: ENDUML;
-PARTICIPANT: P A R T I C I P A N T;
-PAR: P A R;
-IF: I F;
-REF: R E F;
-END: E N D;
-ELSE: E L S E;
-LOOP: L O O P;
-GROUP: G R O U P;
-WITH : W I T H ;
-NAME: N A M E;
-PATH: P A T H;
-METHOD: M E T H O D;
+// §3.10.2 Floating-Point Literals
+
+FloatingPointLiteral
+    :   DecimalFloatingPointLiteral
+    |   HexadecimalFloatingPointLiteral
+    |   VaribaleLiteral
+    ;
+
+fragment
+DecimalFloatingPointLiteral
+    :   Digits '.' Digits? ExponentPart? FloatTypeSuffix?
+    |   '.' Digits ExponentPart? FloatTypeSuffix?
+    |   Digits ExponentPart FloatTypeSuffix?
+    |   Digits FloatTypeSuffix
+    ;
+
+fragment
+ExponentPart
+    :   ExponentIndicator SignedInteger
+    ;
+
+fragment
+ExponentIndicator
+    :   [eE]
+    ;
+
+fragment
+SignedInteger
+    :   Sign? Digits
+    ;
+
+fragment
+Sign
+    :   [+-]
+    ;
+
+fragment
+FloatTypeSuffix
+    :   [fFdD]
+    ;
+
+fragment
+HexadecimalFloatingPointLiteral
+    :   HexSignificand BinaryExponent FloatTypeSuffix?
+    ;
+
+fragment
+HexSignificand
+    :   HexNumeral '.'?
+    |   '0' [xX] HexDigits? '.' HexDigits
+    ;
+
+fragment
+BinaryExponent
+    :   BinaryExponentIndicator SignedInteger
+    ;
+
+fragment
+BinaryExponentIndicator
+    :   [pP]
+    ;
+
+// §3.10.3 Boolean Literals
+
+BooleanLiteral
+    :   'true'
+    |   'false'
+    |   VaribaleLiteral
+    ;
+
+// §3.10.4 Character Literals
+
+CharacterLiteral
+    :   '\'' SingleCharacter '\''
+    |   '\'' EscapeSequence '\''
+    ;
+
+fragment
+SingleCharacter
+    :   ~['\\]
+    ;
+// §3.10.5 String Literals
+
+StringLiteral
+    :   '"' StringCharacters? '"'
+    |   VaribaleLiteral
+    ;
+fragment
+StringCharacters
+    :   StringCharacter+
+    ;
+fragment
+StringCharacter
+    :   ~["\\]
+    |   EscapeSequence
+    ;
+// §3.10.6 Escape Sequences for Character and String Literals
+fragment
+EscapeSequence
+    :   '\\' [btnfr"'\\]
+    |   OctalEscape
+    |   UnicodeEscape
+    ;
+
+fragment
+OctalEscape
+    :   '\\' OctalDigit
+    |   '\\' OctalDigit OctalDigit
+    |   '\\' ZeroToThree OctalDigit OctalDigit
+    ;
+
+fragment
+UnicodeEscape
+    :   '\\' 'u' HexDigit HexDigit HexDigit HexDigit
+    ;
+
+fragment
+ZeroToThree
+    :   [0-3]
+    ;
+
+// §3.10.7 The Null Literal
+
+NullLiteral
+    :   'null'
+    ;
+
+// §3.11 Separators
+
+LPAREN          : '(';
+RPAREN          : ')';
+LBRACE          : '{';
+RBRACE          : '}';
+LBRACK          : '[';
+RBRACK          : ']';
+SEMI            : ';';
+COMMA           : ',';
+DOT             : '.';
+
+// §3.12 Operators
+
+ASSIGN          : '=';
+GT              : '>';
+LT              : '<';
+BANG            : '!';
+TILDE           : '~';
+QUESTION        : '?';
+COLON           : ':';
+EQUAL           : '==';
+LE              : '<=';
+GE              : '>=';
+NOTEQUAL        : '!=';
+AND             : '&&';
+OR              : '||';
+INC             : '++';
+DEC             : '--';
+ADD             : '+';
+SUB             : '-';
+MUL             : '*';
+DIV             : '/';
+BITAND          : '&';
+BITOR           : '|';
+CARET           : '^';
+MOD             : '%';
+
+ADD_ASSIGN      : '+=';
+SUB_ASSIGN      : '-=';
+MUL_ASSIGN      : '*=';
+DIV_ASSIGN      : '/=';
+AND_ASSIGN      : '&=';
+OR_ASSIGN       : '|=';
+XOR_ASSIGN      : '^=';
+MOD_ASSIGN      : '%=';
+LSHIFT_ASSIGN   : '<<=';
+RSHIFT_ASSIGN   : '>>=';
+URSHIFT_ASSIGN  : '>>>=';
 
 
-// LEXER: symbol rules
+// WSO2 NEL Addition***********************************************
+fragment
+VaribaleLiteral
+    :   '$' Identifier
+    ;
+//*****************************************************************
 
-AMP_SYMBOL : '&' ;
-AMPAMP_SYMBOL : '&&' ;
-CARET_SYMBOL : '^' ;
-COMMA_SYMBOL : ',' ;
-COMMENT_SYMBOL : '--' ;
-CONTINUATION_SYMBOL : '\\' | '\u00AC' ;
-EQ_SYMBOL : '=' ;
-GE_SYMBOL : '>=' | '\u2265' ;
-GT_SYMBOL : '>' ;
-LE_SYMBOL : '<=' | '\u2264' ;
-LT_SYMBOL : '<' ;
-MINUS_SYMBOL : '-' ;
-NE_SYMBOL : '<>' | '\u2260';
-PLUS_SYMBOL : '+' ;
-STAR_SYMBOL : '*' ;
-SLASH_SYMBOL : '/' ;
-UNDERSCORE : '-';
-COLON: ':';
-fragment ARROW: '->';
-fragment MEDIATORDEFINITION: IDENTIFIER COLON COLON IDENTIFIER;
-SINGLEQUOTES: '\'';
+// §3.8 Identifiers (must appear after all keywords in the grammar)
 
-// LEXER: miscellaneaous
+Identifier
+    :   JavaLetter JavaLetterOrDigit*
+    ;
 
-LPAREN : '(' ;
-RPAREN : ')' ;
+fragment
+JavaLetter
+    :   [a-zA-Z$_] // these are the "java letters" below 0x7F
+    ;
 
-NEWLINE
-    : ( '\r\n' | '\n' | '\r' ) ;
+fragment
+JavaLetterOrDigit
+    :   [a-zA-Z0-9$_] // these are the "java letters or digits" below 0x7F
+    ;
 
-WS
-    : ' ';
+//
+// Additional symbols not defined in the lexical specification
+//
 
-IDENTIFIER
-    : ('$')? ('a'..'z' | 'A'..'Z' ) ( 'a'..'z' | 'A'..'Z' | DIGIT | '_')+ ;
+AT : '@';
+ELLIPSIS : '...';
 
-ANY_STRING: ('$')? ('a'..'z' | 'A'..'Z' | DIGIT | '_' | '\\' | '/' |'.'| ':')+ ;
+//
+// Whitespace and comments
+//
 
+WS  :  [ \t\r\n\u000C]+ -> skip
+    ;
 
-NUMBER
-    : ( '0' | '1'..'9' DIGIT*) ('.' DIGIT+ )? ;
-
-URL: ([a-zA-Z/\?&] | COLON | [0-9])+;
-
-CONTINUATION
-    : CONTINUATION_SYMBOL ~[\r\n]* NEWLINE -> skip ;
-
-WHITESPACE
-    : [ \t]+ -> skip ;
-
-
-// LEXER: fragments to evaluate only within statements
-
-//fragment ROUTINGSTATEMENT: IDENTIFIER WS+ ARROW WS+ IDENTIFIER WS+ COMMENTX
-//                           WS+ STRINGX;
-fragment STRING: DOUBLEQUOTES IDENTIFIER DOUBLEQUOTES;
-fragment URLSTRING: DOUBLEQUOTES URL DOUBLEQUOTES;
-fragment COMMENTSTRING: DOUBLEQUOTES COMMENTPARAMS DOUBLEQUOTES;
-fragment EXPRESSION: LPAREN CONFIGPARAMS RPAREN;
-fragment STARTUML: '@startuml';
-fragment ENDUML: '@enduml';
-fragment DOUBLEQUOTES: '"';
-fragment POSTSCIPRT
-    : ( 'a'..'z' | 'A'..'Z' | DIGIT | '_')*;
-fragment CONFIGPARAMS: (WS | [a-zA-Z\?] | COLON | [0-9] | '$' | '.' | '@' |
-                        SINGLEQUOTES | DOUBLEQUOTES | '{' | '}' | AMP_SYMBOL |
-                        AMPAMP_SYMBOL | CARET_SYMBOL | COMMA_SYMBOL |
-                        COMMENT_SYMBOL | CONTINUATION_SYMBOL | EQ_SYMBOL |
-                        GE_SYMBOL | GT_SYMBOL | LE_SYMBOL | LT_SYMBOL |
-                        MINUS_SYMBOL | NE_SYMBOL | PLUS_SYMBOL | STAR_SYMBOL |
-                        SLASH_SYMBOL )+;
-fragment COMMENTPARAMS: (WS | [a-zA-Z\?] | COLON | [0-9] | '$' | '.' | '@' |
-                        SINGLEQUOTES | '{' | '}' | AMP_SYMBOL |
-                        AMPAMP_SYMBOL | CARET_SYMBOL | COMMA_SYMBOL |
-                        COMMENT_SYMBOL | CONTINUATION_SYMBOL | EQ_SYMBOL |
-                        GE_SYMBOL | GT_SYMBOL | LE_SYMBOL | LT_SYMBOL |
-                        MINUS_SYMBOL | NE_SYMBOL | PLUS_SYMBOL | STAR_SYMBOL |
-                        SLASH_SYMBOL | '_')+;
-fragment DIGIT : '0'..'9' ;
-fragment INTEGRATIONFLOW: I N T E G R A T I O N F L O W;
-fragment INBOUNDENDPOINT: I N B O U N D E N D P O I N T;
-fragment HTTP: H T T P;
-fragment PIPELINE: P I P E L I N E;
-fragment PROCESSMESSAGE: P R O C E S S M E S S A G E;
-fragment OUTBOUNDENDPOINT: O U T B O U N D E N D P O I N T ;
-fragment PROTOCOL: P R O T O C O L;
-fragment PORT: P O R T;
-fragment ENDPOINT: E N D P O I N T;
-fragment CONTEXT: C O N T E X T;
-fragment TIMEOUT: T I M E O U T;
-fragment HOST: H O S T;
-fragment CONFIGS: C O N F I G S;
-fragment CONDITION: C O N D I T I O N;
-fragment SOURCE: S O U R C E;
-fragment PATTERN: P A T T E R N;
-fragment PROCESS_MESSAGE: 'process_message';
-fragment AS: A S;
-fragment COMMENT: C O M M E N T;
-fragment CALL: C A L L;
-fragment FILTER: F I L T E R;
-fragment RESPOND: R E S P O N D;
-fragment LOG: L O G;
-fragment ENRICH: E N R I C H;
-fragment TRANSFORM: T R A N S F O R M;
-fragment STRINGTYPE: S T R I N G;
-fragment INTEGERTYPE: I N T E G E R;
-fragment BOOLEANTYPE: B O O L E A N;
-fragment DOUBLETYPE: D O U B L E;
-fragment FLOATTYPE: F L O A T;
-fragment LONGTYPE: L O N G;
-fragment SHORTTYPE: S H O R T;
-fragment XMLTYPE: X M L;
-fragment JSONTYPE: J S O N;
-fragment VAR: V A R;
-
-fragment TYPEDEFINITION
-    : INTEGERTYPE
-    | STRINGTYPE
-    | BOOLEANTYPE
-    | LONGTYPE
-    | SHORTTYPE
-    | FLOATTYPE
-    | DOUBLETYPE
-    | XMLTYPE
-    | JSONTYPE
+COMMENT
+    :   '/*' .*? '*/' -> skip
     ;
 
 
-// case insensitive lexer matching
-fragment A:('a'|'A');
-fragment B:('b'|'B');
-fragment C:('c'|'C');
-fragment D:('d'|'D');
-fragment E:('e'|'E');
-fragment F:('f'|'F');
-fragment G:('g'|'G');
-fragment H:('h'|'H');
-fragment I:('i'|'I');
-fragment J:('j'|'J');
-fragment K:('k'|'K');
-fragment L:('l'|'L');
-fragment M:('m'|'M');
-fragment N:('n'|'N');
-fragment O:('o'|'O');
-fragment P:('p'|'P');
-fragment Q:('q'|'Q');
-fragment R:('r'|'R');
-fragment S:('s'|'S');
-fragment T:('t'|'T');
-fragment U:('u'|'U');
-fragment V:('v'|'V');
-fragment W:('w'|'W');
-fragment X:('x'|'X');
-fragment Y:('y'|'Y');
-fragment Z:('z'|'Z');
+LINE_COMMENT
+    :   '//' ~[\r\n]* -> skip
+    ;
+

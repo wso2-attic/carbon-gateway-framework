@@ -29,6 +29,4 @@ public interface MediatorProvider {
     String getName();
 
     Mediator getMediator();
-
-
 }

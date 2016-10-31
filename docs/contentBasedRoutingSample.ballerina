@@ -1,0 +1,42 @@
+@Path ("/cbr")
+@Source( protocol="http", host=“docker0", port=$port)
+@Api (value = "Route based on message content")
+package com.sample
+
+constant endpoint nyseEP = “http://localhost:8080/exchange/nyse/”;
+constant endpoint nasdaqEP = “http://localhost:8081/exchange/nasdaq/”;
+
+@POST
+@Produces ("application/json")
+@Consumes ("application/json")
+@ApiOperation (
+    value = "Routes based on message payload",
+    response = “{
+                   "getQuoteResponse":{
+                       "return":{
+                           "type":"ax21:GetQuoteResponse",
+                           "change":-2.7068615614998293,
+                           "earnings":13.561791927747564,
+                           "high":180.34582676117054,
+                           "last":173.6426062983905,
+                        }
+                     }
+                 }”,
+    )
+@ApiResponses (@ApiResponse(code = 500, message = "Internal server error due to encoding the data"),
+	       @ApiResponse(code = 400, message = "Bad request due to decoding the data"))
+resource cbr (message m) {
+   message response;
+   try {
+       if (eval("$.stock.quote.exchange", m) == "NYSE") {
+           response = invoke(nyseEP, m);
+       } else {
+           response = invoke(nasdaqEP, m);
+       }
+    } catch (exception e) {
+        response = new message();
+        response.setHeader(HTTP.StatusCode, 500);
+        response.setPayload(Type.JSON, {"error":"backend failed"})
+    }
+   reply response;
+}

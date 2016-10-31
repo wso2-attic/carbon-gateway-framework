@@ -1,0 +1,13 @@
+@Path ("/queue")
+@Source (protocol="http", host=“localhost", port=8080)
+@Api (description = “Out only scenario”)
+package com.sample
+
+constant endpoint queueEndpoint = new JMSEndpoint("jms:/queue?initialContext=org.wso2.andes.jndi.PropertiesFileInitialContextFac………");
+
+@POST
+@ApiOperation (value = “Out only”)
+resource outonly (message m) {
+   sendTo(queueEndpoint, m);
+}
+

@@ -1,17 +1,13 @@
-#WSO2 Gateway
+#WSO2 Carbon Gateway Framework
 
-This is a temporary repo for WSO2 Gateway work.
+WSO2 Carbon Gateway Framework is a message-mediation-engine implementation that can receive/send Carbon-Messages from/to Carbon Transport and mediate messages.
 
-Gateway is a message-mediation-engine implementation that can receive/send Carbon-Messages 
-from/to Carbon Transport and mediate messages. 
-
-- Gateway Core runtime is configured via Gateway mediation language 
-which can be visually represented in a sequence diagram-like design.   
+- Gateway Framework runtime is configured via a textual language which can be visually represented in a sequence diagram-like design.
 - Lightweight, fully non-blocking mediation runtime. 
 - Control Structures, Logging, Header and Content-based Routing, Type-aware messaging
-- This runtime if fully extensible to built other advanced solutions such as Integration server (next-gen ESB), Data Integration Server, etc. 
+- This runtime if fully extensible to built other similar gateway solutions.
 
-Gateway Core cannot be used as a stand alone product/runtime. 
+Gateway Framework cannot be used as a stand alone product/runtime.
 
 
 Building Gateway Framework
@@ -46,4 +42,13 @@ Architecture
 <br/>
 
 ![alt tag](docs/config-model.png)
+
+Report Bugs and Improvements
+----------------------------
+
+Please report bugs and improvements of Gateway Framework to following JIRA project.
+
+https://wso2.org/jira/browse/CGF
+
+
 

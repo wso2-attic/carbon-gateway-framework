@@ -1,0 +1,149 @@
+@Path ("/web")
+@Source (protocol="http", host=“localhost", port=8080)
+@Api (tags = {"Holiday_details","Holiday_packages"} description = “Travelpedia flight, hotel and car rental services”)
+package com.classic.travel
+
+constant endpoint hotelEP = “$system.hotel.ep”;
+constant endpoint carRentalEP = new URL (..); // can be overriden from outside by setting com.classic.travel.carRentalEP
+
+@GET
+@Path ("/flights?depart={dateDepart}&return={dateReturn}&from={from}&to={to}")
+@Produces (“application/json”)
+@Consumes (“application/json”)
+@ApiOperation (value = “Return flight details”, response= “{
+   "flights":[
+      {
+         "airline":"emirates",
+         "id":"xyz"
+      }
+   ]
+}
+”)
+resource flights (message m) {
+   message c = datamap("getFlightsMapping.js", m);
+   message response;
+   try {
+      response = invoke(airlineEP, c);
+   } catch (exception e) {
+      response.setHeader(HTTP.StatusCode, 500);
+      response.setPayload(Type.JSON, {})
+   }
+   reply response;
+}
+
+@GET
+@Path ("/hotels?from={dateFrom}&to={dateTo}&location={location}")
+@Produces(“application/json”)
+@Consumes(“application/json”)
+@ApiOperation (value = “Return hotel details”, response= “{
+   "hotels":[
+      {
+         "location":"cmb",
+         "name":"kingsbury"
+      }
+   ]
+}”)
+resource hotels (message m) {
+   message c = datamap("getHotelsMapping.js", m);
+   int sid = sendTo(hotelEP, c);
+   message r = receiveFrom(hotelEP, sid);
+   reply r;
+}
+
+@GET
+@Path ("/rentals?from={dateFrom}&to={dateTo}&type={type}")
+@ApiOperation (value = “Return car rental info”, response= “{
+   "cars":[
+      {
+         "type":"suv",
+         "name":"toyota"
+      }
+   ]
+}”)
+resource cars (message m) {
+   message c = datamap("getRentalCarsMapping.js", m);
+   int sid = sendTo(carRentalEP, c);
+   message r = receiveFrom(carRentalEP, sid);
+   reply r;
+}
+
+@POST
+@Path ("/book")
+@ApiOperation (value = “Book holiday package; flight, hotel & rental car”, response= “{
+   "Status": “Complete”
+}”)
+resource bookPackage (message m) {
+   string location = eval("$.request.holiday.location", m);
+   booked, flightBookingRef = bookAirline($location, $dateFrom, $dateTo, $airlineEP, m);
+
+   if ($booked) {
+      handle hotelWorker = start (worker (message m) {
+         message c = datamap("nearby-hotels.js", m);
+         int sid = sendTo(hotelEP, c);
+         message r = receiveFrom(hotelEP, sid);
+
+         // Query each hotel for price and availability
+         int lowestCost = 0
+         message hotel;
+
+         foreach (message h : eval("$.hotels", r)) {
+            message c1 = datamap("hotel.js", h);
+            int sid1 = sendTo(hotelEP, c1);
+            message r1 = receiveFrom(hotelEP, sid1);
+
+            if (lowestCost == 0) {
+               lowestCost = eval("$.hotel.cost", r1)
+               hotel = eval("$.hotel", r1)
+            }
+            if (eval("$.hotel.cost", r1) < lowestCost) {
+               lowestCost = eval("$.hotel.cost", r1)
+  hotel = eval("$.hotel", r1)
+            }
+         }
+
+         message c2 = datamap("book-hotel.js", m);
+         int sid2 = sendTo(hotelEP, c2);
+         message r2 = receiveFrom(hotelEP, sid2);
+         reply r2;
+      }, m);
+
+      //sendTo (hotelWorker, m);
+      message c1 = datamap("rental.js", m);
+      try {
+         fork getCar (c1) {
+     worker [getHertzCars] (message x) {
+        // retrieve rental cars available from Hertz rent-a-car
+               message c2 = datamap("hertzMapping.js", x);
+               int sid = sendTo(carRentalEP, x);
+               message r = receiveFrom(carRentalEP, sid);
+               message c3 = datamap("hertzMapping.js", r);
+        reply c3;
+     }
+     worker [getEnterpriseCars] (message y) {
+        // retrieve rental cars available from Hertz rent-a-car
+               message c2 = datamap("enterpriseMapping.js", y);
+               int sid = sendTo(carRentalEP, y);
+               message r = receiveFrom(carRentalEP, sid);
+               message c3 = datamap("enterpriseMapping.js", r);
+        reply c3;
+     }
+  }
+      } catch(exception e) {
+         // Do something here
+      }
+
+      log("Retrieving available vehicles from Partners");
+      message[] c2 = join{getCar, any}
+      message c3 = datamap("rental.js", c2[0]);
+      message r = invoke(carRentalEP, c3);
+
+      message r2 = getResult(hotelWorker);
+      message hotelResponse = eval("$", r2);
+      message c1 = datamap("response.js", r2);
+      return c1;
+   }
+   else {
+      message c1 = datamap("unavailable.js", m);
+      return c1;
+   }
+}

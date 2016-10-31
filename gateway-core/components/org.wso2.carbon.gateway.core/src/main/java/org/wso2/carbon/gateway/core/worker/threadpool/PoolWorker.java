@@ -34,22 +34,22 @@ public class PoolWorker implements Runnable {
 
     private CarbonMessage carbonMessage;
 
+    private CarbonCallback carbonCallback;
 
-    public PoolWorker(CarbonMessage carbonMessage) {
+    public PoolWorker(CarbonMessage carbonMessage, CarbonCallback carbonCallback) {
         this.carbonMessage = carbonMessage;
+        this.carbonCallback = carbonCallback;
 
     }
 
     public void run() {
-        CarbonCallback carbonCallback = (CarbonCallback) carbonMessage.getProperty
-                   (Constants.CALL_BACK);
-        Object dir = carbonMessage.getProperty
-                   (Constants.DIRECTION);
+
+        Object dir = carbonMessage.getProperty(Constants.DIRECTION);
         try {
             if (dir != null && dir.equals(Constants.DIRECTION_RESPONSE)) {
                 carbonCallback.done(carbonMessage);
             } else {
-                WorkerUtil.dispatchToInboundEndpoint(carbonMessage);
+                WorkerUtil.dispatchToInboundEndpoint(carbonMessage, carbonCallback);
             }
 
         } catch (Exception e) {

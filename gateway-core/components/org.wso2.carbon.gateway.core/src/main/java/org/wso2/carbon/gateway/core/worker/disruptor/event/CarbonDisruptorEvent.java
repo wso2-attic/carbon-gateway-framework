@@ -20,6 +20,7 @@ package org.wso2.carbon.gateway.core.worker.disruptor.event;
 
 import com.lmax.disruptor.EventFactory;
 import org.wso2.carbon.gateway.core.flow.Mediator;
+import org.wso2.carbon.messaging.CarbonCallback;
 
 /**
  * A class encapsulates the Disruptor event.
@@ -29,6 +30,7 @@ public class CarbonDisruptorEvent {
     public static final EventFactory<CarbonDisruptorEvent> EVENT_FACTORY = CarbonDisruptorEvent::new;
     private Object event;
     private Mediator mediator;
+    private CarbonCallback carbonCallback;
 
     public CarbonDisruptorEvent() {
     }
@@ -47,5 +49,13 @@ public class CarbonDisruptorEvent {
 
     public void setMediator(Mediator mediator) {
         this.mediator = mediator;
+    }
+
+    public CarbonCallback getCarbonCallback() {
+        return carbonCallback;
+    }
+
+    public void setCarbonCallback(CarbonCallback carbonCallback) {
+        this.carbonCallback = carbonCallback;
     }
 }

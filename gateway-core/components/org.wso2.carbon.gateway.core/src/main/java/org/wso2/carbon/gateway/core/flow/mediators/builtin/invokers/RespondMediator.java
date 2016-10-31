@@ -18,8 +18,11 @@
 
 package org.wso2.carbon.gateway.core.flow.mediators.builtin.invokers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.flow.AbstractMediator;
-import org.wso2.carbon.gateway.core.flow.FlowControllerCallback;
+import org.wso2.carbon.gateway.core.flow.FlowControllerMediateCallback;
 import org.wso2.carbon.gateway.core.flow.Invoker;
 import org.wso2.carbon.gateway.core.flow.MediatorType;
 import org.wso2.carbon.messaging.CarbonCallback;
@@ -30,28 +33,44 @@ import org.wso2.carbon.messaging.CarbonMessage;
  */
 public class RespondMediator extends AbstractMediator implements Invoker {
 
+    private String messageId;
+
+    private static final Logger log = LoggerFactory.getLogger(RespondMediator.class);
+
     @Override
     public String getName() {
         return "respond";
     }
 
     @Override
-    public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback)
-            throws Exception {
+    public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
 
         CarbonCallback parentCallback = carbonCallback;
 
         // Traverse and find the top most callback coming from transport level
-        while (parentCallback instanceof FlowControllerCallback) {
-            parentCallback = ((FlowControllerCallback) parentCallback).getParentCallback();
+        while (parentCallback instanceof FlowControllerMediateCallback) {
+            parentCallback = ((FlowControllerMediateCallback) parentCallback).getParentCallback();
         }
 
-        parentCallback.done(carbonMessage);
+        carbonMessage = (CarbonMessage) getObjectFromContext(carbonMessage, messageId);
+
+        if (carbonMessage != null) {
+            parentCallback.done(carbonMessage);
+        } else {
+            log.error("Message: " + messageId + " not found in the context.");
+        }
+
         return true;
     }
 
     @Override
     public MediatorType getMediatorType() {
         return MediatorType.CPU_BOUND;
+    }
+
+    public void setParameters(ParameterHolder parameters) {
+        if (parameters.getParameter("messageId") != null) {
+            this.messageId = parameters.getParameter("messageId").getValue();
+        }
     }
 }

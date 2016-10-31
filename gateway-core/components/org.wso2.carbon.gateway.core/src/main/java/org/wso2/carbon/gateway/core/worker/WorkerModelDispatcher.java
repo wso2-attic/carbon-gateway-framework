@@ -27,6 +27,7 @@ import org.wso2.carbon.gateway.core.worker.disruptor.config.DisruptorManager;
 import org.wso2.carbon.gateway.core.worker.disruptor.publisher.CarbonEventPublisher;
 import org.wso2.carbon.gateway.core.worker.threadpool.PoolWorker;
 import org.wso2.carbon.gateway.core.worker.threadpool.ThreadPoolFactory;
+import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 
 import java.util.concurrent.ExecutorService;
@@ -37,66 +38,61 @@ import java.util.concurrent.ExecutorService;
  */
 public class WorkerModelDispatcher {
 
-
     private static final Logger logger = LoggerFactory.getLogger(WorkerModelDispatcher.class);
 
     private static final WorkerModelDispatcher WORKER_MODEL_DISPATCHER = new WorkerModelDispatcher();
-
 
     private WorkerModelDispatcher() {
 
     }
 
-
     public static WorkerModelDispatcher getInstance() {
         return WORKER_MODEL_DISPATCHER;
     }
 
-    public boolean dispatch(CarbonMessage carbonMessage, MediatorType workerMode) {
+    public boolean dispatch(CarbonMessage carbonMessage, CarbonCallback carbonCallback, MediatorType workerMode) {
 
         if (!ThreadPoolFactory.getInstance().isThreadPoolingEnable()) {
 
             if (workerMode == MediatorType.CPU_BOUND) {
-                RingBuffer ringBuffer = DisruptorManager.getDisruptorConfig
-                           (DisruptorManager.DisruptorType.CPU_INBOUND).getDisruptor();
-                ringBuffer.publishEvent(new CarbonEventPublisher(carbonMessage, null));
+                RingBuffer ringBuffer = DisruptorManager.getDisruptorConfig(DisruptorManager.DisruptorType.CPU_INBOUND)
+                        .getDisruptor();
+                ringBuffer.publishEvent(new CarbonEventPublisher(carbonMessage, null, carbonCallback));
             } else if (workerMode == MediatorType.IO_BOUND) {
-                RingBuffer ringBuffer = DisruptorManager.getDisruptorConfig
-                           (DisruptorManager.DisruptorType.IO_INBOUND).getDisruptor();
-                ringBuffer.publishEvent(new CarbonEventPublisher(carbonMessage, null));
+                RingBuffer ringBuffer = DisruptorManager.getDisruptorConfig(DisruptorManager.DisruptorType.IO_INBOUND)
+                        .getDisruptor();
+                ringBuffer.publishEvent(new CarbonEventPublisher(carbonMessage, null, carbonCallback));
             }
-        } else if (!(carbonMessage.getProperty(org.wso2.carbon.messaging.Constants.DIRECTION)
-                   != null && carbonMessage.getProperty(org.wso2.carbon.messaging.Constants.DIRECTION).
-                   equals(org.wso2.carbon.messaging.Constants.DIRECTION_RESPONSE))) {
+        } else if (!(carbonMessage.getProperty(org.wso2.carbon.messaging.Constants.DIRECTION) != null && carbonMessage
+                .getProperty(org.wso2.carbon.messaging.Constants.DIRECTION).
+                        equals(org.wso2.carbon.messaging.Constants.DIRECTION_RESPONSE))) {
             ExecutorService executorService = ThreadPoolFactory.getInstance().getInbound();
-            executorService.execute(new PoolWorker(carbonMessage));
+            executorService.execute(new PoolWorker(carbonMessage, carbonCallback));
         } else {
             ExecutorService executorService = ThreadPoolFactory.getInstance().getOutbound();
-            executorService.execute(new PoolWorker(carbonMessage));
+            executorService.execute(new PoolWorker(carbonMessage, carbonCallback));
         }
 
         return false;
 
     }
 
-    public boolean dispatch(CarbonMessage carbonMessage, Mediator mediator, MediatorType mediatorType) {
+    public boolean dispatch(CarbonMessage carbonMessage, CarbonCallback carbonCallback, Mediator mediator,
+            MediatorType mediatorType) {
 
         if (mediatorType == MediatorType.CPU_BOUND) {
-            carbonMessage.setProperty(Constants.PARENT_TYPE,
-                                      Constants.CPU_BOUND);
-            RingBuffer ringBuffer = DisruptorManager.getDisruptorConfig
-                       (DisruptorManager.DisruptorType.CPU_INBOUND).getDisruptor();
-            ringBuffer.publishEvent(new CarbonEventPublisher(carbonMessage, mediator));
+            carbonMessage.setProperty(Constants.PARENT_TYPE, Constants.CPU_BOUND);
+            RingBuffer ringBuffer = DisruptorManager.getDisruptorConfig(DisruptorManager.DisruptorType.CPU_INBOUND)
+                    .getDisruptor();
+            ringBuffer.publishEvent(new CarbonEventPublisher(carbonMessage, mediator, carbonCallback));
         } else if (mediatorType == MediatorType.IO_BOUND) {
-            carbonMessage.setProperty(Constants.PARENT_TYPE,
-                                      Constants.IO_BOUND);
-            RingBuffer ringBuffer = DisruptorManager.getDisruptorConfig
-                       (DisruptorManager.DisruptorType.IO_INBOUND).getDisruptor();
-            ringBuffer.publishEvent(new CarbonEventPublisher(carbonMessage, mediator));
+            carbonMessage.setProperty(Constants.PARENT_TYPE, Constants.IO_BOUND);
+            RingBuffer ringBuffer = DisruptorManager.getDisruptorConfig(DisruptorManager.DisruptorType.IO_INBOUND)
+                    .getDisruptor();
+            ringBuffer.publishEvent(new CarbonEventPublisher(carbonMessage, mediator, carbonCallback));
         }
 
         return false;
     }
-
 
 }

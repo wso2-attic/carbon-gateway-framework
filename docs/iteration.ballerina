@@ -1,0 +1,17 @@
+@Path ("/iterate")
+@Source (protocol="http", host=“localhost", port=8080)
+@Api (description = “Iterates through the message”)
+package com.sample
+
+constant endpoint airlineEP = “http://localhost:8080/exchange/”;
+
+@POST
+@ApiOperation (value = “Out only”)
+resource iterate (message m) {
+   foreach (message stock : eval("$.request.stocks", m)){
+      int sid = sendTo(stockEP, stock);
+      message response = receiveFrom(stockEP, sid);
+      log(response);
+   }
+}
+

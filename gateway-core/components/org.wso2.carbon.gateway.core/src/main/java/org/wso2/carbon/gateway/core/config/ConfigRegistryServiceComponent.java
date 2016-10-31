@@ -43,11 +43,11 @@ public class ConfigRegistryServiceComponent {
             unbind = "removeConfigRegistryObserver"
     )
     protected void addConfigRegistryObserver(ConfigRegistryObserver observer) {
-        ConfigRegistry.getInstance().registerObserver(observer);
+        IntegrationConfigRegistry.getInstance().registerObserver(observer);
     }
 
     protected void removeConfigRegistryObserver(ConfigRegistryObserver observer) {
-        ConfigRegistry.getInstance().unregisterObserver(observer);
+        IntegrationConfigRegistry.getInstance().unregisterObserver(observer);
     }
 
 }

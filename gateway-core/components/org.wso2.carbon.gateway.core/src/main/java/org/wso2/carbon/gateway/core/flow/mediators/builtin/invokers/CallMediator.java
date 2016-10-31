@@ -20,28 +20,33 @@ package org.wso2.carbon.gateway.core.flow.mediators.builtin.invokers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.gateway.core.config.ConfigRegistry;
+import org.wso2.carbon.gateway.core.config.IntegrationConfigRegistry;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.flow.AbstractMediator;
-import org.wso2.carbon.gateway.core.flow.FlowControllerCallback;
+import org.wso2.carbon.gateway.core.flow.FlowControllerMediateCallback;
 import org.wso2.carbon.gateway.core.flow.Invoker;
 import org.wso2.carbon.gateway.core.flow.MediatorType;
 import org.wso2.carbon.gateway.core.outbound.OutboundEndpoint;
 import org.wso2.carbon.gateway.core.util.VariableUtil;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.Constants;
+
+import static org.wso2.carbon.gateway.core.Constants.ENDPOINT_KEY;
+import static org.wso2.carbon.gateway.core.Constants.INTEGRATION_KEY;
+import static org.wso2.carbon.gateway.core.Constants.MESSAGE_KEY;
+import static org.wso2.carbon.gateway.core.Constants.RETURN_VALUE;
 
 /**
  * Send a Message out from Pipeline to an Outbound Endpoint
  */
 public class CallMediator extends AbstractMediator implements Invoker {
 
-
-    private String outboundEPKey;
-
-    private OutboundEndpoint outboundEndpoint;
-
     private static final Logger log = LoggerFactory.getLogger(CallMediator.class);
+    private String outboundEPKey;
+    private String integrationKey;
+    private String messageKey;
+    private OutboundEndpoint outboundEndpoint;
 
     public CallMediator() {
     }
@@ -55,7 +60,22 @@ public class CallMediator extends AbstractMediator implements Invoker {
     }
 
     public void setParameters(ParameterHolder parameterHolder) {
-        outboundEPKey = parameterHolder.getParameter("endpointKey").getValue();
+        if (parameterHolder.getParameter(ENDPOINT_KEY) != null) {
+            outboundEPKey = parameterHolder.getParameter(ENDPOINT_KEY).getValue();
+        } else {
+            log.error(ENDPOINT_KEY + " is not set in the configuration.");
+        }
+        if (parameterHolder.getParameter(MESSAGE_KEY) != null) {
+            messageKey = parameterHolder.getParameter(MESSAGE_KEY).getValue();
+        } else {
+            log.error(MESSAGE_KEY + " is not set in the configuration.");
+        }
+        if (parameterHolder.getParameter(RETURN_VALUE) != null) {
+            returnedOutput = parameterHolder.getParameter(RETURN_VALUE).getValue();
+        } else {
+            log.error(RETURN_VALUE + " is not set in the configuration.");
+        }
+        integrationKey = parameterHolder.getParameter(INTEGRATION_KEY).getValue();
     }
 
     @Override
@@ -69,25 +89,41 @@ public class CallMediator extends AbstractMediator implements Invoker {
     }
 
     @Override
-    public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback)
-            throws Exception {
+    public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
 
         OutboundEndpoint endpoint = outboundEndpoint;
         if (endpoint == null) {
-            endpoint = ConfigRegistry.getInstance().getOutboundEndpoint(outboundEPKey);
+            endpoint = IntegrationConfigRegistry.getInstance()
+                    .getIntegrationConfig(integrationKey).getOutbound(outboundEPKey);
 
             if (endpoint == null) {
-                log.error("Outbound Endpoint : " + outboundEPKey + "not found ");
+                log.error("Outbound Endpoint : " + outboundEPKey + " not found ");
                 return false;
             }
         }
 
-        CarbonCallback callback = new FlowControllerCallback(carbonCallback, this,
+        //prepare CarbonMessage if it is a response message from a previous invoke
+        //If the DIRECTION property of the carbonMessage is DIRECTION_RESPONSE, we can assume service chaining
+        if (carbonMessage.getProperty(Constants.DIRECTION) != null &&
+                            carbonMessage.getProperty(Constants.DIRECTION).equals(Constants.DIRECTION_RESPONSE)) {
+            //remove Direction property
+            carbonMessage.removeProperty(Constants.DIRECTION);
+            //remove HTTP status code
+            carbonMessage.removeProperty(org.wso2.carbon.transport.http.netty.common.Constants.HTTP_STATUS_CODE);
+            //TODO decide and remove/add any other properties (removed above to enable service chaining support)
+        }
+
+        CarbonMessage inputCarbonMessage = (CarbonMessage) getObjectFromContext(carbonMessage, messageKey);
+        // if the message is not already built
+        if (inputCarbonMessage.getMessageDataSource() == null) {
+            carbonMessage = inputCarbonMessage;
+        }
+
+        CarbonCallback callback = new FlowControllerMediateCallback(carbonCallback, this,
                 VariableUtil.getVariableStack(carbonMessage));
 
         endpoint.receive(carbonMessage, callback);
         return false;
     }
-
 
 }

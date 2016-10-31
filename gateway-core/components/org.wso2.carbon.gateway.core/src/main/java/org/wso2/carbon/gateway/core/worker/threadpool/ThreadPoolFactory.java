@@ -28,10 +28,10 @@ public class ThreadPoolFactory {
 
     private static final ThreadPoolFactory threadPoolFactory = new ThreadPoolFactory();
 
-    private ExecutorService inbound;
-    private ExecutorService outbound;
+    private ExecutorService inbound =  Executors.newFixedThreadPool(20);
+    private ExecutorService outbound =  Executors.newFixedThreadPool(20);
 
-    private boolean threadPoolingEnable;
+    private boolean threadPoolingEnable = true;
 
     public void createThreadPool(int noOfThreads) {
         inbound = Executors.newFixedThreadPool(noOfThreads);

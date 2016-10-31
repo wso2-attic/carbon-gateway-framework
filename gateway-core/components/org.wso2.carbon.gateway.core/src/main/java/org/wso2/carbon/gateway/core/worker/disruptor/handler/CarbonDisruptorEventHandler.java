@@ -46,8 +46,7 @@ public class CarbonDisruptorEventHandler extends DisruptorEventHandler {
         Lock lock = carbonMessage.getLock();
         if (lock.tryLock()) {
             Object obj = carbonMessage.getProperty(Constants.PARENT_TYPE);
-            CarbonCallback carbonCallback = (CarbonCallback) carbonMessage.getProperty
-                       (org.wso2.carbon.messaging.Constants.CALL_BACK);
+            CarbonCallback carbonCallback = carbonDisruptorEvent.getCarbonCallback();
             Object dir = carbonMessage.getProperty(org.wso2.carbon.messaging.Constants.DIRECTION);
             if (dir != null && dir.equals(org.wso2.carbon.messaging.Constants.DIRECTION_RESPONSE)) {
                 carbonCallback.done(carbonMessage);
@@ -57,7 +56,7 @@ public class CarbonDisruptorEventHandler extends DisruptorEventHandler {
                     mediator.receive(carbonMessage, carbonCallback);
                 } else {
                     carbonMessage.setProperty(Constants.PARENT_TYPE, Constants.CPU_BOUND);
-                    WorkerUtil.dispatchToInboundEndpoint(carbonMessage);
+                    WorkerUtil.dispatchToInboundEndpoint(carbonMessage, carbonCallback);
                 }
             }
         }

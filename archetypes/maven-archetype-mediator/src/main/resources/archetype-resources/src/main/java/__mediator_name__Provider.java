@@ -34,18 +34,18 @@ import org.wso2.carbon.gateway.core.flow.MediatorProvider;
 )
 public class ${mediator_name}Provider implements MediatorProvider {
 
-  @Activate
-  protected void start(BundleContext bundleContext) {
-  }
+    @Activate
+    protected void start(BundleContext bundleContext) {
+    }
 
-  @Override
-  public String getName() {
-    return "${mediator_name}";
-  }
+    @Override
+    public String getName() {
+        return "${mediator_name}";
+    }
 
-  @Override
-  public Mediator getMediator() {
-    return new ${mediator_name}();
-  }
+    @Override
+    public Mediator getMediator() {
+        return new ${mediator_name}();
+    }
 
 }

@@ -29,17 +29,16 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.gateway.core.config.ConfigRegistry;
-import org.wso2.carbon.gateway.core.config.GWConfigHolder;
-import org.wso2.carbon.gateway.core.config.dsl.external.WUMLConfigurationBuilder;
+import org.wso2.carbon.deployment.engine.Artifact;
+import org.wso2.carbon.deployment.engine.ArtifactType;
+import org.wso2.carbon.deployment.engine.Deployer;
+import org.wso2.carbon.deployment.engine.exception.CarbonDeploymentException;
+import org.wso2.carbon.gateway.core.config.Integration;
+import org.wso2.carbon.gateway.core.config.IntegrationConfigRegistry;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.WUMLBaseListenerImpl;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLLexer;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLParser;
 import org.wso2.carbon.gateway.core.inbound.ProviderRegistry;
-import org.wso2.carbon.kernel.deployment.Artifact;
-import org.wso2.carbon.kernel.deployment.ArtifactType;
-import org.wso2.carbon.kernel.deployment.Deployer;
-import org.wso2.carbon.kernel.deployment.exception.CarbonDeploymentException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,8 +46,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+
+import static org.wso2.carbon.gateway.core.Constants.EMPTY_STRING;
 
 /**
  * A class responsible for read the .iflow files and deploy them to the runtime Object model.
@@ -56,19 +55,14 @@ import java.util.Map;
 @Component(
         name = "org.wso2.carbon.gateway.core.config.dsl.external.deployer.IFlowDeployer",
         immediate = true,
-        service = Deployer.class
-)
+        service = Deployer.class)
 public class IFlowDeployer implements Deployer {
 
-    private ArtifactType artifactType;
-
-    private URL directoryLocation;
-
-    private Map<String, GWConfigHolder> artifactMap = new HashMap<>();
-
-    private static final Logger logger = LoggerFactory.getLogger(IFlowDeployer.class);
-
     public static final String EXTERNAL_DSL_CONFIGS_DIRECTORY = "integration-flows";
+    private static final String FILE_EXTENSION = ".ballerina";
+    private static final Logger logger = LoggerFactory.getLogger(IFlowDeployer.class);
+    private ArtifactType artifactType;
+    private URL directoryLocation;
 
     @Activate
     protected void activate(BundleContext bundleContext) {
@@ -81,8 +75,7 @@ public class IFlowDeployer implements Deployer {
             service = ProviderRegistry.class,
             cardinality = ReferenceCardinality.MANDATORY,
             policy = ReferencePolicy.DYNAMIC,
-            unbind = "removeInboundProviderRegistry"
-    )
+            unbind = "removeInboundProviderRegistry")
     protected void addInboundProviderRegistry(ProviderRegistry registry) {
     }
 
@@ -94,14 +87,11 @@ public class IFlowDeployer implements Deployer {
             service = org.wso2.carbon.gateway.core.outbound.ProviderRegistry.class,
             cardinality = ReferenceCardinality.MANDATORY,
             policy = ReferencePolicy.DYNAMIC,
-            unbind = "removeOutboundProviderRegistry"
-    )
-    protected void addOutboundProviderRegistry(
-            org.wso2.carbon.gateway.core.outbound.ProviderRegistry registry) {
+            unbind = "removeOutboundProviderRegistry")
+    protected void addOutboundProviderRegistry(org.wso2.carbon.gateway.core.outbound.ProviderRegistry registry) {
     }
 
-    protected void removeOutboundProviderRegistry(
-            org.wso2.carbon.gateway.core.outbound.ProviderRegistry registry) {
+    protected void removeOutboundProviderRegistry(org.wso2.carbon.gateway.core.outbound.ProviderRegistry registry) {
     }
 
     @Reference(
@@ -109,14 +99,11 @@ public class IFlowDeployer implements Deployer {
             service = org.wso2.carbon.gateway.core.flow.ProviderRegistry.class,
             cardinality = ReferenceCardinality.MANDATORY,
             policy = ReferencePolicy.DYNAMIC,
-            unbind = "removeMediatorProviderRegistry"
-    )
-    protected void addMediatorProviderRegistry(
-            org.wso2.carbon.gateway.core.flow.ProviderRegistry registry) {
+            unbind = "removeMediatorProviderRegistry")
+    protected void addMediatorProviderRegistry(org.wso2.carbon.gateway.core.flow.ProviderRegistry registry) {
     }
 
-    protected void removeMediatorProviderRegistry(
-            org.wso2.carbon.gateway.core.flow.ProviderRegistry registry) {
+    protected void removeMediatorProviderRegistry(org.wso2.carbon.gateway.core.flow.ProviderRegistry registry) {
     }
 
     @Override
@@ -137,12 +124,17 @@ public class IFlowDeployer implements Deployer {
 
     @Override
     public void undeploy(Object o) throws CarbonDeploymentException {
-        GWConfigHolder configHolder = artifactMap.remove((String) o);
-        ConfigRegistry.getInstance().removeGWConfig(configHolder);
+        Integration configHolder = IntegrationConfigRegistry.getInstance()
+                .getIntegrationConfig(((String) o).replace(FILE_EXTENSION, EMPTY_STRING));
+        if (configHolder != null) {
+            logger.info("Undeploying Integration : " + configHolder.getName());
+            IntegrationConfigRegistry.getInstance().removeIntegrationConfig(configHolder);
+        }
     }
 
     @Override
     public Object update(Artifact artifact) throws CarbonDeploymentException {
+        undeploy(artifact.getKey());
         updateESBConfig(artifact);
         return artifact.getFile().getName();
     }
@@ -164,29 +156,28 @@ public class IFlowDeployer implements Deployer {
             File file = artifact.getFile();
             inputStream = new FileInputStream(file);
 
-            CharStream cs = new ANTLRInputStream(inputStream);
+            if (file.getName().endsWith(FILE_EXTENSION)) {
+                String integrationName = file.getName().replace(FILE_EXTENSION, EMPTY_STRING);
 
-            // Passing the input to the lexer to create tokens
-            WUMLLexer lexer = new WUMLLexer(cs);
+                logger.info("Deploying Integration : " + integrationName);
 
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
+                CharStream cs = new ANTLRInputStream(inputStream);
 
-            // Passing the tokens to the parser to create the parse trea.
-            WUMLParser parser = new WUMLParser(tokens);
+                // Passing the input to the lexer to create tokens
+                WUMLLexer lexer = new WUMLLexer(cs);
 
-            // Adding the listener to facilitate walking through parse tree.
-            WUMLBaseListenerImpl wumlBaseListener = new WUMLBaseListenerImpl();
+                CommonTokenStream tokens = new CommonTokenStream(lexer);
 
-            parser.addParseListener(wumlBaseListener);
-            parser.script();
+                // Passing the tokens to the parser to create the parse trea.
+                WUMLParser parser = new WUMLParser(tokens);
 
-            WUMLConfigurationBuilder.IntegrationFlow integrationFlow = wumlBaseListener.getIntegrationFlow();
-            GWConfigHolder configHolder = integrationFlow.getGWConfigHolder();
-            if (configHolder != null) {
-                artifactMap.put(file.getName(), configHolder);
-                ConfigRegistry.getInstance().addGWConfig(configHolder);
+                // Adding the listener to facilitate walking through parse tree.
+                WUMLBaseListenerImpl wumlBaseListener = new WUMLBaseListenerImpl(integrationName);
+
+                parser.addParseListener(wumlBaseListener);
+                parser.sourceFile();
+
             }
-
         } catch (IOException e) {
             logger.error("Error while creating Cheetah object model", e);
         } finally {

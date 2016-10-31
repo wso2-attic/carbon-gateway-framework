@@ -1,0 +1,15 @@
+@Path ("/flights?depart={dateDepart}&return={dateReturn}&from={from}&to={to}")
+@Source (protocol="http", host=“localhost", port=8080)
+@Api (description = “GetFlights Sample”)
+package com.classic.travel
+
+constant endpoint airlineEP = “http://localhost:8080/airlineEP/”;
+
+@GET
+@ApiOperation (value = “Return flight details”)
+resource flights (message m) {
+   message c = datamap("getFlightsMapping.js", m);
+   r = invoke(airlineEP, c);
+   reply r;
+}
+

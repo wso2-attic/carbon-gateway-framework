@@ -1,0 +1,11 @@
+@Api (description = “Consumes messages from a JMS queue”)
+package com.sample
+
+constant endpoint jmsEndpoint = new JMSEndpoint("jms://initialContext=org.wso2.andes.jndi.PropertiesFileInitialContextFa………");
+
+@Queue ("myQueue")
+@SelectorQuery ("NewsType = ’Sports’ OR NewsType = ’Opinion’")
+@ApiOperation (value = “JMS Message consumer”)
+resource consumer (message m) {
+   log(m);
+}

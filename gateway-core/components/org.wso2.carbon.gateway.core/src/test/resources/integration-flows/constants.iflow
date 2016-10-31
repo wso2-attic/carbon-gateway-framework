@@ -1,0 +1,22 @@
+@Path ("/stock")
+@Source (protocol="http", host="localhost", port=8080)
+@Api (tags = {"stock_info","stock_update"}, description = "Rest api for do operations on admin", produces = MediaType.APPLICATION_JSON)
+package com.sample;
+
+constant endpoint stockEP = new EndPoint("http://localhost:8080/exchange/");
+
+@GET
+@PUT
+@POST
+@Path ("/passthrough")
+resource passthrough (message m) {
+    message response;
+    try {
+        response = invoke(stockEP, m);
+    } catch (exception e) {
+        response = new Message();
+        response.setHeader(HTTPStatusCode, 500);
+        response.setPayload(TypeJSON, "{\"error\":\"backend failed\"}");
+    }
+    reply response;
+}

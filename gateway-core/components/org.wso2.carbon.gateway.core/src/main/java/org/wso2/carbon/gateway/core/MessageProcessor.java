@@ -17,7 +17,6 @@
  */
 package org.wso2.carbon.gateway.core;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.flow.MediatorType;
@@ -26,7 +25,6 @@ import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.CarbonMessageProcessor;
 import org.wso2.carbon.messaging.TransportSender;
-
 
 /**
  * Message Processor Implementation for Gateway
@@ -42,9 +40,7 @@ public class MessageProcessor implements CarbonMessageProcessor {
             log.debug("Gateway received a message");
         }
 
-
-        WorkerModelDispatcher.getInstance().dispatch(cMsg, MediatorType.CPU_BOUND);
-
+        WorkerModelDispatcher.getInstance().dispatch(cMsg, callback, MediatorType.CPU_BOUND);
 
         return false;
     }
@@ -58,6 +54,5 @@ public class MessageProcessor implements CarbonMessageProcessor {
     public String getId() {
         return null;
     }
-
 
 }

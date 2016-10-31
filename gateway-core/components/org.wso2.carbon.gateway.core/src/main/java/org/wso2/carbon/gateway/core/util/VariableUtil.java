@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.DefaultCarbonMessage;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -34,7 +35,6 @@ import java.util.Stack;
 public class VariableUtil {
 
     private static final Logger log = LoggerFactory.getLogger(VariableUtil.class);
-
 
     /**
      * Creates a new variable stack containing global variables and attaches this to CarbonMessage.
@@ -110,6 +110,35 @@ public class VariableUtil {
     }
 
     /**
+     * Adds a variable onto the top most variable stack.
+     * @param cMsg
+     * @param key
+     * @param variable
+     */
+    public static void addVariable(CarbonMessage cMsg, String key, Object variable) {
+        Stack<Map<String, Object>> stack = getVariableStack(cMsg);
+        stack.peek().put(key, variable);
+    }
+
+    /**
+     * Add a variable onto the global constants stack.
+     * @param cMsg
+     * @param key
+     * @param variable
+     */
+    public static void addGlobalVariable(CarbonMessage cMsg, String key, Object variable) {
+        Stack<Map<String, Object>> stack = getVariableStack(cMsg);
+        Map<String, Object> global;
+        if (stack.peek().containsKey(Constants.GW_GT_SCOPE)) {
+            global = (Map<String, Object>) stack.peek().get(Constants.GW_GT_SCOPE);
+        } else {
+            global = stack.peek();
+        }
+
+        global.put(key, variable);
+    }
+
+    /**
      * Get variable stack from CarbonMessage. This method will create an empty variable stack if it does not exist.
      * @param cMsg
      * @return variable stack
@@ -129,31 +158,137 @@ public class VariableUtil {
      * @param value
      * @return Object of variable type
      */
-    public static Object getVariable(String type, String value) {
-        type = type.toLowerCase(Locale.ROOT);
-        if (type.equals("string")) {
+    public static Object createVariable(Constants.TYPES type, String value) {
+        if (type.equals(Constants.TYPES.STRING)) {
             return String.valueOf(value);
-        } else if (type.equals("integer")) {
+        } else if (type.equals(Constants.TYPES.INTEGER)) {
             return Integer.valueOf(value);
-        } else if (type.equals("boolean")) {
+        } else if (type.equals(Constants.TYPES.BOOLEAN)) {
             return Boolean.valueOf(value);
-        } else if (type.equals("double")) {
+        } else if (type.equals(Constants.TYPES.DOUBLE)) {
             return Double.valueOf(value);
-        } else if (type.equals("float")) {
+        } else if (type.equals(Constants.TYPES.FLOAT)) {
             return Float.valueOf(value);
-        } else if (type.equals("long")) {
+        } else if (type.equals(Constants.TYPES.LONG)) {
             return Long.valueOf(value);
-        } else if (type.equals("short")) {
+        } else if (type.equals(Constants.TYPES.SHORT)) {
             return Short.valueOf(value);
-        } else if (type.equals("xml")) {
+        } else if (type.equals(Constants.TYPES.MESSAGE)) {
+            return new DefaultCarbonMessage();
+        } else if (type.equals(Constants.TYPES.XML)) {
             log.info("XML Variable type not yet implemented! Using string instead.");
             return String.valueOf(value);
-        } else if (type.equals("json")) {
+        } else if (type.equals(Constants.TYPES.JSON)) {
             log.info("JSON Variable type not yet implemented! Using string instead.");
             return String.valueOf(value);
         } else {
             log.error("Unrecognized variable type " + type);
             return null;
+        }
+    }
+
+    /**
+     * Returns the type of a variable object.
+     * @param variable
+     * @return object type as Constants.TYPES
+     */
+    public static Constants.TYPES getType(Object variable) {
+        if (variable instanceof String) {
+            return Constants.TYPES.STRING;
+        } else if (variable instanceof Integer) {
+            return Constants.TYPES.INTEGER;
+        } else if (variable instanceof Boolean) {
+            return Constants.TYPES.BOOLEAN;
+        } else if (variable instanceof Double) {
+            return Constants.TYPES.DOUBLE;
+        } else if (variable instanceof Float) {
+            return Constants.TYPES.FLOAT;
+        } else if (variable instanceof Long) {
+            return Constants.TYPES.LONG;
+        } else if (variable instanceof Short) {
+            return Constants.TYPES.SHORT;
+        } else {
+            return Constants.TYPES.UNKNOWN;
+        }
+    }
+
+    /**
+     * Returns the type of a variable given type name.
+     * @param typeName
+     * @return object type as Constants.TYPES
+     */
+    public static Constants.TYPES getType(String typeName) {
+        if (typeName == null) {
+            return null;
+        }
+
+        typeName = typeName.toLowerCase(Locale.ROOT);
+        if (typeName.equals("string")) {
+            return Constants.TYPES.STRING;
+        } else if (typeName.equals("int")) {
+            return Constants.TYPES.INTEGER;
+        } else if (typeName.equals("boolean")) {
+            return Constants.TYPES.BOOLEAN;
+        } else if (typeName.equals("double")) {
+            return Constants.TYPES.DOUBLE;
+        } else if (typeName.equals("float")) {
+            return Constants.TYPES.FLOAT;
+        } else if (typeName.equals("long")) {
+            return Constants.TYPES.LONG;
+        } else if (typeName.equals("short")) {
+            return Constants.TYPES.SHORT;
+        } else if (typeName.equals("message")) {
+            return Constants.TYPES.MESSAGE;
+        } else {
+            return Constants.TYPES.UNKNOWN;
+        }
+    }
+
+    /**
+     * Find the map that contains a variable by traversing variable stack.
+     * @param carbonMessage
+     * @param name
+     * @return Variable value object.
+     */
+    public static Object getMap(CarbonMessage carbonMessage, String name) {
+        Stack<Map<String, Object>> variableStack =
+                (Stack<Map<String, Object>>) carbonMessage.getProperty(Constants.VARIABLE_STACK);
+        return findVariable(variableStack.peek(), name, true);
+    }
+
+    /**
+     * Find the value of a given key traversing the variable stack.
+     * @param carbonMessage
+     * @param name
+     * @return Variable value object.
+     */
+    public static Object getVariable(CarbonMessage carbonMessage, String name) {
+        Stack<Map<String, Object>> variableStack =
+                (Stack<Map<String, Object>>) carbonMessage.getProperty(Constants.VARIABLE_STACK);
+        return findVariable(variableStack.peek(), name, false);
+    }
+
+    /**
+     * Recursively search variable stack for given key and return either the map containing the variable or
+     * the variable value itself.
+     * @param variables
+     * @param name
+     * @param map toggle whether variable value or map containing variable should be returned.
+     * @return Variable value or map object.
+     */
+    private static Object findVariable(Map<String, Object> variables, String name, boolean map) {
+        if (variables.containsKey(name)) {
+            if (!map) {
+                return variables.get(name);
+            } else {
+                return variables;
+            }
+        } else {
+            if (variables.containsKey(Constants.GW_GT_SCOPE)) {
+                return findVariable((Map<String, Object>) variables.get(Constants.GW_GT_SCOPE), name, map);
+            } else {
+                return null;
+            }
         }
     }
 

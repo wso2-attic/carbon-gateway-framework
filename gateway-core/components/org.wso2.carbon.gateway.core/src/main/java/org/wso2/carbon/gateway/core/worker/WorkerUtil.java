@@ -33,9 +33,7 @@ public class WorkerUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(WorkerUtil.class);
 
-    public static void dispatchToInboundEndpoint(CarbonMessage carbonMessage) {
-        CarbonCallback carbonCallback = (CarbonCallback) carbonMessage.getProperty
-                   (org.wso2.carbon.messaging.Constants.CALL_BACK);
+    public static void dispatchToInboundEndpoint(CarbonMessage carbonMessage, CarbonCallback carbonCallback) {
 
         String protocol = "http";  //TODO: Take from cMsg
 

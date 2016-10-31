@@ -40,4 +40,8 @@ public interface OutboundEndpoint {
 
     void setName(String name);
 
+    void setUri(String uri);
+
+    String getUri();
+
 }

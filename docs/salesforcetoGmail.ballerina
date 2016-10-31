@@ -1,0 +1,15 @@
+@Description "Notify Salesforce account create to Gmail users"
+package com.classic.travel
+
+import org.wso2.connectors.gmail.*;
+import org.wso2.connectors.salesforce.*;
+
+@Trigger CronSchedule("0 10 * * * *")
+resource flights (message m) {
+   string query = “select id,name from account”;
+   int count = 200;
+   message m = receiveFrom(sf.query($query, $count));
+   message c = datamap("sfTogmailMapping.js", m);
+   sendTo(gmail.send("accounts created", "sanjiva@wso2.com"), m);
+}
+

@@ -16,13 +16,14 @@
   ~ * limitations under the License.
   ~ */
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.wso2.carbon.gateway</groupId>
         <artifactId>org.wso2.carbon.gateway.core.parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -71,8 +72,8 @@
             <artifactId>org.wso2.carbon.core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.orbit.org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
+            <groupId>org.wso2.carbon.deployment</groupId>
+            <artifactId>org.wso2.carbon.deployment.engine</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.messaging</groupId>
@@ -83,8 +84,49 @@
             <artifactId>antlr4-runtime</artifactId>
         </dependency>
         <dependency>
+
             <groupId>org.wso2.orbit.com.lmax</groupId>
             <artifactId>disruptor</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ws.commons.axiom</groupId>
+            <artifactId>axiom-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ws.commons.axiom</groupId>
+            <artifactId>axiom-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ws.commons.axiom</groupId>
+            <artifactId>axiom-dom</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.io.reactivex</groupId>
+            <artifactId>rxjava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.transport</groupId>
+            <artifactId>org.wso2.carbon.transport.http.netty</artifactId>
         </dependency>
     </dependencies>
 
@@ -111,10 +153,33 @@
             org.wso2.carbon.kernel.startupresolver.*;version="${carbon.kernel.package.import.version.range}",
             org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
             org.antlr.v4.runtime.*,
-            org.wso2.carbon.messaging.*;version="${carbon.messaging.package.import.version.range}",
+
             org.yaml.snakeyaml.*;version="${org.snakeyaml.package.import.version.range}",
             com.lmax.disruptor.*;version="${disruptor.package.import.version.range}",
+
+            org.apache.ws.commons.axiom.*;version="${axiom.version}",
+            org.apache.axiom.*;version="0.0.0",
+            javax.mail.*;version=0.0.0,
+            javax.xml.*;version=0.0.0,
+            org.jaxen.*;version="${jaxen.version}",
+            org.wso2.carbon.messaging.*;version="${carbon.messaging.package.import.version.range}",
+            org.wso2.carbon.deployment.engine.*;version="${carbon.deployment.export.version}",
+            rx.*; version="${rxjava.export.version}"
+
         </import.package>
+        <carbon.component>
+            startup.listener;componentName="mediator-provider";
+            requiredService="org.wso2.carbon.gateway.core.flow.MediatorProvider",
+            startup.listener;componentName="inbound-provider";
+            requiredService="org.wso2.carbon.gateway.core.inbound.Provider",
+            startup.listener;componentName="outbound-provider";
+            requiredService="org.wso2.carbon.gateway.core.outbound.OutboundEPProvider",
+            startup.listener;componentName="reader-provider";
+            requiredService="org.wso2.carbon.gateway.core.flow.contentaware.messagereaders.ReaderProvider",
+            osgi.service; objectClass="org.wso2.carbon.deployment.engine.Deployer",
+            osgi.service; objectClass="org.wso2.carbon.messaging.CarbonMessageProcessor";
+            requiredByComponentName="netty-transports-mgt"
+        </carbon.component>
     </properties>
 
 </project>

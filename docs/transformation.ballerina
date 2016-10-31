@@ -1,0 +1,11 @@
+@Path ("/transform")
+@Source (protocol="http", host=“localhost", port=8080)
+@Api (description = “Transforms the inbound message”)
+package com.sample
+
+@POST
+@ApiOperation (value = “Message transformer”)
+resource transform (message m) {
+   message r = datamap("mapping.js", m);
+   reply r;
+}

@@ -21,6 +21,7 @@ package org.wso2.carbon.gateway.core.worker.disruptor.publisher;
 import com.lmax.disruptor.EventTranslator;
 import org.wso2.carbon.gateway.core.flow.Mediator;
 import org.wso2.carbon.gateway.core.worker.disruptor.event.CarbonDisruptorEvent;
+import org.wso2.carbon.messaging.CarbonCallback;
 
 /**
  * Event Publisher for RingNBuffer of Disruptor.
@@ -29,15 +30,17 @@ public class CarbonEventPublisher implements EventTranslator<CarbonDisruptorEven
 
     private Object event;
     private Mediator mediator;
+    private CarbonCallback carbonCallback;
 
-
-    public CarbonEventPublisher(Object event , Mediator mediator) {
+    public CarbonEventPublisher(Object event, Mediator mediator, CarbonCallback carbonCallback) {
         this.event = event;
         this.mediator = mediator;
+        this.carbonCallback = carbonCallback;
     }
 
     public void translateTo(CarbonDisruptorEvent event, long sequence) {
         event.setEvent(this.event);
         event.setMediator(mediator);
+        event.setCarbonCallback(carbonCallback);
     }
 }

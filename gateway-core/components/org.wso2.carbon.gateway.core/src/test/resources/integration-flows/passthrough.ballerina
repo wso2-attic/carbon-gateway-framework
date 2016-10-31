@@ -1,0 +1,19 @@
+@Path("/stock")
+@Source(protocol = "http", host = "localhost", port = 8280)
+@Service(tags = {
+    "stock_info",
+    "stock_update"
+}, description = "Rest api for do operations on admin", produces = MediaType.APPLICATION_JSON)
+package com.sample;
+
+constant endpoint stockEP = new HTTPEndPoint("http://localhost:8080/stockquote/all");
+
+@GET
+@PUT
+@POST
+@Path("/passthrough")
+resource passthrough(message m) {
+    message response;
+    response = invoke(endpointRef=stockEP, messageRef=m);
+    reply response;
+}

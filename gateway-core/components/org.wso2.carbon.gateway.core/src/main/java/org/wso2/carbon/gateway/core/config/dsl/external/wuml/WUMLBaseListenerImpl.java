@@ -17,27 +17,44 @@
  */
 package org.wso2.carbon.gateway.core.config.dsl.external.wuml;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.wso2.carbon.gateway.core.Constants;
+import org.wso2.carbon.gateway.core.config.ConfigConstants;
+import org.wso2.carbon.gateway.core.config.Integration;
+import org.wso2.carbon.gateway.core.config.IntegrationConfigRegistry;
 import org.wso2.carbon.gateway.core.config.Parameter;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.config.dsl.external.StringParserUtil;
-import org.wso2.carbon.gateway.core.config.dsl.external.WUMLConfigurationBuilder;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLBaseListener;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLParser;
-import org.wso2.carbon.gateway.core.flow.Group;
+import org.wso2.carbon.gateway.core.exception.ChildExceptionHandler;
+import org.wso2.carbon.gateway.core.exception.ConnectionClosedExceptionHandler;
+import org.wso2.carbon.gateway.core.exception.ConnectionFailedExceptionHandler;
+import org.wso2.carbon.gateway.core.exception.ConnectionTimeoutExceptionHandler;
+import org.wso2.carbon.gateway.core.exception.GeneralExceptionHandler;
+import org.wso2.carbon.gateway.core.flow.AbstractFlowController;
 import org.wso2.carbon.gateway.core.flow.Mediator;
 import org.wso2.carbon.gateway.core.flow.MediatorProviderRegistry;
-import org.wso2.carbon.gateway.core.flow.Pipeline;
+import org.wso2.carbon.gateway.core.flow.Resource;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.Condition;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.FilterMediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.Source;
+import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.TryBlockMediator;
+import org.wso2.carbon.gateway.core.flow.templates.uri.URITemplate;
+import org.wso2.carbon.gateway.core.flow.templates.uri.URITemplateException;
 import org.wso2.carbon.gateway.core.inbound.InboundEPProviderRegistry;
 import org.wso2.carbon.gateway.core.inbound.InboundEndpoint;
 import org.wso2.carbon.gateway.core.outbound.OutboundEPProviderRegistry;
 import org.wso2.carbon.gateway.core.outbound.OutboundEndpoint;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.Locale;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Pattern;
@@ -46,414 +63,928 @@ import java.util.regex.Pattern;
  * Implementation class of the ANTLR generated listener class
  */
 public class WUMLBaseListenerImpl extends WUMLBaseListener {
+    private static final Logger log = LoggerFactory.getLogger(WUMLBaseListenerImpl.class);
+    private Integration integration;
+    private String integrationName;
+    private Resource currentResource;
+    // Temporary reference for the currently processing filter mediator
+    private Stack<AbstractFlowController> flowControllerStack;
+    private Stack<FlowControllerMediatorSection> flowControllerMediatorSection;
+    // Used when mediator returns a value
+    private String nextMediatorReturnParameter;
+    // Handling statements like "message n = invoke(endpoint,m)". Here we will add a property and a call mediator
+    private boolean isInitializationFired;
+    private Mediator initializerMediator;
 
-    public static final String INBOUND = "INBOUND";
-    public static final String OUTBOUND = "OUTBOUND";
-    private static final String DOUBLECOLON = "::";
-    WUMLConfigurationBuilder.IntegrationFlow integrationFlow;
-    Stack<String> pipelineStack = new Stack<String>();
-    Stack<FilterMediator> filterMediatorStack = new Stack<FilterMediator>();
-    boolean ifMultiThenBlockStarted = false;
-    boolean ifElseBlockStarted = false;
-    Map<String, String> identifierTypeMap = new HashMap<>();
-
-    boolean insideGroup = false;
-    private String groupPath;
-
-    public WUMLBaseListenerImpl() {
-        this.integrationFlow = new WUMLConfigurationBuilder.IntegrationFlow("default");
-    }
-
-    public WUMLBaseListenerImpl(WUMLConfigurationBuilder.IntegrationFlow integrationFlow) {
-        this.integrationFlow = integrationFlow;
-    }
-
-    public WUMLConfigurationBuilder.IntegrationFlow getIntegrationFlow() {
-        return integrationFlow;
+    public WUMLBaseListenerImpl(String fileName) {
+        this.integrationName = fileName;
+        this.flowControllerStack = new Stack<>();
+        this.flowControllerMediatorSection = new Stack<>();
+        this.nextMediatorReturnParameter = null;
+        this.isInitializationFired = false;
+        this.initializerMediator = null;
     }
 
     @Override
-    public void exitScript(WUMLParser.ScriptContext ctx) {
-        super.exitScript(ctx);
+    public void enterSourceFile(WUMLParser.SourceFileContext ctx) {
+        integration = new Integration(integrationName);
     }
 
     @Override
-    public void exitVariableStatement(WUMLParser.VariableStatementContext ctx) {
-        String varType = ctx.TYPEDEFINITIONX().getText();
-        String varIdentifier = ctx.IDENTIFIER().getText();
-        String varValue = ctx.COMMENTSTRINGX().getText();
+    public void exitSourceFile(WUMLParser.SourceFileContext ctx) {
+        IntegrationConfigRegistry.getInstance().addIntegrationConfig(integration);
+    }
 
-        if (varType.toLowerCase(Locale.ROOT).equals("string")) {
-            varValue = StringParserUtil.getValueWithinDoubleQuotes(varValue);
-        }
+    @Override
+    public void enterDefinition(WUMLParser.DefinitionContext ctx) {
+    }
 
-        Mediator mediator = MediatorProviderRegistry.getInstance().getMediator("property");
+    @Override
+    public void exitDefinition(WUMLParser.DefinitionContext ctx) {
+    }
 
+    @Override
+    public void enterConstants(WUMLParser.ConstantsContext ctx) {
+    }
+
+    @Override
+    public void exitConstants(WUMLParser.ConstantsContext ctx) {
+    }
+
+    @Override
+    public void enterResources(WUMLParser.ResourcesContext ctx) {
+    }
+
+    @Override
+    public void exitResources(WUMLParser.ResourcesContext ctx) {
+    }
+
+    @Override
+    public void enterPackageDef(WUMLParser.PackageDefContext ctx) {
+    }
+
+    @Override
+    public void exitPackageDef(WUMLParser.PackageDefContext ctx) {
+        //String packageName = ctx.qualifiedName().getText();
+        /* Updating the integration name to its fully qualified name */
+        //integration.setName(packageName + "." + integration.getName());
+    }
+
+    @Override
+    public void enterPath(WUMLParser.PathContext ctx) {
+    }
+
+    @Override
+    public void exitPath(WUMLParser.PathContext ctx) {
+        integration.getAnnotation(ConfigConstants.AN_BASE_PATH)
+                .setValue(StringParserUtil.getValueWithinDoubleQuotes(ctx.StringLiteral().getText()));
+    }
+
+    @Override
+    public void enterSource(WUMLParser.SourceContext ctx) {
+    }
+
+    @Override
+    public void exitSource(WUMLParser.SourceContext ctx) {
+        InboundEndpoint inboundEndpoint;
         ParameterHolder parameterHolder = new ParameterHolder();
-        parameterHolder.addParameter(new Parameter("key", varIdentifier));
-        parameterHolder.addParameter(new Parameter("value", varValue));
-        parameterHolder.addParameter(new Parameter("type", varType));
-        mediator.setParameters(parameterHolder);
+        Map<String, String> valueMap = new HashMap<>();
+        String protocol;
 
-        if (pipelineStack.size() == 0) {
-            integrationFlow.getGWConfigHolder().addGlobalVariable(varType, varIdentifier, varValue);
+        if (ctx.sourceElementValuePairs().interfaceDeclaration() != null) {
+            String interfaceName = StringParserUtil.getValueWithinDoubleQuotes(
+                    ctx.sourceElementValuePairs().interfaceDeclaration().StringLiteral().getText());
+            protocol = "http";
+            valueMap.put("interface", interfaceName);
+            parameterHolder.addParameter(new Parameter("interface", interfaceName));
         } else {
-            dropMediatorFilterAware(mediator);
+            String host = StringParserUtil
+                    .getValueWithinDoubleQuotes(ctx.sourceElementValuePairs().host().StringLiteral().getText());
+            String port = ctx.sourceElementValuePairs().port().IntegerLiteral().getText();
+            protocol = StringParserUtil
+                    .getValueWithinDoubleQuotes(ctx.sourceElementValuePairs().protocol().StringLiteral().getText());
+
+            valueMap.put(Constants.HOST, host);
+            valueMap.put(Constants.PORT, port);
+
+            parameterHolder.addParameter(new Parameter(Constants.HOST, host));
+            parameterHolder.addParameter(new Parameter(Constants.PORT, port));
         }
 
-        super.exitVariableStatement(ctx);
-    }
+        valueMap.put(Constants.PROTOCOL, protocol);
+        integration.getAnnotation(ConfigConstants.AN_SOURCE).setValue(valueMap);
+        parameterHolder.addParameter(new Parameter(Constants.CONTEXT,
+                integration.getAnnotation(ConfigConstants.AN_BASE_PATH).getValue().toString()));
 
-    @Override
-    public void exitHandler(WUMLParser.HandlerContext ctx) {
-        super.exitHandler(ctx);
-    }
-
-    @Override
-    public void exitStatementList(WUMLParser.StatementListContext ctx) {
-        super.exitStatementList(ctx);
-    }
-
-    @Override
-    public void exitStatement(WUMLParser.StatementContext ctx) {
-        super.exitStatement(ctx);
-    }
-
-    @Override
-    public void exitParticipantStatement(WUMLParser.ParticipantStatementContext ctx) {
-        super.exitParticipantStatement(ctx);
-    }
-
-    @Override
-    public void exitIntegrationFlowDefStatement(WUMLParser.IntegrationFlowDefStatementContext ctx) {
-        //Create the integration flow when definition is found
-        integrationFlow = new WUMLConfigurationBuilder.IntegrationFlow(ctx.IDENTIFIER().getText());
-        super.exitIntegrationFlowDefStatement(ctx);
-    }
-
-    @Override
-    public void exitTitleStatement(WUMLParser.TitleStatementContext ctx) {
-        //Create the integration flow when definition is found
-        integrationFlow = new WUMLConfigurationBuilder.IntegrationFlow(ctx.IDENTIFIER().getText());
-        super.exitTitleStatement(ctx);
-    }
-
-    @Override
-    public void exitInboundEndpointDefStatement(WUMLParser.InboundEndpointDefStatementContext ctx) {
-        identifierTypeMap.put(ctx.IDENTIFIER().getText(), INBOUND);
-        String protocolName = getValue(StringParserUtil.getValueWithinDoubleQuotes(ctx.inboundEndpointDef().
-                PROTOCOLDEF().getText())).toString();
-
-        ParameterHolder parameterHolder = new ParameterHolder();
-
-        for (TerminalNode terminalNode : ctx.inboundEndpointDef().PARAMX()) {
-            String keyValue = terminalNode.getSymbol().getText();
-            String key = keyValue.substring(1, keyValue.indexOf("("));
-            String value =
-                    getValue(keyValue.substring(keyValue.indexOf("\"") + 1, keyValue.lastIndexOf("\""))).toString();
-
-            parameterHolder.addParameter(new Parameter(key, value));
-        }
-
-        InboundEndpoint inboundEndpoint = InboundEPProviderRegistry.getInstance().getProvider(protocolName)
-                .getInboundEndpoint();
+        inboundEndpoint = InboundEPProviderRegistry.getInstance().getProvider(protocol).getInboundEndpoint();
         inboundEndpoint.setParameters(parameterHolder);
 
-        integrationFlow.getGWConfigHolder().setInboundEndpoint(inboundEndpoint);
-        super.exitInboundEndpointDefStatement(ctx);
+        integration.addInbound(inboundEndpoint);
     }
 
     @Override
-    public void exitPipelineDefStatement(WUMLParser.PipelineDefStatementContext ctx) {
-        String pipeId = getValue(ctx.IDENTIFIER().getText()).toString();
-
-        Pipeline pipeline = new Pipeline(pipeId);
-        integrationFlow.getGWConfigHolder().addPipeline(pipeline);
-        super.exitPipelineDefStatement(ctx);
+    public void enterApi(WUMLParser.ApiContext ctx) {
     }
 
     @Override
-    public void exitOutboundEndpointDefStatement(WUMLParser.OutboundEndpointDefStatementContext ctx) {
-        identifierTypeMap.put(ctx.IDENTIFIER().getText(), OUTBOUND);
-        String protocolName = getValue(StringParserUtil.getValueWithinDoubleQuotes(ctx.outboundEndpointDef().
-                PROTOCOLDEF().getText())).toString();
-
-        ParameterHolder parameterHolder = new ParameterHolder();
-
-        for (TerminalNode terminalNode : ctx.outboundEndpointDef().PARAMX()) {
-            String keyValue = terminalNode.getSymbol().getText();
-            String key = keyValue.substring(1, keyValue.indexOf("("));
-            String value =
-                    getValue(keyValue.substring(keyValue.indexOf("\"") + 1, keyValue.lastIndexOf("\""))).toString();
-
-            parameterHolder.addParameter(new Parameter(key, value));
-        }
-
-        OutboundEndpoint outboundEndpoint = OutboundEPProviderRegistry.getInstance().getProvider(protocolName)
-                .getEndpoint();
-        outboundEndpoint.setName(ctx.IDENTIFIER().getText());
-        outboundEndpoint.setParameters(parameterHolder);
-
-        integrationFlow.getGWConfigHolder().addOutboundEndpoint(outboundEndpoint);
-        super.exitOutboundEndpointDefStatement(ctx);
+    public void exitApi(WUMLParser.ApiContext ctx) {
     }
 
     @Override
-    public void exitInboundEndpointDef(WUMLParser.InboundEndpointDefContext ctx) {
-        super.exitInboundEndpointDef(ctx);
+    public void enterResourcePath(WUMLParser.ResourcePathContext ctx) {
     }
 
     @Override
-    public void exitPipelineDef(WUMLParser.PipelineDefContext ctx) {
-        super.exitPipelineDef(ctx);
+    public void exitResourcePath(WUMLParser.ResourcePathContext ctx) {
     }
 
     @Override
-    public void exitOutboundEndpointDef(WUMLParser.OutboundEndpointDefContext ctx) {
-        super.exitOutboundEndpointDef(ctx);
+    public void enterGetMethod(WUMLParser.GetMethodContext ctx) {
     }
 
     @Override
-    public void exitIntegrationFlowDef(WUMLParser.IntegrationFlowDefContext ctx) {
-        super.exitIntegrationFlowDef(ctx);
+    public void exitGetMethod(WUMLParser.GetMethodContext ctx) {
     }
 
     @Override
-    public void exitMediatorStatement(WUMLParser.MediatorStatementContext ctx) {
-        super.exitMediatorStatement(ctx);
+    public void enterPostMethod(WUMLParser.PostMethodContext ctx) {
     }
 
     @Override
-    public void exitMediatorStatementDef(WUMLParser.MediatorStatementDefContext ctx) {
-        String mediatorDefinition = ctx.MEDIATORDEFINITIONX().getText();
-        String mediatorName = mediatorDefinition.split(DOUBLECOLON)[1];
-
-        String configurations = StringParserUtil.getValueWithinDoubleQuotes(ctx.ARGUMENTLISTDEF().getText());
-        Mediator mediator = MediatorProviderRegistry.getInstance().getMediator(mediatorName);
-
-        ParameterHolder parameterHolder = new ParameterHolder();
-        parameterHolder.addParameter(new Parameter("parameters", configurations));
-        mediator.setParameters(parameterHolder);
-
-        // mediator.setParameters(configurations);
-        dropMediatorFilterAware(mediator);
-        super.exitMediatorStatementDef(ctx);
+    public void exitPostMethod(WUMLParser.PostMethodContext ctx) {
     }
 
     @Override
-    public void exitConditionDef(WUMLParser.ConditionDefContext ctx) {
-        super.exitConditionDef(ctx);
+    public void enterPutMethod(WUMLParser.PutMethodContext ctx) {
     }
 
     @Override
-    public void exitRoutingStatement(WUMLParser.RoutingStatementContext ctx) {
-        super.exitRoutingStatement(ctx);
+    public void exitPutMethod(WUMLParser.PutMethodContext ctx) {
     }
 
     @Override
-    public void exitParallelStatement(WUMLParser.ParallelStatementContext ctx) {
-        super.exitParallelStatement(ctx);
+    public void enterDeleteMethod(WUMLParser.DeleteMethodContext ctx) {
     }
 
     @Override
-    public void exitParMultiThenBlock(WUMLParser.ParMultiThenBlockContext ctx) {
-        super.exitParMultiThenBlock(ctx);
+    public void exitDeleteMethod(WUMLParser.DeleteMethodContext ctx) {
     }
 
     @Override
-    public void exitParElseBlock(WUMLParser.ParElseBlockContext ctx) {
-        super.exitParElseBlock(ctx);
+    public void enterHeadMethod(WUMLParser.HeadMethodContext ctx) {
     }
 
     @Override
-    public void exitIfStatement(WUMLParser.IfStatementContext ctx) {
-        //ctx.expression().EXPRESSIONX()
-        ifMultiThenBlockStarted = false;
-        ifElseBlockStarted = false;
-        if (!filterMediatorStack.isEmpty()) {
-            filterMediatorStack.pop();
-        }
-        super.exitIfStatement(ctx);
+    public void exitHeadMethod(WUMLParser.HeadMethodContext ctx) {
     }
 
     @Override
-    public void exitConditionStatement(WUMLParser.ConditionStatementContext ctx) {
-        String sourceDefinition = StringParserUtil.getValueWithinDoubleQuotes(ctx.conditionDef().SOURCEDEF().getText());
-        Source source = new Source(sourceDefinition);
-        String conditionValue = null;
+    public void enterProdAnt(WUMLParser.ProdAntContext ctx) {
+    }
 
-        for (TerminalNode terminalNode : ctx.conditionDef().PARAMX()) {
-            String keyValue = terminalNode.getSymbol().getText();
-            String key = keyValue.substring(1, keyValue.indexOf("("));
-            String value = keyValue.substring(keyValue.indexOf("\"") + 1, keyValue.lastIndexOf("\""));
+    @Override
+    public void exitProdAnt(WUMLParser.ProdAntContext ctx) {
+    }
 
-            if ("pattern".equals(key)) {
-                conditionValue = value;
+    @Override
+    public void enterConAnt(WUMLParser.ConAntContext ctx) {
+    }
+
+    @Override
+    public void exitConAnt(WUMLParser.ConAntContext ctx) {
+    }
+
+    @Override
+    public void enterAntApiOperation(WUMLParser.AntApiOperationContext ctx) {
+    }
+
+    @Override
+    public void exitAntApiOperation(WUMLParser.AntApiOperationContext ctx) {
+    }
+
+    @Override
+    public void enterAntApiResponses(WUMLParser.AntApiResponsesContext ctx) {
+    }
+
+    @Override
+    public void exitAntApiResponses(WUMLParser.AntApiResponsesContext ctx) {
+    }
+
+    @Override
+    public void enterElementValuePairs(WUMLParser.ElementValuePairsContext ctx) {
+    }
+
+    @Override
+    public void exitElementValuePairs(WUMLParser.ElementValuePairsContext ctx) {
+    }
+
+    @Override
+    public void enterSourceElementValuePairs(WUMLParser.SourceElementValuePairsContext ctx) {
+    }
+
+    @Override
+    public void exitSourceElementValuePairs(WUMLParser.SourceElementValuePairsContext ctx) {
+    }
+
+    @Override
+    public void enterApiElementValuePairs(WUMLParser.ApiElementValuePairsContext ctx) {
+    }
+
+    @Override
+    public void exitApiElementValuePairs(WUMLParser.ApiElementValuePairsContext ctx) {
+    }
+
+    @Override
+    public void enterProtocol(WUMLParser.ProtocolContext ctx) {
+    }
+
+    @Override
+    public void exitProtocol(WUMLParser.ProtocolContext ctx) {
+    }
+
+    @Override
+    public void enterHost(WUMLParser.HostContext ctx) {
+    }
+
+    @Override
+    public void exitHost(WUMLParser.HostContext ctx) {
+    }
+
+    @Override
+    public void enterPort(WUMLParser.PortContext ctx) {
+    }
+
+    @Override
+    public void exitPort(WUMLParser.PortContext ctx) {
+    }
+
+    @Override
+    public void enterTags(WUMLParser.TagsContext ctx) {
+    }
+
+    @Override
+    public void exitTags(WUMLParser.TagsContext ctx) {
+    }
+
+    @Override
+    public void enterTag(WUMLParser.TagContext ctx) {
+    }
+
+    @Override
+    public void exitTag(WUMLParser.TagContext ctx) {
+    }
+
+    @Override
+    public void enterDescripton(WUMLParser.DescriptonContext ctx) {
+    }
+
+    @Override
+    public void exitDescripton(WUMLParser.DescriptonContext ctx) {
+    }
+
+    @Override
+    public void enterProducer(WUMLParser.ProducerContext ctx) {
+    }
+
+    @Override
+    public void exitProducer(WUMLParser.ProducerContext ctx) {
+    }
+
+    @Override
+    public void enterConstant(WUMLParser.ConstantContext ctx) {
+    }
+
+    @Override
+    public void exitConstant(WUMLParser.ConstantContext ctx) {
+        String type = (ctx.classType() != null) ? ctx.classType().getText() : ctx.type().getText();
+        /* Extracting endpoints as constants */
+        if (Constants.ENDPOINT.equals(type)) {
+            //String endpointType = ctx.getChild(5).getText();
+            String uriAsString = StringParserUtil.getValueWithinDoubleQuotes(ctx.StringLiteral().getText());
+            URI endpoint = null;
+            try {
+                endpoint = new URI(uriAsString);
+            } catch (URISyntaxException ex) {
+                //endpoint uri syntax error
+                log.error("Endpoint syntax error occurred. Failed to add outbound endpoint to configuration.", ex);
+                return;
             }
+            //since protocol type is redundant in endpoint URI
+            OutboundEndpoint outboundEndpoint = OutboundEPProviderRegistry.getInstance()
+                    .getProvider(endpoint.getScheme()).getEndpoint();
+            outboundEndpoint.setName(ctx.Identifier().get(0).getText());
+            outboundEndpoint.setUri(uriAsString);
+            integration.getOutbounds().put(ctx.Identifier().get(0).getText(), outboundEndpoint);
         }
-
-        Condition condition = new Condition(source, Pattern.compile(conditionValue));
-
-        FilterMediator filterMediator = new FilterMediator(condition);
-        integrationFlow.getGWConfigHolder().getPipeline(pipelineStack.peek()).addMediator(filterMediator);
-        filterMediatorStack.push(filterMediator);
-        super.exitConditionStatement(ctx);
     }
 
     @Override
-    public void enterIfMultiThenBlock(WUMLParser.IfMultiThenBlockContext ctx) {
-        ifMultiThenBlockStarted = true;
-        super.enterIfMultiThenBlock(ctx);
+    public void enterResource(WUMLParser.ResourceContext ctx) {
     }
 
+    @Override
+    public void exitResource(WUMLParser.ResourceContext ctx) {
+
+        String path = StringParserUtil.getValueWithinDoubleQuotes(ctx.resourcePath().StringLiteral().getText());
+
+        URITemplate uriTemplate = null;
+
+        try {
+            uriTemplate = new URITemplate(path);
+        } catch (URITemplateException e) {
+            log.error("Unable to create URI template for :" + path);
+        }
+
+        this.currentResource.setUritemplate(uriTemplate);
+
+        /* Updating annotations */
+        if (!ctx.httpMethods().getMethod().isEmpty()) {
+            this.currentResource.getAnnotations().get(ConfigConstants.GET_ANNOTATION).setValue(Boolean.TRUE);
+        }
+        if (!ctx.httpMethods().putMethod().isEmpty()) {
+            this.currentResource.getAnnotations().get(ConfigConstants.PUT_ANNOTATION).setValue(Boolean.TRUE);
+        }
+        if (!ctx.httpMethods().postMethod().isEmpty()) {
+            this.currentResource.getAnnotations().get(ConfigConstants.POST_ANNOTATION).setValue(Boolean.TRUE);
+        }
+        if (!ctx.httpMethods().deleteMethod().isEmpty()) {
+            this.currentResource.getAnnotations().get(ConfigConstants.DELETE_ANNOTATION).setValue(Boolean.TRUE);
+        }
+        this.currentResource.getAnnotations().get(ConfigConstants.AN_BASE_PATH).setValue(path);
+
+        integration.getResources().put(this.currentResource.getName(), this.currentResource);
+    }
+
+    @Override
+    public void enterHttpMethods(WUMLParser.HttpMethodsContext ctx) {
+    }
+
+    @Override
+    public void exitHttpMethods(WUMLParser.HttpMethodsContext ctx) {
+    }
+
+    @Override
+    public void enterQualifiedName(WUMLParser.QualifiedNameContext ctx) {
+    }
+
+    @Override
+    public void exitQualifiedName(WUMLParser.QualifiedNameContext ctx) {
+    }
+
+    @Override
+    public void enterResourceDeclaration(WUMLParser.ResourceDeclarationContext ctx) {
+    }
+
+    @Override
+    public void exitResourceDeclaration(WUMLParser.ResourceDeclarationContext ctx) {
+        currentResource.setInputParamIdentifier(ctx.Identifier().getText());
+    }
+
+    @Override
+    public void enterElementValuePair(WUMLParser.ElementValuePairContext ctx) {
+    }
+
+    @Override
+    public void exitElementValuePair(WUMLParser.ElementValuePairContext ctx) {
+    }
+
+    @Override
+    public void enterElementValue(WUMLParser.ElementValueContext ctx) {
+    }
+
+    @Override
+    public void exitElementValue(WUMLParser.ElementValueContext ctx) {
+    }
+
+    @Override
+    public void enterBlock(WUMLParser.BlockContext ctx) {
+    }
+
+    @Override
+    public void exitBlock(WUMLParser.BlockContext ctx) {
+    }
+
+    @Override
+    public void enterBlockStatement(WUMLParser.BlockStatementContext ctx) {
+    }
+
+    @Override
+    public void exitBlockStatement(WUMLParser.BlockStatementContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void enterParExpression(WUMLParser.ParExpressionContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void enterExpression(WUMLParser.ExpressionContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitExpression(WUMLParser.ExpressionContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void enterLiteral(WUMLParser.LiteralContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitLiteral(WUMLParser.LiteralContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void enterType(WUMLParser.TypeContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitType(WUMLParser.TypeContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void enterClassType(WUMLParser.ClassTypeContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitClassType(WUMLParser.ClassTypeContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void enterMediaType(WUMLParser.MediaTypeContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitMediaType(WUMLParser.MediaTypeContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void enterEveryRule(ParserRuleContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitEveryRule(ParserRuleContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void visitTerminal(TerminalNode node) {
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void visitErrorNode(ErrorNode node) {
+    }
+
+    @Override
+    public void exitResourceName(WUMLParser.ResourceNameContext ctx) {
+        /* Creating the resource */
+        this.currentResource = new Resource(ctx.Identifier().getText());
+    }
+
+    /**
+     * Handle events regarding all the data manipulation mediators (including custom mediators)
+     * @param ctx
+     */
+    @Override
+    public void exitMediatorCall(WUMLParser.MediatorCallContext ctx) {
+        String mediatorId =  ctx.Identifier().getText();
+        // call mediator is specified in the language as "invoke". This is a special case.
+        if (Constants.INVOKE_STATEMENT.equals(mediatorId)) {
+            mediatorId = Constants.CALL_MEDIATOR_NAME;
+        } else if (Constants.HEADER_MEDIATOR_STATEMENT.equals(mediatorId)) {
+            mediatorId = Constants.HEADER_MEDIATOR_NAME;
+        }
+
+        Mediator mediator = MediatorProviderRegistry.getInstance().getMediator(mediatorId);
+
+        if (mediator != null) {
+            ParameterHolder parameterHolder  = new ParameterHolder();
+            String key, value;
+            // passing all the mediator input arguments
+            if (ctx.keyValuePairs() != null) {
+                for (WUMLParser.KeyValuePairContext keyValuePair : ctx.keyValuePairs().keyValuePair()) {
+                    if (keyValuePair.literal() != null) {
+                        if (keyValuePair.literal().StringLiteral() != null) {
+                            value = StringParserUtil
+                                    .getValueWithinDoubleQuotes(keyValuePair.literal().StringLiteral().getText());
+                        } else {
+                            value = keyValuePair.literal().getText();
+                        }
+                    } else {
+                        value = keyValuePair.Identifier(keyValuePair.Identifier().size() - 1).getText();
+                    }
+                    // if the key is a classType (eg: 'endpoint' or 'message')
+                    if (keyValuePair.classType() != null) {
+                        key = keyValuePair.classType().getText();
+                    } else {
+                        key = keyValuePair.Identifier(0).getText();
+                    }
+                    parameterHolder.addParameter(new Parameter(key, value));
+                }
+            }
+            //Adding the return variable key
+            if (ctx.parent instanceof WUMLParser.LocalVariableInitializationStatementContext) {
+                parameterHolder.addParameter(new Parameter(Constants.RETURN_VALUE,
+                        ((WUMLParser.LocalVariableInitializationStatementContext)
+                                ((WUMLParser.MediatorCallContext) ctx).parent).Identifier().getText()));
+            } else if (ctx.parent instanceof WUMLParser.LocalVariableAssignmentStatementContext) {
+                parameterHolder.addParameter(new Parameter(Constants.RETURN_VALUE,
+                        ((WUMLParser.LocalVariableAssignmentStatementContext)
+                                ((WUMLParser.MediatorCallContext) ctx).parent).Identifier().getText()));
+            }
+
+            // setting the integration name to the mediator. It can use useful in writing the operation in the mediator
+            parameterHolder.addParameter(new Parameter(Constants.INTEGRATION_KEY, this.integrationName));
+
+            mediator.setParameters(parameterHolder);
+            dropMediatorFilterAware(mediator);
+        }  else {
+            log.warn("Mediator with the name : " + mediatorId + " is not found.");
+        }
+    }
+
+    /**
+     * statements with 'reply'. It maps to a Respond mediator
+     */
+    @Override
+    public void exitReturnStatement(WUMLParser.ReturnStatementContext ctx) {
+        Mediator respondMediator = MediatorProviderRegistry.getInstance().getMediator(Constants.RESPOND_MEDIATOR_NAME);
+        ParameterHolder parameterHolder = new ParameterHolder();
+        if (ctx.Identifier() != null) {
+            String messageId = ctx.Identifier().getText();
+            parameterHolder.addParameter(new Parameter("messageId", messageId));
+        }
+
+        respondMediator.setParameters(parameterHolder);
+        dropMediatorFilterAware(respondMediator);
+    }
+
+    /**
+     * Filter Mediator Handling
+     */
     @Override
     public void enterIfElseBlock(WUMLParser.IfElseBlockContext ctx) {
-        ifMultiThenBlockStarted = false;
-        ifElseBlockStarted = true;
-        super.enterIfElseBlock(ctx);
     }
 
     @Override
-    public void exitIfMultiThenBlock(WUMLParser.IfMultiThenBlockContext ctx) {
-        ifMultiThenBlockStarted = false;
-        super.exitIfMultiThenBlock(ctx);
+    public void exitParExpression(WUMLParser.ParExpressionContext ctx) {
+        //Condition condition = new Condition(source, Pattern.compile(conditionValue));
+        // For expressions with pattern "exp1" == "exp2"
+        if (ctx.EQUAL() != null) {
+            List<WUMLParser.ExpressionContext> expressions = ((WUMLParser.ParExpressionContext) ctx).expression();
+            if (expressions != null && expressions.size() == 2) {
+                // if the format is : "eval("$p1.p2")=="abc""
+                if (expressions.get(0).evalExpression() != null && expressions.get(1).literal() != null) {
+                    String sourceDefinition = StringParserUtil
+                            .getValueWithinDoubleQuotes(expressions.get(0).evalExpression().StringLiteral().getText());
+
+                    // if the messageRef is given, extract the message variable name
+                    String messageIdentifier = null;
+                    if (expressions.get(0).evalExpression().Identifier().size() == 2 && Constants.MESSAGE_KEY
+                            .equals(expressions.get(0).evalExpression().Identifier().get(0).getText())) {
+                        messageIdentifier = expressions.get(0).evalExpression().Identifier().get(1).getText();
+                    } else {
+                        log.error("messageRef value is not set in the eval expression.");
+                    }
+
+                    Source source = new Source(sourceDefinition);
+                    String conditionValue = StringParserUtil
+                            .getValueWithinDoubleQuotes(expressions.get(1).literal().StringLiteral().getText());
+
+                    Condition condition = new Condition(source, Pattern.compile(conditionValue));
+
+                    FilterMediator filterMediator = new FilterMediator(condition, messageIdentifier);
+                    dropMediatorFilterAware(filterMediator);
+                    flowControllerStack.push(filterMediator);
+                    this.flowControllerMediatorSection.push(FlowControllerMediatorSection.ifBlock);
+                } else {
+                    //TODO: Support other types of expressions. eg: ("aa"=="bb"), ("bb"==eval(...))
+                    log.error("Unsupported expression: " + ctx.getText());
+                }
+            }
+        }
     }
 
     @Override
     public void exitIfElseBlock(WUMLParser.IfElseBlockContext ctx) {
-        ifElseBlockStarted = false;
-        super.exitIfElseBlock(ctx);
-    }
-
-    @Override
-    public void exitLoopStatement(WUMLParser.LoopStatementContext ctx) {
-        super.exitLoopStatement(ctx);
-    }
-
-    @Override
-    public void exitRefStatement(WUMLParser.RefStatementContext ctx) {
-        pipelineStack.push(ctx.IDENTIFIER().getText());
-        super.exitRefStatement(ctx);
-    }
-
-    @Override
-    public void exitExpression(WUMLParser.ExpressionContext ctx) {
-        super.exitExpression(ctx);
-    }
-
-    @Override
-    public void exitRoutingStatementDef(WUMLParser.RoutingStatementDefContext ctx) {
-        String firstIdentifier = ctx.IDENTIFIER(0).getText();
-        String secondIdentifier = ctx.IDENTIFIER(1).getText();
-        String identifierType;
-
-        String firstType = identifierTypeMap.get(firstIdentifier);
-        if (firstType != null) {
-            if (INBOUND.equals(firstType)) {
-                identifierType = "invokeFromSource";
-            } else {
-                identifierType = "invokeFromTarget";
-            }
-
-        } else {
-            String secondType = identifierTypeMap.get(secondIdentifier);
-            if (INBOUND.equals(secondType)) {
-                identifierType = "invokeToSource";
-            } else {
-                identifierType = "invokeToTarget";
-            }
+        if (!this.flowControllerStack.empty()) {
+            this.flowControllerStack.pop();
         }
+    }
 
-        String pipelineName = ctx.IDENTIFIER(1).getText();
-        switch (identifierType) {
-        case "invokeFromSource":
-            if (insideGroup) {
-                integrationFlow.getGWConfigHolder().getGroup(groupPath).setPipeline(pipelineName);
-            } else {
-                integrationFlow.getGWConfigHolder().getInboundEndpoint().setPipeline(pipelineName);
-            }
+    @Override
+    public void enterIfBlock(WUMLParser.IfBlockContext ctx) {
+    }
 
-            pipelineStack.push(pipelineName);
-            break;
-        case "invokeFromTarget":
-            pipelineStack.push(pipelineName);
-            break;
-        case "invokeToSource":
-            Mediator respondMediator = MediatorProviderRegistry.getInstance().getMediator("respond");
-            dropMediatorFilterAware(respondMediator);
-            pipelineStack.pop();
-            break;
-        case "invokeToTarget":
-            Mediator callMediator = MediatorProviderRegistry.getInstance().getMediator("call");
-
-            ParameterHolder parameterHolder = new ParameterHolder();
-            parameterHolder.addParameter(new Parameter("endpointKey", ctx.IDENTIFIER(1).getText()));
-
-            callMediator.setParameters(parameterHolder);
-            dropMediatorFilterAware(callMediator);
-            pipelineStack.pop();
-            break;
-
-        default:
-            break;
+    @Override
+    public void exitIfBlock(WUMLParser.IfBlockContext ctx) {
+        if (!this.flowControllerMediatorSection.empty()) {
+            this.flowControllerMediatorSection.pop();
         }
-
-        super.exitRoutingStatementDef(ctx);
     }
 
     @Override
-    public void enterGroupStatement(WUMLParser.GroupStatementContext ctx) {
-        insideGroup = true;
-        super.enterGroupStatement(ctx);
+    public void enterElseBlock(WUMLParser.ElseBlockContext ctx) {
+        this.flowControllerMediatorSection.push(FlowControllerMediatorSection.elseBlock);
     }
 
     @Override
-    public void exitGroupDefStatement(WUMLParser.GroupDefStatementContext ctx) {
-        String path = StringParserUtil.getValueWithinDoubleQuotes(ctx.GROUP_PATH_DEF().getText().split("path=")[1]);
-        Group group = new Group(path);
-        groupPath = path;
-        group.setMethod(
-                StringParserUtil.getValueWithinDoubleQuotes(ctx.GROUP_METHOD_DEF().getText().split("method=")[1]));
-
-        integrationFlow.getGWConfigHolder().addGroup(group);
-        super.exitGroupDefStatement(ctx);
+    public void exitElseBlock(WUMLParser.ElseBlockContext ctx) {
+        if (!this.flowControllerMediatorSection.empty()) {
+            this.flowControllerMediatorSection.pop();
+        }
     }
 
+
+    /* Try-catch parsing */
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <p>The default implementation does nothing.</p>
+     */
     @Override
-    public void exitGroupStatement(WUMLParser.GroupStatementContext ctx) {
-        insideGroup = false;
-        super.exitGroupStatement(ctx);
+    public void enterTryClause(WUMLParser.TryClauseContext ctx) {
+        TryBlockMediator tryBlockMediator = new TryBlockMediator();
+        dropMediatorFilterAware(tryBlockMediator);
+        flowControllerStack.push(tryBlockMediator);
+        this.flowControllerMediatorSection.push(FlowControllerMediatorSection.tryBlock);
     }
 
     /**
-     * Helper method to place mediator in correct stack when filter mediator is in use in mediation flow.
+     * {@inheritDoc}
+     * <p>
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitTryClause(WUMLParser.TryClauseContext ctx) {
+        if (!this.flowControllerMediatorSection.empty()) {
+            this.flowControllerMediatorSection.pop();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitExceptionHandler(WUMLParser.ExceptionHandlerContext ctx) {
+
+        if (ctx.getChild(0) != null && ctx.getChild(0).getChild(0) != null) {
+
+            String exceptionType = ((java.util.ArrayList) ((WUMLParser.ExceptionTypeContext) ctx.children
+                    .get(0)).children).get(0).toString();
+
+            ChildExceptionHandler childExceptionHandler = null;
+
+            switch (exceptionType) {
+            case Constants.CONN_CLOSED_EX:
+                childExceptionHandler = new ConnectionClosedExceptionHandler();
+                break;
+            case Constants.CONN_FAILED_EX:
+                childExceptionHandler = new ConnectionFailedExceptionHandler();
+                break;
+            case Constants.CONN_TIMEOUT_EX:
+                childExceptionHandler = new ConnectionTimeoutExceptionHandler();
+                break;
+            case Constants.DEFAULT_EX:
+                childExceptionHandler = new GeneralExceptionHandler();
+                break;
+            default:
+                break;
+            }
+            ((TryBlockMediator) flowControllerStack.peek()).pushHandler(childExceptionHandler);
+            this.flowControllerMediatorSection.push(FlowControllerMediatorSection.catchBlock);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitCatchClause(WUMLParser.CatchClauseContext ctx) {
+        if (!this.flowControllerMediatorSection.empty()) {
+            this.flowControllerMediatorSection.pop();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitTryCatchBlock(WUMLParser.TryCatchBlockContext ctx) {
+        if (!this.flowControllerStack.empty()) {
+            this.flowControllerStack.pop();
+        }
+    }
+
+    /* Variable Handling */
+
+    @Override
+    public void exitLocalVariableDeclarationStatement(WUMLParser.LocalVariableDeclarationStatementContext ctx) {
+        String type = null;
+        String variableName;
+        ParameterHolder parameterHolder = new ParameterHolder();
+        Mediator propertyMediator = MediatorProviderRegistry.getInstance()
+                .getMediator(Constants.PROPERTY_MEDIATOR_NAME);
+
+        if (ctx.type() != null) { // pattern of "type Identifier ';'"
+            type = ctx.type().getText();
+        } else if (ctx.classType() != null) { // pattern of "message m ';'"
+            type = ctx.classType().getText();
+        }
+
+        variableName = ctx.Identifier().getText();
+        parameterHolder.addParameter(new Parameter(Constants.KEY, variableName));
+        parameterHolder.addParameter(new Parameter(Constants.TYPE, type));
+        parameterHolder.addParameter(new Parameter(Constants.ASSIGNMENT, Boolean.FALSE.toString()));
+
+        propertyMediator.setParameters(parameterHolder);
+        dropMediatorFilterAware(propertyMediator);
+    }
+
+    @Override
+    public void enterLocalVariableInitializationStatement(WUMLParser.LocalVariableInitializationStatementContext ctx) {
+        isInitializationFired = true;
+    }
+
+    @Override
+    public void exitLocalVariableInitializationStatement(WUMLParser.LocalVariableInitializationStatementContext ctx) {
+        String type = null;
+        String variableName = null;
+        String variableValue;
+        ParameterHolder parameterHolder = new ParameterHolder();
+        Mediator propertyMediator = MediatorProviderRegistry.getInstance()
+                .getMediator(Constants.PROPERTY_MEDIATOR_NAME);
+
+        if (ctx.type() != null) { // pattern of " type Identifier '=' literal ';' "
+            type = ctx.type().getText();
+            variableName = ctx.Identifier().getText();
+            variableValue = (ctx.literal().StringLiteral() != null) ?
+                    StringParserUtil.getValueWithinDoubleQuotes(ctx.literal().getText()) :
+                    ctx.literal().getText();
+            parameterHolder.addParameter(new Parameter(Constants.VALUE, variableValue));
+        } else if (ctx.mediatorCall() != null) { // pattern of " message n = invoke(Ep,m) ';'"
+            type = ctx.classType().getText();
+            variableName = ctx.Identifier().getText();
+        } else if (ctx.classType() != null) { // pattern of " message m '=' new message() ';' "
+            type = ctx.classType().getText();
+            variableName = ctx.newTypeObjectCreation().Identifier().getText();
+        }
+
+        parameterHolder.addParameter(new Parameter(Constants.KEY, variableName));
+        parameterHolder.addParameter(new Parameter(Constants.TYPE, type));
+        parameterHolder.addParameter(new Parameter(Constants.ASSIGNMENT, Boolean.FALSE.toString()));
+
+        isInitializationFired = false;
+        propertyMediator.setParameters(parameterHolder);
+        dropMediatorFilterAware(propertyMediator);
+        if (initializerMediator != null) {
+            dropMediatorFilterAware(initializerMediator);
+            initializerMediator = null;
+        }
+
+    }
+
+    @Override
+    public void exitLocalVariableAssignmentStatement(WUMLParser.LocalVariableAssignmentStatementContext ctx) {
+        String type;
+        String variableName;
+        String variableValue;
+        ParameterHolder parameterHolder = new ParameterHolder();
+        Mediator propertyMediator = MediatorProviderRegistry.getInstance()
+                .getMediator(Constants.PROPERTY_MEDIATOR_NAME);
+
+        if (ctx.newTypeObjectCreation() != null) { // pattern of " m '=' new message() ';' "
+            type = ctx.newTypeObjectCreation().classType().getText();
+            variableName = ctx.newTypeObjectCreation().Identifier().getText();
+            parameterHolder.addParameter(new Parameter(Constants.TYPE, type));
+            parameterHolder.addParameter(new Parameter(Constants.ASSIGNMENT, Boolean.FALSE.toString()));
+        } else if (ctx.mediatorCall() != null) {
+            return;
+        } else {  // pattern of " i = 4 ';'"
+            variableName = ctx.Identifier().getText();
+            variableValue = (ctx.literal().StringLiteral() != null) ?
+                    StringParserUtil.getValueWithinDoubleQuotes(ctx.literal().getText()) :
+                    ctx.literal().getText();
+            parameterHolder.addParameter(new Parameter(Constants.VALUE, variableValue));
+            parameterHolder.addParameter(new Parameter(Constants.ASSIGNMENT, Boolean.TRUE.toString()));
+        }
+        parameterHolder.addParameter(new Parameter(Constants.KEY, variableName));
+
+        propertyMediator.setParameters(parameterHolder);
+        dropMediatorFilterAware(propertyMediator);
+    }
+
+    /* Util methods */
+
+    /**
+     * Use correct mediation flow to place the mediator when filter mediator is present
+     *
      * @param mediator
      */
     private void dropMediatorFilterAware(Mediator mediator) {
-        // mediator.setParameters(configurations);
-        if (ifMultiThenBlockStarted) {
-            filterMediatorStack.peek().addThenMediator(mediator);
-
-        } else if (ifElseBlockStarted) {
-            filterMediatorStack.peek().addOtherwiseMediator(mediator);
-
-        } else {
-            integrationFlow.getGWConfigHolder().getPipeline(pipelineStack.peek()).addMediator(mediator);
-        }
-    }
-
-    /**
-     * If variable detected, return value from global variable if it exists, in all other cases return key back.
-     * @param key
-     * @return Variable value or key
-     */
-    private Object getValue(String key) {
-        if (key.startsWith("$")) {
-            if (integrationFlow.getGWConfigHolder().getGlobalVariable(key.substring(1)) != null) {
-                return integrationFlow.getGWConfigHolder().getGlobalVariable(key.substring(1));
+        if (isInitializationFired) {
+            initializerMediator = mediator;
+        } else if (!flowControllerMediatorSection.empty() && !flowControllerStack.empty()) {
+            switch (flowControllerMediatorSection.peek()) {
+            case ifBlock:
+                ((FilterMediator) flowControllerStack.peek()).addThenMediator(mediator);
+                break;
+            case elseBlock:
+                ((FilterMediator) flowControllerStack.peek()).addOtherwiseMediator(mediator);
+                break;
+            case tryBlock:
+                ((TryBlockMediator) flowControllerStack.peek()).addThenMediator(mediator);
+                break;
+            case catchBlock:
+                ((TryBlockMediator) flowControllerStack.peek()).peekExceptionHandlers().addChildMediator(mediator);
+                break;
             }
+        } else {
+            this.currentResource.getDefaultWorker().addMediator(mediator);
         }
-
-        return key;
     }
+
+    private enum FlowControllerMediatorSection {
+        ifBlock, elseBlock, tryBlock, catchBlock
+    }
+
 }
