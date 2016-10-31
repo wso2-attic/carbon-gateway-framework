@@ -4,6 +4,7 @@ grammar WUML;
 sourceFile
     :   definition
         constants?
+        globalVariables?
         resources
         EOF
     ;
@@ -17,6 +18,10 @@ definition
 
 constants
     :   constant*
+    ;
+
+globalVariables
+    :   globalVariable*
     ;
 
 resources
@@ -138,6 +143,10 @@ constant
     |   CONSTANT classType Identifier  '=' 'new' Identifier '(' (StringLiteral)? ')' ';'
     ;
 
+globalVariable
+    :   type    Identifier  '='   literal ';'
+    |   endpointDeclaration '=' newTypeObjectCreation   ';'
+    ;
 
 elementValuePair
     :   Identifier '=' elementValue
@@ -233,20 +242,22 @@ elseBlock
     :   'else'  block
     ;
 
-// local varibale handling statements
+// local variable handling statements
 localVariableDeclarationStatement
-    :   (type|classType)    Identifier  ';'
+    :   endpointDeclaration ';' // endpointDeclaration has given more priority over (classType Identifier)
+    |   (type|classType)    Identifier  ';'
     ;
 
 localVariableInitializationStatement
     :   type    Identifier  '='   literal ';'
-    |   classType newTypeObjectCreation ';'
+    |   endpointDeclaration '=' newTypeObjectCreation   ';'
+    |   classType Identifier  '=' newTypeObjectCreation ';' // only used for new message creation
     |   classType Identifier '=' mediatorCall ';' // calling a mediator that will return a message
     ;
 
 localVariableAssignmentStatement
     :   Identifier  '='   literal ';'
-    |   newTypeObjectCreation ';'
+    |   Identifier '='  newTypeObjectCreation ';'
     |   Identifier '=' mediatorCall ';'
     ;
 
@@ -254,14 +265,29 @@ mediatorCallStatement
     :   mediatorCall ';'
     ;
 
- // this is only used when "m = new message ()" called
+ // this is only used when "m = new message ()" and "ep = new endpoint("http://google.lk")" called
 newTypeObjectCreation
-    : Identifier '=' 'new' classType '('   ')'
+    :  'new' classType '(' literal?  ')'
     ;
 
 //mediator calls
 mediatorCall
     :   Identifier '(' ( keyValuePairs )? ')'
+    ;
+
+//Endpoints
+endpointDeclaration
+    :   parametersAnnotation?
+        circuitBreakerAnnotation?
+        'endpoint' Identifier
+    ;
+
+parametersAnnotation
+    :   '@Parameters' '(' keyValuePairs? ')'
+    ;
+
+circuitBreakerAnnotation
+    :   '@CircuitBreaker' '(' keyValuePairs? ')'
     ;
 
 keyValuePairs
