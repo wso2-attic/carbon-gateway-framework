@@ -113,11 +113,8 @@ public class CallMediator extends AbstractMediator implements Invoker {
             //TODO decide and remove/add any other properties (removed above to enable service chaining support)
         }
 
-        CarbonMessage inputCarbonMessage = (CarbonMessage) getObjectFromContext(carbonMessage, messageKey);
-        // if the message is not already built
-        if (inputCarbonMessage.getMessageDataSource() == null) {
-            carbonMessage = inputCarbonMessage;
-        }
+        // Retrieve the referenced message from the variable stack
+        carbonMessage = (CarbonMessage) getObjectFromContext(carbonMessage, messageKey);
 
         CarbonCallback callback = new FlowControllerMediateCallback(carbonCallback, this,
                 VariableUtil.getVariableStack(carbonMessage));

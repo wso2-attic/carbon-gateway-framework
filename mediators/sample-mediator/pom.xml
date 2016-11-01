@@ -20,12 +20,12 @@
     <parent>
         <groupId>org.wso2.carbon.gateway.mediators</groupId>
         <artifactId>org.wso2.carbon.gateway.mediators.parent</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <artifactId>org.wso2.carbon.gateway.mediators.samplemediator.parent</artifactId>
     <packaging>pom</packaging>
     <name>WSO2 Gateway - Inbound Endpoint Module</name>

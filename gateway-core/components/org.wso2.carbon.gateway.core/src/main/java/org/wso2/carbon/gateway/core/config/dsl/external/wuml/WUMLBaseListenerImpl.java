@@ -904,9 +904,9 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         } else if (ctx.mediatorCall() != null) { // pattern of " message n = invoke(Ep,m) ';'"
             type = ctx.classType().getText();
             variableName = ctx.Identifier().getText();
-        } else if (ctx.classType() != null) { // pattern of " message m '=' new message() ';' "
-            type = ctx.classType().getText();
-            variableName = ctx.newTypeObjectCreation().Identifier().getText();
+        } else if (ctx.classType() != null && ctx.newTypeObjectCreation() != null) {
+            type = ctx.classType().getText();   // pattern of " message m '=' new message() ';' "
+            variableName = ctx.Identifier().getText();
         }
 
         parameterHolder.addParameter(new Parameter(Constants.KEY, variableName));
@@ -934,7 +934,7 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
         if (ctx.newTypeObjectCreation() != null) { // pattern of " m '=' new message() ';' "
             type = ctx.newTypeObjectCreation().classType().getText();
-            variableName = ctx.newTypeObjectCreation().Identifier().getText();
+            variableName = ctx.Identifier().getText();
             parameterHolder.addParameter(new Parameter(Constants.TYPE, type));
             parameterHolder.addParameter(new Parameter(Constants.ASSIGNMENT, Boolean.FALSE.toString()));
         } else if (ctx.mediatorCall() != null) {
