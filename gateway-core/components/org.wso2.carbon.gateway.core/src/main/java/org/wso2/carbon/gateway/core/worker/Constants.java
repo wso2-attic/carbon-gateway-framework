@@ -24,6 +24,8 @@ package org.wso2.carbon.gateway.core.worker;
 public final class Constants {
 
     // Disruptor related constants
+
+    //wait strategies
     public static final String BUSY_SPIN = "BUSY_SPIN";
 
     public static final String BLOCKING_WAIT = "BLOCKING_WAIT";

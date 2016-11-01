@@ -25,8 +25,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Exception handler class of the Disruptor.
  */
-public class GenericExceptionHandler implements ExceptionHandler {
-    private static final Logger logger = LoggerFactory.getLogger(GenericExceptionHandler.class);
+public class DisruptorExceptionHandler implements ExceptionHandler {
+    private static final Logger logger = LoggerFactory.getLogger(DisruptorExceptionHandler.class);
 
     public void handleEventException(Throwable ex, long sequence, Object event) {
         logger.error("Caught unhandled exception while processing: " + event.toString(), ex);

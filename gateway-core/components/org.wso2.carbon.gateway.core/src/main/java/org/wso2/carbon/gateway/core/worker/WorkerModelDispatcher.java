@@ -46,14 +46,26 @@ public class WorkerModelDispatcher {
 
     }
 
+    /**
+     * Return WorkerModelDispatcher
+     * @return WorkerModelDispatcher
+     */
     public static WorkerModelDispatcher getInstance() {
         return WORKER_MODEL_DISPATCHER;
     }
 
-    public boolean dispatch(CarbonMessage carbonMessage, CarbonCallback carbonCallback, MediatorType workerMode) {
+    /**
+     * Use for receive message from MessageProcessor
+     *
+     * @param carbonMessage
+     * @param carbonCallback
+     * @param workerMode
+     * @return
+     */
+    public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback, MediatorType workerMode) {
 
         if (!ThreadPoolFactory.getInstance().isThreadPoolingEnable()) {
-
+            // If Disruptor Mode is enabled
             if (workerMode == MediatorType.CPU_BOUND) {
                 RingBuffer ringBuffer = DisruptorManager.getDisruptorConfig(DisruptorManager.DisruptorType.CPU_INBOUND)
                         .getDisruptor();
@@ -66,10 +78,12 @@ public class WorkerModelDispatcher {
         } else if (!(carbonMessage.getProperty(org.wso2.carbon.messaging.Constants.DIRECTION) != null && carbonMessage
                 .getProperty(org.wso2.carbon.messaging.Constants.DIRECTION).
                         equals(org.wso2.carbon.messaging.Constants.DIRECTION_RESPONSE))) {
-            ExecutorService executorService = ThreadPoolFactory.getInstance().getInbound();
+            // If Diruptor mode is disabled and response message
+            ExecutorService executorService = ThreadPoolFactory.getInstance().getInboundExecutorService();
             executorService.execute(new PoolWorker(carbonMessage, carbonCallback));
         } else {
-            ExecutorService executorService = ThreadPoolFactory.getInstance().getOutbound();
+            // Request message when Disruptor is disabled
+            ExecutorService executorService = ThreadPoolFactory.getInstance().getOutboundExecutorService();
             executorService.execute(new PoolWorker(carbonMessage, carbonCallback));
         }
 
@@ -77,6 +91,15 @@ public class WorkerModelDispatcher {
 
     }
 
+    /**
+     * Use for dispatch messages in mediator level.If parent type is equal to current mediator type then do not
+     * dispatch use same thread otherwise switch Disruptors
+     * @param carbonMessage
+     * @param carbonCallback
+     * @param mediator
+     * @param mediatorType
+     * @return successfully handover to disruptor
+     */
     public boolean dispatch(CarbonMessage carbonMessage, CarbonCallback carbonCallback, Mediator mediator,
             MediatorType mediatorType) {
 
@@ -92,7 +115,7 @@ public class WorkerModelDispatcher {
             ringBuffer.publishEvent(new CarbonEventPublisher(carbonMessage, mediator, carbonCallback));
         }
 
-        return false;
+        return true;
     }
 
 }

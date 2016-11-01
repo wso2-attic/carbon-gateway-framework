@@ -40,7 +40,7 @@ public class MessageProcessor implements CarbonMessageProcessor {
             log.debug("Gateway received a message");
         }
 
-        WorkerModelDispatcher.getInstance().dispatch(cMsg, callback, MediatorType.CPU_BOUND);
+        WorkerModelDispatcher.getInstance().receive(cMsg, callback, MediatorType.CPU_BOUND);
 
         return false;
     }

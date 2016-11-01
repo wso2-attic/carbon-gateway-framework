@@ -48,13 +48,17 @@ public class CarbonDisruptorEventHandler extends DisruptorEventHandler {
             Object obj = carbonMessage.getProperty(Constants.PARENT_TYPE);
             CarbonCallback carbonCallback = carbonDisruptorEvent.getCarbonCallback();
             Object dir = carbonMessage.getProperty(org.wso2.carbon.messaging.Constants.DIRECTION);
+            // If response then call carbonCallback
             if (dir != null && dir.equals(org.wso2.carbon.messaging.Constants.DIRECTION_RESPONSE)) {
                 carbonCallback.done(carbonMessage);
+
             } else {
                 if (obj != null) {
+                    //request received from mediator  and forward request to next mediator
                     Mediator mediator = carbonDisruptorEvent.getMediator();
                     mediator.receive(carbonMessage, carbonCallback);
                 } else {
+                    //request received from message processor
                     carbonMessage.setProperty(Constants.PARENT_TYPE, Constants.CPU_BOUND);
                     WorkerUtil.dispatchToInboundEndpoint(carbonMessage, carbonCallback);
                 }

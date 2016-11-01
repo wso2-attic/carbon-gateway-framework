@@ -32,7 +32,7 @@ import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import org.wso2.carbon.gateway.core.worker.Constants;
 import org.wso2.carbon.gateway.core.worker.disruptor.event.CarbonDisruptorEvent;
-import org.wso2.carbon.gateway.core.worker.disruptor.exception.GenericExceptionHandler;
+import org.wso2.carbon.gateway.core.worker.disruptor.exception.DisruptorExceptionHandler;
 import org.wso2.carbon.gateway.core.worker.disruptor.handler.CarbonDisruptorEventHandler;
 import org.wso2.carbon.gateway.core.worker.threadpool.ThreadPoolFactory;
 
@@ -51,8 +51,11 @@ public class DisruptorManager {
     private static ConcurrentHashMap<DisruptorType, DisruptorConfig> disruptorConfigHashMap =
                new ConcurrentHashMap<>();
 
-
-
+    /**
+     * create Disruptor's  using given Disruptor Configurations
+     * @param type
+     * @param disruptorConfig
+     */
     @SuppressWarnings("unchecked")
     public static synchronized void createDisruptors(DisruptorType type, DisruptorConfig disruptorConfig) {
         if (!ThreadPoolFactory.getInstance().isThreadPoolingEnable()) {
@@ -66,7 +69,7 @@ public class DisruptorManager {
                                                       executorService,
                                                       ProducerType.MULTI,
                                                       inboundWaitStrategy);
-                ExceptionHandler exh = new GenericExceptionHandler();
+                ExceptionHandler exh = new DisruptorExceptionHandler();
 
 
                 EventHandler[] eventHandlers = new EventHandler[disruptorConfig.getNoOfEventHandlersPerDisruptor()];
@@ -118,6 +121,9 @@ public class DisruptorManager {
         return disruptorConfigHashMap.get(disruptorType);
     }
 
+    /**
+     * Shutting down all Disruptors
+     */
     public static synchronized void shutdownAllDisruptors() {
         for (Map.Entry entry : disruptorConfigHashMap.entrySet()) {
             DisruptorConfig disruptorConfig = (DisruptorConfig) entry.getValue();

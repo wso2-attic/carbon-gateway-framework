@@ -28,22 +28,25 @@ public class ThreadPoolFactory {
 
     private static final ThreadPoolFactory threadPoolFactory = new ThreadPoolFactory();
 
-    private ExecutorService inbound =  Executors.newFixedThreadPool(20);
-    private ExecutorService outbound =  Executors.newFixedThreadPool(20);
+    // handle inboundExecutorService requests
+    private ExecutorService inboundExecutorService =  Executors.newFixedThreadPool(20);
+
+    //handle outboundExecutorService requests
+    private ExecutorService outboundExecutorService =  Executors.newFixedThreadPool(20);
 
     private boolean threadPoolingEnable = true;
 
     public void createThreadPool(int noOfThreads) {
-        inbound = Executors.newFixedThreadPool(noOfThreads);
-        outbound = Executors.newFixedThreadPool(noOfThreads);
+        inboundExecutorService = Executors.newFixedThreadPool(noOfThreads);
+        outboundExecutorService = Executors.newFixedThreadPool(noOfThreads);
     }
 
-    public ExecutorService getInbound() {
-        return inbound;
+    public ExecutorService getInboundExecutorService() {
+        return inboundExecutorService;
     }
 
-    public ExecutorService getOutbound() {
-        return outbound;
+    public ExecutorService getOutboundExecutorService() {
+        return outboundExecutorService;
     }
 
     public boolean isThreadPoolingEnable() {

@@ -35,7 +35,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-
 /**
  * JAXB representation of the Engine Thread Model.
  */
@@ -43,7 +42,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "engine")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ThreadModelConfiguration {
-
 
     public static ThreadModelConfiguration getDefault() {
         ThreadModelConfiguration defaultConfig = new ThreadModelConfiguration();
@@ -66,7 +64,11 @@ public class ThreadModelConfiguration {
     @XmlElement(name = "threadPoolConfiguration")
     private Set<ThreadPoolConfiguration> threadPoolConfigurations;
 
-
+    /**
+     * Provide Disruptor Configurations
+     *
+     * @return
+     */
     public Set<DisruptorConfiguration> getDisruptorConfigurations() {
         if (disruptorConfigurations == null) {
             return Collections.EMPTY_SET;
@@ -74,10 +76,20 @@ public class ThreadModelConfiguration {
         return Collections.unmodifiableSet(disruptorConfigurations);
     }
 
+    /**
+     * set set of Disruptor Configurations
+     *
+     * @param disruptorConfigurations
+     */
     public void setDisruptorConfigurations(Set<DisruptorConfiguration> disruptorConfigurations) {
         this.disruptorConfigurations = Collections.unmodifiableSet(disruptorConfigurations);
     }
 
+    /**
+     * get ThreadPoolConfigurations
+     *
+     * @return ThreadPoolConfiguration
+     */
     public Set<ThreadPoolConfiguration> getThreadPoolConfigurations() {
         if (threadPoolConfigurations == null) {
             return Collections.EMPTY_SET;
@@ -89,53 +101,49 @@ public class ThreadModelConfiguration {
         this.threadPoolConfigurations = Collections.unmodifiableSet(threadPoolConfigurations);
     }
 
+    /**
+     * creating Thread Model. Disruptor and configure the IO bound and CPU bound Disruptors
+     */
     public void configure() {
 
         Iterator iterator = threadPoolConfigurations.iterator();
+        //creating Thread Pools
         if (iterator.hasNext()) {
             ThreadPoolConfiguration threadModelConfiguration = (ThreadPoolConfiguration) iterator.next();
-            ThreadPoolFactory.getInstance().createThreadPool
-                       (threadModelConfiguration.getNoOfThreads());
+            ThreadPoolFactory.getInstance().createThreadPool(threadModelConfiguration.getNoOfThreads());
             ThreadPoolFactory.getInstance().setThreadPoolingEnable(threadModelConfiguration.isEnable());
         }
 
+        //creating Disruptors
         for (DisruptorConfiguration disruptorConfiguration : disruptorConfigurations) {
             String id = disruptorConfiguration.getId();
             if (id.equals(Constants.CPU_BOUND)) {
-                DisruptorConfig disruptorConfig = new DisruptorConfig();
-                List<Parameter> parameterList = disruptorConfiguration.getParameters();
-                for (Parameter parameter : parameterList) {
-                    if (parameter.getName().equals(Constants.DISRUPTOR_BUFFER_SIZE)) {
-                        disruptorConfig.setBufferSize(Integer.parseInt(parameter.getValue()));
-                    } else if (parameter.getName().equals(Constants.DISRUPTOR_COUNT)) {
-                        disruptorConfig.setNoDisruptors(Integer.parseInt(parameter.getValue()));
-                    } else if (parameter.getName().equals(Constants.DISRUPTOR_EVENT_HANDLER_COUNT)) {
-                        disruptorConfig.setNoOfEventHandlersPerDisruptor(Integer.parseInt(parameter.getValue()));
-                    } else if (parameter.getName().equals(Constants.WAIT_STRATEGY)) {
-                        disruptorConfig.setDisruptorWaitStrategy(parameter.getValue());
-                    }
-                }
+                DisruptorConfig disruptorConfig = createDisruptorConfig(disruptorConfiguration);
                 DisruptorManager.createDisruptors(DisruptorManager.DisruptorType.CPU_INBOUND, disruptorConfig);
             } else if (id.equals(Constants.IO_BOUND)) {
-                DisruptorConfig disruptorConfig = new DisruptorConfig();
-                List<Parameter> parameterList = disruptorConfiguration.getParameters();
-                for (Parameter parameter : parameterList) {
-                    if (parameter.getName().equals(Constants.DISRUPTOR_BUFFER_SIZE)) {
-                        disruptorConfig.setBufferSize(Integer.parseInt(parameter.getValue()));
-                    } else if (parameter.getName().equals(Constants.DISRUPTOR_COUNT)) {
-                        disruptorConfig.setNoDisruptors(Integer.parseInt(parameter.getValue()));
-                    } else if (parameter.getName().equals(Constants.DISRUPTOR_EVENT_HANDLER_COUNT)) {
-                        disruptorConfig.setNoOfEventHandlersPerDisruptor(Integer.parseInt(parameter.getValue()));
-                    } else if (parameter.getName().equals(Constants.WAIT_STRATEGY)) {
-                        disruptorConfig.setDisruptorWaitStrategy(parameter.getValue());
-                    }
-                }
+                DisruptorConfig disruptorConfig = createDisruptorConfig(disruptorConfiguration);
                 DisruptorManager.createDisruptors(DisruptorManager.DisruptorType.IO_INBOUND, disruptorConfig);
             }
 
-
         }
 
+    }
 
+    //create and configure Disruptor configuration
+    private DisruptorConfig createDisruptorConfig(DisruptorConfiguration disruptorConfiguration) {
+        DisruptorConfig disruptorConfig = new DisruptorConfig();
+        List<Parameter> parameterList = disruptorConfiguration.getParameters();
+        for (Parameter parameter : parameterList) {
+            if (parameter.getName().equals(Constants.DISRUPTOR_BUFFER_SIZE)) {
+                disruptorConfig.setBufferSize(Integer.parseInt(parameter.getValue()));
+            } else if (parameter.getName().equals(Constants.DISRUPTOR_COUNT)) {
+                disruptorConfig.setNoDisruptors(Integer.parseInt(parameter.getValue()));
+            } else if (parameter.getName().equals(Constants.DISRUPTOR_EVENT_HANDLER_COUNT)) {
+                disruptorConfig.setNoOfEventHandlersPerDisruptor(Integer.parseInt(parameter.getValue()));
+            } else if (parameter.getName().equals(Constants.WAIT_STRATEGY)) {
+                disruptorConfig.setDisruptorWaitStrategy(parameter.getValue());
+            }
+        }
+        return disruptorConfig;
     }
 }

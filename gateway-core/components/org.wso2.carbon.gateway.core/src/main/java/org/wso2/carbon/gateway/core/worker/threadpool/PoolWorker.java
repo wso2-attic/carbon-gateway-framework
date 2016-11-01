@@ -26,7 +26,7 @@ import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.Constants;
 
 /**
- * A class which represents the Worker for ThreadPool
+ * A class which represents the Worker for Engine request
  */
 public class PoolWorker implements Runnable {
 
@@ -46,9 +46,11 @@ public class PoolWorker implements Runnable {
 
         Object dir = carbonMessage.getProperty(Constants.DIRECTION);
         try {
+            //if response
             if (dir != null && dir.equals(Constants.DIRECTION_RESPONSE)) {
                 carbonCallback.done(carbonMessage);
             } else {
+                // if request
                 WorkerUtil.dispatchToInboundEndpoint(carbonMessage, carbonCallback);
             }
 

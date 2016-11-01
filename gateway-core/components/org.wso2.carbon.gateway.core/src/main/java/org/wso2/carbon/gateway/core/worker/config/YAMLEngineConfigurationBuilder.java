@@ -29,7 +29,7 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 
 /**
- * A Configuration builder class for engine
+ * A Configuration builder class for engine.Read the .yml file and load engine properties
  */
 public class YAMLEngineConfigurationBuilder {
 
@@ -42,6 +42,7 @@ public class YAMLEngineConfigurationBuilder {
                                       "conf" + File.separator + "engine" + File.separator + "engine-config.yml");
 
         File file = new File(nettyTransportsConfigFile);
+        //If file exists load file
         if (file.exists()) {
             try (Reader in = new InputStreamReader(new FileInputStream(file), StandardCharsets.ISO_8859_1)) {
                 Yaml yaml = new Yaml();
@@ -51,7 +52,8 @@ public class YAMLEngineConfigurationBuilder {
                 String msg = "Error while loading " + nettyTransportsConfigFile + " configuration file";
                 throw new RuntimeException(msg, e);
             }
-        } else { // return a default config
+        } else {
+        // return a default config
             threadModelConfiguration = ThreadModelConfiguration.getDefault();
         }
         return threadModelConfiguration;
