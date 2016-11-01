@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.gateway.core.worker.disruptor.handler;
 
+import com.lmax.disruptor.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.flow.Mediator;
@@ -32,7 +33,7 @@ import java.util.concurrent.locks.Lock;
 /**
  * Event Consumer of the Disruptor.
  */
-public class CarbonDisruptorEventHandler extends DisruptorEventHandler {
+public class CarbonDisruptorEventHandler implements EventHandler<CarbonDisruptorEvent> {
 
     private static final Logger logger = LoggerFactory.getLogger(CarbonDisruptorEventHandler.class);
 
@@ -40,7 +41,7 @@ public class CarbonDisruptorEventHandler extends DisruptorEventHandler {
     }
 
     @Override
-    public void onEvent(CarbonDisruptorEvent carbonDisruptorEvent, long l, boolean b) throws Exception {
+    public void onEvent(CarbonDisruptorEvent carbonDisruptorEvent, long sequence, boolean endOfBatch) throws Exception {
 
         CarbonMessage carbonMessage = (CarbonMessage) carbonDisruptorEvent.getEvent();
         Lock lock = carbonMessage.getLock();

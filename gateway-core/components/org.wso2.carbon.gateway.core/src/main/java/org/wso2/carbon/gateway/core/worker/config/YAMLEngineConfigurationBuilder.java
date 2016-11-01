@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.gateway.core.worker.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.introspector.BeanAccess;
 
@@ -35,25 +37,38 @@ public class YAMLEngineConfigurationBuilder {
 
     public static final String GATEWAY_ENGINE_CONF = "gateway.engine.conf";
 
+    private static final Logger log = LoggerFactory.getLogger(YAMLEngineConfigurationBuilder.class);
+
     public static ThreadModelConfiguration build() {
         ThreadModelConfiguration threadModelConfiguration;
-        String nettyTransportsConfigFile =
-                   System.getProperty(GATEWAY_ENGINE_CONF,
-                                      "conf" + File.separator + "engine" + File.separator + "engine-config.yml");
+        String nettyTransportsConfigFile = System.getProperty(GATEWAY_ENGINE_CONF,
+                "conf" + File.separator + "engine" + File.separator + "engine-config.yml");
 
         File file = new File(nettyTransportsConfigFile);
         //If file exists load file
-        if (file.exists()) {
-            try (Reader in = new InputStreamReader(new FileInputStream(file), StandardCharsets.ISO_8859_1)) {
+        if (file.exists() && file.canRead()) {
+            log.info("Loading file" + nettyTransportsConfigFile);
+            Reader in = null;
+            try {
+                in = new InputStreamReader(new FileInputStream(file), StandardCharsets.ISO_8859_1);
                 Yaml yaml = new Yaml();
                 yaml.setBeanAccess(BeanAccess.FIELD);
                 threadModelConfiguration = yaml.loadAs(in, ThreadModelConfiguration.class);
             } catch (IOException e) {
                 String msg = "Error while loading " + nettyTransportsConfigFile + " configuration file";
                 throw new RuntimeException(msg, e);
+            } finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        log.error("Cannot close opened stream ", e);
+                    }
+                }
             }
         } else {
-        // return a default config
+            log.info("Cannot find engine level property file hence using default configs");
+            // return a default config
             threadModelConfiguration = ThreadModelConfiguration.getDefault();
         }
         return threadModelConfiguration;

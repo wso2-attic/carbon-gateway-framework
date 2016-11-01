@@ -52,7 +52,7 @@ public class DisruptorManager {
                new ConcurrentHashMap<>();
 
     /**
-     * create Disruptor's  using given Disruptor Configurations
+     * create and configure Disruptors  using given Disruptor Configurations
      * @param type
      * @param disruptorConfig
      */
@@ -134,7 +134,7 @@ public class DisruptorManager {
 
 
     /**
-     * Describe types of disruptors.
+     * Describe types of Disruptors.
      */
     public enum DisruptorType {
         CPU_INBOUND, IO_INBOUND

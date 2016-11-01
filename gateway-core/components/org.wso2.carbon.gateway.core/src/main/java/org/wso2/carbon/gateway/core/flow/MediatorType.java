@@ -20,6 +20,8 @@ package org.wso2.carbon.gateway.core.flow;
 
 /**
  * A class represents the Mediator types
+ * CPU_BOUND :- If mediator contains CPU bound code it should be CPU_BOUND
+ * IO_BOUND :- If mediator contains IO bound code (e.g database writing)it should be IO_BOUND
  */
 public enum MediatorType {
 

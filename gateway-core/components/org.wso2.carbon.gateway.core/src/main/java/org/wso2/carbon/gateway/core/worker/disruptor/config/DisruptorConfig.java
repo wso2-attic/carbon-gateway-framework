@@ -44,6 +44,7 @@ public class DisruptorConfig {
     private int noOfEventHandlersPerDisruptor = 1;
 
     //default wait strategy of Disruptor and it is phase Spins, then yields, then waits
+    //This strategy is used because it does not over or under consume CPU and resources.
     private String disruptorWaitStrategy = Constants.PHASED_BACKOFF;
 
     private List<RingBuffer> ringBuffers = new ArrayList<>();

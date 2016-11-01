@@ -20,11 +20,15 @@ package org.wso2.carbon.gateway.core.worker;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.gateway.core.inbound.Dispatcher;
 import org.wso2.carbon.gateway.core.inbound.InboundEPProviderRegistry;
 import org.wso2.carbon.gateway.core.inbound.Provider;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
+
+import java.util.Map;
+import java.util.Stack;
 
 /**
  * A Util class which is used by Thread Initiated classes.
@@ -33,7 +37,14 @@ public class WorkerUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(WorkerUtil.class);
 
+    /**
+     * Select the InboundEndpoint according to protocol and dispatch
+     * @param carbonMessage
+     * @param carbonCallback
+     */
     public static void dispatchToInboundEndpoint(CarbonMessage carbonMessage, CarbonCallback carbonCallback) {
+
+        carbonMessage.setProperty(Constants.VARIABLE_STACK, new Stack<Map<String, Object>>());
 
         String protocol = "http";  //TODO: Take from cMsg
 

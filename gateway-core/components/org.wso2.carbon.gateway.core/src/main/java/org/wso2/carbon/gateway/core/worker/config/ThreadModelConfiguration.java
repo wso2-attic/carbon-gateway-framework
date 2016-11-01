@@ -77,7 +77,7 @@ public class ThreadModelConfiguration {
     }
 
     /**
-     * set set of Disruptor Configurations
+     * Set  Disruptor Configurations
      *
      * @param disruptorConfigurations
      */
@@ -86,7 +86,7 @@ public class ThreadModelConfiguration {
     }
 
     /**
-     * get ThreadPoolConfigurations
+     * Get ThreadPoolConfigurations
      *
      * @return ThreadPoolConfiguration
      */
@@ -102,19 +102,19 @@ public class ThreadModelConfiguration {
     }
 
     /**
-     * creating Thread Model. Disruptor and configure the IO bound and CPU bound Disruptors
+     * Creating Thread Model (Disruptor or ThreadPool)
      */
     public void configure() {
 
         Iterator iterator = threadPoolConfigurations.iterator();
-        //creating Thread Pools
+        //Creating Thread Pools
         if (iterator.hasNext()) {
             ThreadPoolConfiguration threadModelConfiguration = (ThreadPoolConfiguration) iterator.next();
             ThreadPoolFactory.getInstance().createThreadPool(threadModelConfiguration.getNoOfThreads());
             ThreadPoolFactory.getInstance().setThreadPoolingEnable(threadModelConfiguration.isEnable());
         }
 
-        //creating Disruptors
+        //Creating Disruptors
         for (DisruptorConfiguration disruptorConfiguration : disruptorConfigurations) {
             String id = disruptorConfiguration.getId();
             if (id.equals(Constants.CPU_BOUND)) {
@@ -129,7 +129,7 @@ public class ThreadModelConfiguration {
 
     }
 
-    //create and configure Disruptor configuration
+    //Create and configure Disruptor configuration
     private DisruptorConfig createDisruptorConfig(DisruptorConfiguration disruptorConfiguration) {
         DisruptorConfig disruptorConfig = new DisruptorConfig();
         List<Parameter> parameterList = disruptorConfiguration.getParameters();
