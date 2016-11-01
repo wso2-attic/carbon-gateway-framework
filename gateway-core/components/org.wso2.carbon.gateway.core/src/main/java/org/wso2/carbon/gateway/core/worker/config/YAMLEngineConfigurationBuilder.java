@@ -47,7 +47,7 @@ public class YAMLEngineConfigurationBuilder {
         File file = new File(nettyTransportsConfigFile);
         //If file exists load file
         if (file.exists() && file.canRead()) {
-            log.info("Loading file" + nettyTransportsConfigFile);
+            log.debug("Loading file " + nettyTransportsConfigFile);
             Reader in = null;
             try {
                 in = new InputStreamReader(new FileInputStream(file), StandardCharsets.ISO_8859_1);
