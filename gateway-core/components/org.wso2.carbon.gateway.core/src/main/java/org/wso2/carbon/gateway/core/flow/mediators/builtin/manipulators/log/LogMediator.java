@@ -117,9 +117,23 @@ public class LogMediator extends AbstractMediator {
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
         boolean trace = category == 2 ? true : false;
         MediatorLog mediatorLog = new MediatorLog(log, trace, carbonMessage);
+        CarbonMessage carbonMessageRef = carbonMessage;
+        /* If the messageRef is provided in the configuration, lookup in the variable stack for that message.
+        * And if its found, use it to log operation. Else skip this mediator while giving an error.
+        * In case where messageRef is not specified in the configuration, skip the lookup, move on with the existing
+        * carbon message.
+        * */
+        if (messageId != null) {
+            Object carbonMessageObject = getObjectFromContext(carbonMessage, messageId);
+            if (!(carbonMessageObject instanceof CarbonMessage)) {
+                log.error("Skipping the log due to message variable named " + messageId + " not found in the context.");
+                return next(carbonMessage, carbonCallback);
+            }
+            carbonMessageRef = (CarbonMessage) carbonMessageObject;
+        }
         Reader reader = null;
-        if (readerRequired && !carbonMessage.isAlreadyRead()) {
-            reader = ReaderRegistryImpl.getInstance().getReader(carbonMessage);
+        if (readerRequired && !carbonMessageRef.isAlreadyRead()) {
+            reader = ReaderRegistryImpl.getInstance().getReader(carbonMessageRef);
             if (reader == null) {
                 String errMsg = "Cannot find registered message reader for incoming content Type";
                 log.error(errMsg);
@@ -128,26 +142,26 @@ public class LogMediator extends AbstractMediator {
         }
         switch (category) {
         case CATEGORY_INFO:
-            mediatorLog.auditLog(getLogMessage(carbonMessage, reader));
+            mediatorLog.auditLog(getLogMessage(carbonMessageRef, reader));
             break;
         case CATEGORY_TRACE:
             if (mediatorLog.isTraceEnabled()) {
-                mediatorLog.auditTrace(getLogMessage(carbonMessage, reader));
+                mediatorLog.auditTrace(getLogMessage(carbonMessageRef, reader));
             }
             break;
         case CATEGORY_DEBUG:
             if (mediatorLog.isDebugEnabled()) {
-                mediatorLog.auditDebug(getLogMessage(carbonMessage, reader));
+                mediatorLog.auditDebug(getLogMessage(carbonMessageRef, reader));
             }
             break;
         case CATEGORY_WARN:
-            mediatorLog.auditWarn(getLogMessage(carbonMessage, reader));
+            mediatorLog.auditWarn(getLogMessage(carbonMessageRef, reader));
             break;
         case CATEGORY_ERROR:
-            mediatorLog.auditError(getLogMessage(carbonMessage, reader));
+            mediatorLog.auditError(getLogMessage(carbonMessageRef, reader));
             break;
         case CATEGORY_FATAL:
-            mediatorLog.auditFatal(getLogMessage(carbonMessage, reader));
+            mediatorLog.auditFatal(getLogMessage(carbonMessageRef, reader));
             break;
         default:
             break;
@@ -168,6 +182,7 @@ public class LogMediator extends AbstractMediator {
                 logLevel = CUSTOM;
             } else if (levelParameter.getValue().toUpperCase(Locale.getDefault()).equals("HEADERS")) {
                 logLevel = HEADERS;
+                readerRequired = true;
             } else if (levelParameter.getValue().toUpperCase(Locale.getDefault()).equals("FULL")) {
                 logLevel = FULL;
                 readerRequired = true;
@@ -200,6 +215,8 @@ public class LogMediator extends AbstractMediator {
         // Setting the message id
         if (parameterHolder.getParameter(Constants.MESSAGE_KEY) != null) {
             this.messageId = parameterHolder.getParameter(Constants.MESSAGE_KEY).getValue();
+            // remove message reference from logging parameters
+            parameterHolder.removeParameter(Constants.MESSAGE_KEY);
         }
 
         Map<String, Parameter> properties = parameterHolder.getParameters();
