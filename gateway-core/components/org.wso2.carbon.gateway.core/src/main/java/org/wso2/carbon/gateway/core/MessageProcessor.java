@@ -17,23 +17,17 @@
  */
 package org.wso2.carbon.gateway.core;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.gateway.core.inbound.Dispatcher;
-import org.wso2.carbon.gateway.core.inbound.InboundEPProviderRegistry;
-import org.wso2.carbon.gateway.core.inbound.Provider;
+import org.wso2.carbon.gateway.core.flow.MediatorType;
+import org.wso2.carbon.gateway.core.worker.WorkerModelDispatcher;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.CarbonMessageProcessor;
 import org.wso2.carbon.messaging.TransportSender;
 
-import java.util.Map;
-import java.util.Stack;
-
 /**
- *  Message Processor Implementation for Gateway
- *
+ * Message Processor Implementation for Gateway
  */
 public class MessageProcessor implements CarbonMessageProcessor {
 
@@ -46,25 +40,8 @@ public class MessageProcessor implements CarbonMessageProcessor {
             log.debug("Gateway received a message");
         }
 
-        cMsg.setProperty(Constants.VARIABLE_STACK, new Stack<Map<String, Object>>());
+        WorkerModelDispatcher.getInstance().receive(cMsg, callback, MediatorType.CPU_BOUND);
 
-        String protocol = "http";  //TODO: Take from cMsg
-
-        Provider provider = InboundEPProviderRegistry.getInstance().getProvider(protocol);
-
-        if (provider == null) {
-            log.error("Cannot handle protocol : " + protocol + " , Provider not found");
-            return false;
-        }
-
-        // Decide the dispatcher
-        Dispatcher dispatcher = provider.getInboundEndpointDispatcher();
-        if (dispatcher == null) {
-            log.error("Cannot handle protocol : " + protocol + " , Dispatcher not found");
-            return false;
-        }
-
-        dispatcher.dispatch(cMsg, callback);
         return false;
     }
 
@@ -77,4 +54,5 @@ public class MessageProcessor implements CarbonMessageProcessor {
     public String getId() {
         return null;
     }
+
 }

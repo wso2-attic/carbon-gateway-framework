@@ -20,6 +20,7 @@ package org.wso2.carbon.gateway.core.flow.mediators.builtin.manipulators;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.flow.AbstractMediator;
+import org.wso2.carbon.gateway.core.flow.MediatorType;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 
@@ -39,5 +40,10 @@ public class TransformMediator extends AbstractMediator {
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
         log.info("Message received at TransformMediator");
         return next(carbonMessage, carbonCallback);
+    }
+
+    @Override
+    public MediatorType getMediatorType() {
+        return MediatorType.CPU_BOUND;
     }
 }

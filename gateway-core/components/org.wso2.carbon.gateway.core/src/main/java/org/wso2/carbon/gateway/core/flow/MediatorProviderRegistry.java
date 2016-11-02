@@ -64,6 +64,7 @@ public class MediatorProviderRegistry implements ProviderRegistry {
 
     public void registerMediatorProvider(MediatorProvider mediatorProvider) {
         mediatorProviders.put(mediatorProvider.getName(), mediatorProvider);
+
     }
 
     private void loadMediators() {

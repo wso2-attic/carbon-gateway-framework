@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.flow.contentaware.ConversionManager;
 import org.wso2.carbon.gateway.core.util.VariableUtil;
+import org.wso2.carbon.gateway.core.worker.WorkerModelDispatcher;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 
@@ -35,9 +36,7 @@ public abstract class AbstractMediator implements Mediator {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractMediator.class);
 
-
-    /* Pointer for the next sibling in the pipeline*/
-    Mediator nextMediator = null;
+    /* Pointer for the next sibling in the pipeline*/ Mediator nextMediator = null;
 
     protected String returnedOutput;
 
@@ -58,8 +57,7 @@ public abstract class AbstractMediator implements Mediator {
      * @return whether mediation is proceeded
      * @throws Exception
      */
-    public boolean next(CarbonMessage carbonMessage, CarbonCallback carbonCallback)
-            throws Exception {
+    public boolean next(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
         if (!hasNext() && carbonCallback instanceof FlowControllerCallback) {
             carbonCallback.done(carbonMessage);
         }
@@ -82,6 +80,25 @@ public abstract class AbstractMediator implements Mediator {
      */
     public void setParameters(ParameterHolder parameterHolder) {
         //Do nothing
+    }
+
+    @Override
+    public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
+        Object obj = carbonMessage.getProperty(org.wso2.carbon.gateway.core.worker.Constants.PARENT_TYPE);
+        if (obj != null) {
+            String val = (String) obj;
+            if (val.equals(org.wso2.carbon.gateway.core.worker.Constants.CPU_BOUND)
+                    && getMediatorType() == MediatorType.IO_BOUND) {
+                WorkerModelDispatcher.getInstance().
+                        dispatch(carbonMessage, carbonCallback, this, MediatorType.IO_BOUND);
+
+            } else if (val.equals(org.wso2.carbon.gateway.core.worker.Constants.IO_BOUND)
+                    && getMediatorType() == MediatorType.CPU_BOUND) {
+                WorkerModelDispatcher.getInstance().
+                        dispatch(carbonMessage, carbonCallback, this, MediatorType.CPU_BOUND);
+            }
+        }
+        return false;
     }
 
     /**
@@ -121,6 +138,7 @@ public abstract class AbstractMediator implements Mediator {
     public Object getValue(CarbonMessage carbonMessage, String name) {
         if (name.startsWith("$")) {
             return VariableUtil.getVariable(carbonMessage, name.substring(1));
+
         } else {
             return name;
         }
@@ -128,8 +146,9 @@ public abstract class AbstractMediator implements Mediator {
 
     /**
      * Retrieve an object from the Variable stack
+     *
      * @param carbonMessage Carbon message with the stack
-     * @param objectName Name of the object
+     * @param objectName    Name of the object
      * @return Object itself
      */
     protected Object getObjectFromContext(CarbonMessage carbonMessage, String objectName) {
@@ -138,17 +157,24 @@ public abstract class AbstractMediator implements Mediator {
 
     /**
      * Put an object in the variable stack
+     *
      * @param carbonMessage Carbon message with the stack
-     * @param objectName Name of the object
-     * @param object Object itself
+     * @param objectName    Name of the object
+     * @param object        Object itself
      */
     public void setObjectToContext(CarbonMessage carbonMessage, String objectName, Object object) {
         Map map = (Map) VariableUtil.getMap(carbonMessage, objectName);
-        if (map !=  null) {
+        if (map != null) {
             map.put(objectName, object);
         } else {
             log.error("Variable " + objectName + " is not declared.");
         }
+
+    }
+
+    @Override
+    public MediatorType getMediatorType() {
+        return MediatorType.IO_BOUND;
     }
 
     public String getReturnedOutput() {

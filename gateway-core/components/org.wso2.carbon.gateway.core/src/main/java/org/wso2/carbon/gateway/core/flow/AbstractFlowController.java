@@ -29,6 +29,7 @@ import org.wso2.carbon.messaging.CarbonMessage;
 public abstract class AbstractFlowController extends AbstractMediator {
 
     public boolean receive(CarbonMessage cMsg, CarbonCallback carbonCallback) throws Exception {
+        super.receive(cMsg, carbonCallback);
         VariableUtil.pushNewVariableStack(cMsg);
         return true;
     }

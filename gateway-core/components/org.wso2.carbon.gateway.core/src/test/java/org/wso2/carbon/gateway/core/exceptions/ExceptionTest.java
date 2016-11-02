@@ -11,6 +11,7 @@ import org.wso2.carbon.gateway.core.exception.DefaultExceptionHandler;
 import org.wso2.carbon.gateway.core.exception.FlowControllerExceptionCallback;
 import org.wso2.carbon.gateway.core.flow.FlowControllerMediateCallback;
 import org.wso2.carbon.gateway.core.flow.Mediator;
+import org.wso2.carbon.gateway.core.flow.MediatorType;
 import org.wso2.carbon.gateway.core.flow.Resource;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.TryBlockMediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.manipulators.log.LogMediator;
@@ -196,6 +197,11 @@ public class ExceptionTest {
 
         @Override
         public void setParameters(ParameterHolder parameters) {}
+
+        @Override
+        public MediatorType getMediatorType() {
+            return MediatorType.CPU_BOUND;
+        }
 
         @Override
         public Object getValue(CarbonMessage carbonMessage, String name) {
