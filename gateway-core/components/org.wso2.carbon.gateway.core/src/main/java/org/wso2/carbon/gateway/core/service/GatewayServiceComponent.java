@@ -28,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.MessageProcessor;
 import org.wso2.carbon.gateway.core.ServiceContextHolder;
+import org.wso2.carbon.gateway.core.worker.config.ThreadModelConfiguration;
+import org.wso2.carbon.gateway.core.worker.config.YAMLEngineConfigurationBuilder;
 import org.wso2.carbon.messaging.CarbonMessageProcessor;
 import org.wso2.carbon.messaging.TransportSender;
 
@@ -50,7 +52,8 @@ public class GatewayServiceComponent {
 
             //Creating the processor and registering the service
             bundleContext.registerService(CarbonMessageProcessor.class, new MessageProcessor(), null);
-
+            ThreadModelConfiguration threadModelConfiguration = YAMLEngineConfigurationBuilder.build();
+            threadModelConfiguration.configure();
         } catch (Exception ex) {
             String msg = "Error while loading WSO2 Integration";
             log.error(msg, ex);
@@ -59,11 +62,11 @@ public class GatewayServiceComponent {
     }
 
     @Reference(
-            name = "transport-sender",
-            service = TransportSender.class,
-            cardinality = ReferenceCardinality.OPTIONAL,
-            policy = ReferencePolicy.DYNAMIC,
-            unbind = "removeTransportSender"
+               name = "transport-sender",
+               service = TransportSender.class,
+               cardinality = ReferenceCardinality.OPTIONAL,
+               policy = ReferencePolicy.DYNAMIC,
+               unbind = "removeTransportSender"
     )
     protected void addTransportSender(TransportSender transportSender) {
         ServiceContextHolder.getInstance().addTransportSender(transportSender);

@@ -33,7 +33,7 @@ public interface TypeConverter {
      *
      * @param inputStream the inputStream of cMsg
      * @return the converted value, or <tt>null</tt> if not possible to convert
-     * @throws TypeConversionException is thrown if error during type conversion
+     * TypeConversionException is thrown if error during type conversion
      */
     InputStream convert(InputStream inputStream) throws TypeConversionException, IOException;
 

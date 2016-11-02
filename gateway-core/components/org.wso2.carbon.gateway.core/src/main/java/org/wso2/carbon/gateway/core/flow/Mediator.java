@@ -79,10 +79,17 @@ public interface Mediator {
     void setParameters(ParameterHolder parameters);
 
     /**
+
+     * Whether CPU bound or IO bound.
+     * @return Mediator Type
+     */
+     MediatorType  getMediatorType();
+     /*
      * Returns object stored as variabe with name passed as argument.
      * @param carbonMessage
      * @param name
      * @return Object stored as variable
      */
     Object getValue(CarbonMessage carbonMessage, String name);
+
 }

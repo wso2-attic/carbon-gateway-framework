@@ -24,6 +24,7 @@ import org.wso2.carbon.gateway.core.flow.AbstractFlowController;
 import org.wso2.carbon.gateway.core.flow.FlowControllerMediateCallback;
 import org.wso2.carbon.gateway.core.flow.Mediator;
 import org.wso2.carbon.gateway.core.flow.MediatorCollection;
+import org.wso2.carbon.gateway.core.flow.MediatorType;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.evaluator.Evaluator;
 import org.wso2.carbon.gateway.core.util.VariableUtil;
 import org.wso2.carbon.messaging.CarbonCallback;
@@ -45,15 +46,13 @@ public class FilterMediator extends AbstractFlowController {
 
     private Pattern pattern;
 
-    private Condition condition;
-
     /* This field will contain the value that is passed from the Integration config as messageRef */
     private String messageRef;
 
-    public FilterMediator() {};
+    public FilterMediator() {
+    }
 
     public FilterMediator(Condition condition, String messageRef) {
-        this.condition = condition;
         this.source = condition.getSource();
         this.pattern = condition.getPattern();
         this.messageRef = messageRef;
@@ -82,15 +81,13 @@ public class FilterMediator extends AbstractFlowController {
         childOtherwiseMediatorList.addMediator(mediator);
     }
 
-
     @Override
     public String getName() {
         return "filter";
     }
 
     @Override
-    public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback)
-               throws Exception {
+    public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
 
         Object referredCMsg = getObjectFromContext(carbonMessage, messageRef);
         // if the messageRef is not found as a CarbonMessage skip the filter mediator
@@ -115,7 +112,7 @@ public class FilterMediator extends AbstractFlowController {
                             receive(carbonMessage, new FlowControllerMediateCallback(carbonCallback, this,
                                     VariableUtil.getVariableStack(carbonMessage)));
                 } else {
-                   next(carbonMessage, carbonCallback);
+                    next(carbonMessage, carbonCallback);
                 }
             }
         }
@@ -123,12 +120,18 @@ public class FilterMediator extends AbstractFlowController {
         return true;
     }
 
-    public MediatorCollection getChildThenMediatorList () {
+    @Override
+    public MediatorType getMediatorType() {
+        return MediatorType.CPU_BOUND;
+    }
+
+    public MediatorCollection getChildThenMediatorList() {
         return childThenMediatorList;
     }
 
-    public MediatorCollection getChildOtherwiseMediatorList () {
+    public MediatorCollection getChildOtherwiseMediatorList() {
         return childOtherwiseMediatorList;
+
     }
 
 }
