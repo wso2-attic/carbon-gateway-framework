@@ -55,13 +55,15 @@ public class FlowControllerMediateCallback implements FlowControllerCallback {
 
         if (canProcess(carbonMessage)) {
             VariableUtil.popVariableStack(carbonMessage, variableStack);
+            /* Call mediator is the only mediator that uses FlowControllerMediatorCallback and return a value after
+            * Therefor the returning value should be set to the variable stack in the carbon message */
+            if (mediator instanceof CallMediator) {
+                ((CallMediator) mediator)
+                        .setObjectToContext(carbonMessage, ((CallMediator) mediator).getReturnedOutput(),
+                                carbonMessage);
+            }
             if (mediator.hasNext()) { // If Mediator has a sibling after this
                 try {
-                    if (mediator instanceof CallMediator) {
-                        ((CallMediator) mediator)
-                                .setObjectToContext(carbonMessage, ((CallMediator) mediator).getReturnedOutput(),
-                                        carbonMessage);
-                    }
                     mediator.next(carbonMessage, parentCallback);
                 } catch (Exception e) {
                     log.error("Error while mediating from Callback", e);
