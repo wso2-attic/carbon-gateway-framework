@@ -433,5 +433,6 @@
         <module>archetypes</module>
         <module>type-converters</module>
         <module>message-readers</module>
+        <module>tests</module>
     </modules>
 </project>
