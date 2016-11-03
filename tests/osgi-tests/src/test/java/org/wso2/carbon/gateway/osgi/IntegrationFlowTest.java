@@ -51,9 +51,12 @@ import static org.ops4j.pax.exam.CoreOptions.maven;
 import static org.wso2.carbon.container.options.CarbonDistributionOption.copyDropinsBundle;
 import static org.wso2.carbon.container.options.CarbonDistributionOption.copyFile;
 
+//Mandatory class annotations for each and every test class in the Pax-Exam test module.
 @Listeners(PaxExam.class)
-@ExamReactorStrategy(PerClass.class)
 @ExamFactory(CarbonContainerFactory.class)
+// Reactor strategy "PerClass" starts the test-distribution for each test class in the test suite.
+@ExamReactorStrategy(PerClass.class)
+
 /**
  * Test class to test simple integration flow.
  */
