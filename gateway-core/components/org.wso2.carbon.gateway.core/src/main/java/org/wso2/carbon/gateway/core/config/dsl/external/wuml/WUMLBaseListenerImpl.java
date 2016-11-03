@@ -771,31 +771,24 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
     @Override
     public void enterForkBlock(WUMLParser.ForkBlockContext ctx) {
-        log.info("******ENTER  enterForkBlock TRIGGERED*******");
-
     }
 
     @Override
     public void enterForkBlockName(WUMLParser.ForkBlockNameContext ctx) {
-        log.info("******ENTER  enterForkBlockName TRIGGERED*******");
     }
 
     @Override
     public void exitForkBlockName(WUMLParser.ForkBlockNameContext ctx) {
-        log.info("******EXIT  exitForkBlockName TRIGGERED*******");
         ForkMediator forkMediator = new ForkMediator(ctx.Identifier().getText());
         dropMediatorFilterAware(forkMediator);
         //push forkBlock on stacks
         this.flowControllerMediatorSection.push(FlowControllerMediatorSection.forkBlock);
         this.flowControllerStack.push(forkMediator);
-        log.info("****** Fork created and pushed *******");
 
     }
 
     @Override
     public void exitForkBlock(WUMLParser.ForkBlockContext ctx) {
-        log.info("******EXIT  exitForkBlock TRIGGERED*******");
-
         //pop fork block from stacks
         if (!this.flowControllerMediatorSection.empty()) {
             this.flowControllerMediatorSection.pop();
@@ -808,20 +801,14 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
     @Override
     public void enterWorkerBlock(WUMLParser.WorkerBlockContext ctx) {
-        log.info("******ENTER  enterWorkerBlock TRIGGERED*******");
-
     }
 
     @Override
     public void enterWorkerBlockName(WUMLParser.WorkerBlockNameContext ctx) {
-        log.info("******ENTER  enterWorkerBlockName TRIGGERED*******");
-
     }
 
     @Override
     public void exitWorkerBlockName(WUMLParser.WorkerBlockNameContext ctx) {
-        log.info("******EXIT exitWorkerBlockName TRIGGERED******");
-
         WorkerBlockMediator workerBlockMediator = new WorkerBlockMediator(ctx.Identifier().getText());
         if (!this.flowControllerMediatorSection.empty() && !this.flowControllerStack.empty() &&
                                                             this.flowControllerStack.peek() instanceof ForkMediator) {
@@ -835,8 +822,6 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
     @Override
     public void exitWorkerBlock(WUMLParser.WorkerBlockContext ctx) {
-        log.info("******EXIT exitWorkerBlock TRIGGERED******");
-
         //pop worker block from stacks
         if (!this.flowControllerMediatorSection.empty()) {
             this.flowControllerMediatorSection.pop();
