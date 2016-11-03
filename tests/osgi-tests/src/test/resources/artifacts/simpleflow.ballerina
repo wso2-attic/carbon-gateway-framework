@@ -11,6 +11,6 @@ package com.sample;
 @POST
 @Path("/getStocks")
 resource passthrough(message m) {
-    log(level="custom", status="****************************");
+    log(level="custom", status="*******Test for simple integration flow*******");
     reply m;
 }

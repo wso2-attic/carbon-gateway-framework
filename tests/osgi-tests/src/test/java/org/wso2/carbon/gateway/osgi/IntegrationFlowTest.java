@@ -77,17 +77,11 @@ public class IntegrationFlowTest {
                 CarbonDistributionOption.keepDirectory(),
                 copyDropinsBundle(maven().artifactId("mockito-all").groupId("org.mockito")
                         .versionAsInProject())
-                //CarbonDistributionOption.debug()
         };
     }
 
-    @Test
+    @Test (description = "Test the scenario of integration flow which includes a respond mediator after a log mediator")
     public void testIntegrationFlow()throws Exception {
-        /*Integration sampleIntegration = IntegrationConfigRegistry.getInstance().getIntegrationConfig("simpleflow");
-        MediatorCollection generatedMediatorCollection = sampleIntegration.getResource("passthrough").getDefaultWorker()
-                .getMediators();
-        List<Mediator> mediatorList = generatedMediatorCollection.getMediators();*/
-
         CarbonMessage carbonMessage = mock(CarbonMessage.class);
         CarbonCallback carbonCallback = mock(CarbonCallback.class);
 
@@ -102,14 +96,6 @@ public class IntegrationFlowTest {
                 thenReturn("GET");
         when(carbonMessage.getProperty(org.wso2.carbon.gateway.core.Constants.VARIABLE_STACK)).
                 thenReturn(new Stack<Map<String, Object>>());
-
-        /*doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                ((CarbonCallback) invocation.getArguments()[0]).done(carbonMessage);
-                return null;
-            }
-        }).when(carbonCallback).done(carbonMessage);*/
 
         carbonMessageProcessor.receive(carbonMessage, carbonCallback);
 
