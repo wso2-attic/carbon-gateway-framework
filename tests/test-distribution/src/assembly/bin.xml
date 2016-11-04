@@ -80,8 +80,4 @@
             </excludes>
         </fileSet>
     </fileSets>
-
-    <files>
-
-    </files>
 </assembly>
