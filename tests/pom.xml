@@ -17,6 +17,4 @@
         <module>osgi-tests</module>
         <module>test-distribution</module>
     </modules>
-
-
 </project>
