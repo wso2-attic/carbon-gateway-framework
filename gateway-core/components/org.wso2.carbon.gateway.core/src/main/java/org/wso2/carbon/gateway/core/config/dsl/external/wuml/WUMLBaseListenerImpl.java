@@ -660,7 +660,7 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
      * statements with 'reply'. It maps to a Respond mediator
      */
     @Override
-    public void exitReturnStatement(WUMLParser.ReturnStatementContext ctx) {
+    public void exitReplyStatement(WUMLParser.ReplyStatementContext ctx) {
         Mediator respondMediator = MediatorProviderRegistry.getInstance().getMediator(Constants.RESPOND_MEDIATOR_NAME);
         ParameterHolder parameterHolder = new ParameterHolder();
         if (ctx.Identifier() != null) {

@@ -6,6 +6,7 @@ sourceFile
         constants?
         globalVariables?
         resources
+        subroutines?
         EOF
     ;
 
@@ -26,6 +27,10 @@ globalVariables
 
 resources
     :   resource+
+    ;
+
+subroutines
+    :   subroutine+
     ;
 
 packageDef
@@ -188,6 +193,36 @@ resourceName
     :   Identifier
     ;
 
+subroutine
+    :   '@' 'Description' StringLiteral
+        subroutineDeclaration
+    ;
+
+subroutineDeclaration
+    :   'function' subroutineName '(' arguments? ')' '(' returnTypes? ')' throwsClause?
+        block
+    ;
+
+subroutineName
+    :   Identifier
+    ;
+
+arguments
+    : argument (',' argument)*
+    ;
+
+argument
+    :   ( type | classType )    Identifier
+    ;
+
+returnTypes
+    :   ( type | classType ) ( ',' ( type | classType ) )*
+    ;
+
+throwsClause
+    : 'throws' exceptionType (',' exceptionType)*
+    ;
+
 // block is anything that starts with '{' and and ends with '}'
 block
     :   '{' blockStatement* '}'
@@ -199,10 +234,11 @@ blockStatement
     |   localVariableInitializationStatement    // eg: string endpoint = "my_endpoint";
     |   localVariableAssignmentStatement    //  eg: i =45; msgModification mediators also falls under this
     |   messageModificationStatement    //  eg: response.setHeader(HTTP.StatusCode, 500);
-    |   returnStatement //  eg: reply response;
+    |   replyStatement //  eg: reply response;
     |   mediatorCallStatement // eg: log(level="custom", log_value="log message");
     |   tryCatchBlock   // flowControl Mediator
     |   ifElseBlock // flowControl Mediator
+    |   returnStatement // This is to parse return statements in sub-routines
     ;
 
 // try catch definition
@@ -306,8 +342,16 @@ messageModificationStatement
     ;
 
 //return (reply) Statement specification
-returnStatement
+replyStatement
     :   'reply' (Identifier | mediatorCall)? ';'
+    ;
+// return statement in sub-routines
+returnStatement
+    :   'return' returningIdentifiers ';'
+    ;
+
+returningIdentifiers
+    :   Identifier  (',' Identifier)
     ;
 
 // expression, which will be used to build the parExpression used inside if condition
