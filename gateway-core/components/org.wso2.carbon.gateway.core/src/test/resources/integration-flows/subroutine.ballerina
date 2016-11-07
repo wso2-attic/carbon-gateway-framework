@@ -1,0 +1,31 @@
+@Path("/stocks")
+@Source(interface = "default")
+	@Service(tags = {
+	"stock_info",
+	"stock_update"
+}, description = "Rest api for get stocks details", produces = MediaType.APPLICATION_JSON)
+package com.sample;
+
+constant endpoint stockEP = new EndPoint("http://localhost:8080/stockquote/all");
+
+@GET
+@PUT
+@POST
+@Path("/getStocks")
+resource passthrough(message m) {
+	message response;
+	reply response;
+}
+
+@Description "Book airline and return confirmation and booking reference"
+function sampleSubroutine (message m, string x) (message, int) throws Exception {
+	log(level="custom", status="Message received at subroutine...");
+	int a;
+    if (eval(messageRef=m, path="$header.exchange") == "NYSE") {
+        a = 5;
+        log(level="custom", status="Some log1");
+    } else {
+        log(level="custom", status="Some log2");
+    }
+    return m,a;
+}

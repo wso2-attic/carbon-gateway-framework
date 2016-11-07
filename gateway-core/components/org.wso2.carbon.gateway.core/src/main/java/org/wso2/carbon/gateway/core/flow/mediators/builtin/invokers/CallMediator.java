@@ -114,12 +114,16 @@ public class CallMediator extends AbstractMediator implements Invoker {
         }
 
         // Retrieve the referenced message from the variable stack
-        carbonMessage = (CarbonMessage) getObjectFromContext(carbonMessage, messageKey);
-
-        CarbonCallback callback = new FlowControllerMediateCallback(carbonCallback, this,
-                VariableUtil.getVariableStack(carbonMessage));
-
-        endpoint.receive(carbonMessage, callback);
+        // If the retrieved message is null, skip the Call Mediator
+        CarbonMessage cMsg = (CarbonMessage) getObjectFromContext(carbonMessage, messageKey);
+        if (cMsg != null) {
+            CarbonCallback callback = new FlowControllerMediateCallback(carbonCallback, this,
+                    VariableUtil.getVariableStack(carbonMessage));
+            endpoint.receive(cMsg, callback);
+        } else {
+            log.error("Message with identifier: " + messageKey + ", not found in this context or value is null.");
+            return next(carbonMessage, carbonCallback);
+        }
         return false;
     }
 

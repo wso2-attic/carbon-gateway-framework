@@ -292,4 +292,40 @@ public class VariableUtil {
         }
     }
 
+    /**
+     * Method is used to remove the parent map pointer from the top of the stack map, This is done to stop the
+     * variable search traversal from at the given point, without going further.
+     *
+     * @param cMsg CarbonMessage
+     */
+    public static void removeParentMap(CarbonMessage cMsg) {
+        // check if stack exists in cMsg,
+        Stack<Map<String, Object>> variableStack;
+        if (cMsg.getProperty(Constants.VARIABLE_STACK) != null) {
+            variableStack = (Stack<Map<String, Object>>) cMsg.getProperty(Constants.VARIABLE_STACK);
+            variableStack.peek().remove(Constants.GW_GT_SCOPE);
+        }
+    }
+
+    /**
+     * Validate if the both objects are in the same type which recognized in Gateway
+     *
+     * @param object1 first object
+     * @param object2 second object
+     * @return true if both are same type, false otherwise
+     */
+    public static boolean isBothSameType(Object object1, Object object2) {
+        if ((object1 instanceof String) && (object2 instanceof String) ||
+                (object1 instanceof Integer) && (object2 instanceof Integer) ||
+                (object1 instanceof Boolean) && (object2 instanceof Boolean) ||
+                (object1 instanceof Double) && (object2 instanceof Double) ||
+                (object1 instanceof Float) && (object2 instanceof Float) ||
+                (object1 instanceof Long) && (object2 instanceof Long) ||
+                (object1 instanceof Short) && (object2 instanceof Short) ||
+                (object1 instanceof CarbonMessage) && (object2 instanceof CarbonMessage)) {
+            return true;
+        }
+        return false;
+    }
+
 }
