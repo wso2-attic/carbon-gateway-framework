@@ -14,7 +14,7 @@
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Gateway Tests</name>
     <modules>
-        <module>osgi-tests</module>
+        <module>paxexam-tests</module>
         <module>test-distribution</module>
     </modules>
 </project>
