@@ -244,7 +244,8 @@
                         <configuration>
                             <profile>profiles/default</profile>
                             <repositoryURL>file:${basedir}/target/p2-repo</repositoryURL>
-                            <destination>${basedir}/target/wso2carbon-kernel-${carbon.kernel.version}/osgi/</destination>
+                            <destination>${basedir}/target/wso2carbon-kernel-${carbon.kernel.version}/osgi/
+                            </destination>
                             <deleteOldProfileFiles>true</deleteOldProfileFiles>
                             <features>
                                 <feature>
@@ -379,5 +380,4 @@
             </plugin>
         </plugins>
     </build>
-
-    </project>
+</project>
