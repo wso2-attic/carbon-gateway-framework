@@ -40,6 +40,7 @@ import org.wso2.carbon.gateway.core.flow.AbstractFlowController;
 import org.wso2.carbon.gateway.core.flow.Mediator;
 import org.wso2.carbon.gateway.core.flow.MediatorProviderRegistry;
 import org.wso2.carbon.gateway.core.flow.Resource;
+import org.wso2.carbon.gateway.core.flow.Subroutine;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.Condition;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.FilterMediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.Source;
@@ -53,11 +54,13 @@ import org.wso2.carbon.gateway.core.outbound.OutboundEndpoint;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Implementation class of the ANTLR generated listener class
@@ -66,7 +69,10 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     private static final Logger log = LoggerFactory.getLogger(WUMLBaseListenerImpl.class);
     private Integration integration;
     private String integrationName;
+    /* This will hold the currently processing Resource until its copied to the Integration instance */
     private Resource currentResource;
+    /* This will hold the currently processing Subroutine until its copied to the Integration instance */
+    private Subroutine currentSubroutine;
     // Temporary reference for the currently processing filter mediator
     private Stack<AbstractFlowController> flowControllerStack;
     private Stack<FlowControllerMediatorSection> flowControllerMediatorSection;
@@ -413,6 +419,7 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         this.currentResource.getAnnotations().get(ConfigConstants.AN_BASE_PATH).setValue(path);
 
         integration.getResources().put(this.currentResource.getName(), this.currentResource);
+        currentResource = null;
     }
 
     @Override
@@ -934,6 +941,72 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         dropMediatorFilterAware(propertyMediator);
     }
 
+    /* Handling Subroutine Declarations */
+
+    @Override public void exitSubroutineName(WUMLParser.SubroutineNameContext ctx) {
+        this.currentSubroutine = new Subroutine(ctx.Identifier().getText());
+    }
+
+    @Override public void exitSubroutine(WUMLParser.SubroutineContext ctx) {
+        Map<String, Constants.TYPES> inputArgs = new HashMap<>();
+        List<Constants.TYPES> returnTypes = new ArrayList<>();
+        List<String> exceptionsList = new ArrayList<>();
+        // Parse input arguments
+        WUMLParser.ArgumentsContext arguments = ctx.subroutineDeclaration().arguments();
+        if (arguments != null && !arguments.argument().isEmpty()) {
+            String type, identifier;
+            for (WUMLParser.ArgumentContext argument: arguments.argument()) {
+                if (argument.type() != null) {
+                    type = argument.type().getText();
+                } else {
+                    type = argument.classType().getText();
+                }
+                identifier = argument.Identifier().getText();
+                inputArgs.put(identifier, getTypeConstant(type));
+            }
+        }
+
+        // Parse output types
+        WUMLParser.ReturnTypesContext returnValues = ctx.subroutineDeclaration().returnTypes();
+        if (returnValues != null && !returnValues.returnType().isEmpty()) {
+            String type;
+            for (WUMLParser.ReturnTypeContext returnType: returnValues.returnType()) {
+                if (returnType.type() != null) {
+                    type = returnType.type().getText();
+                } else {
+                    type = returnType.classType().getText();
+                }
+                returnTypes.add(getTypeConstant(type));
+            }
+        }
+
+        // Parse thrown NelExceptions
+        WUMLParser.ThrowsClauseContext exceptions = ctx.subroutineDeclaration().throwsClause();
+        if (exceptions != null) {
+            exceptionsList = exceptions.exceptionType()
+                    .stream()
+                    .map(exceptionTypeContext -> exceptionTypeContext.getText())
+                    .collect(Collectors.toList());
+        }
+
+        this.currentSubroutine.setInputArgs(inputArgs);
+        this.currentSubroutine.setReturnTypes(returnTypes);
+        this.currentSubroutine.setExceptionsList(exceptionsList);
+
+        // Add subroutine to subroutine Map
+        this.integration.addSubroutine(currentSubroutine);
+
+        this.currentSubroutine = null;
+    }
+
+    @Override public void exitReturnStatement(WUMLParser.ReturnStatementContext ctx) {
+        this.currentSubroutine.setReturnVariables(ctx.returningIdentifiers().Identifier()
+                .stream()
+                .map(i -> i.getText())
+                .collect(Collectors.toList()));
+    }
+
+
     /* Util methods */
 
     /**
@@ -960,7 +1033,11 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
                 break;
             }
         } else {
-            this.currentResource.getDefaultWorker().addMediator(mediator);
+            if (this.currentResource != null) {
+                this.currentResource.getDefaultWorker().addMediator(mediator);
+            } else if (this.currentSubroutine != null) {
+                this.currentSubroutine.addSubroutineMediator(mediator);
+            }
         }
     }
 
@@ -994,6 +1071,39 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
                 parameterHolder.addParameter(new Parameter(key, value));
             }
         }
+    }
+
+    /**
+     * Get the matching Constant.TYPE according to the Integration Configuration
+     *
+     * @param type Type that is mentioned in the Integration Configuration
+     * @return  Matched Constant.TYPE
+     */
+    public Constants.TYPES getTypeConstant(String type) {
+        Constants.TYPES typeConstant =  null;
+        switch (type) {
+        case Constants.INTEGER:
+            typeConstant = Constants.TYPES.INTEGER;
+            break;
+        case Constants.DOUBLE:
+            typeConstant = Constants.TYPES.DOUBLE;
+            break;
+        case Constants.BOOLEAN:
+            typeConstant = Constants.TYPES.BOOLEAN;
+            break;
+        case Constants.STRING:
+            typeConstant = Constants.TYPES.STRING;
+            break;
+        case Constants.MESSAGE:
+            typeConstant = Constants.TYPES.MESSAGE;
+            break;
+        case Constants.ENDPOINT:
+            typeConstant = Constants.TYPES.ENDPOINT;
+            break;
+        default:
+            log.error("Invalid type declaration: " + type);
+        }
+        return typeConstant;
     }
 
     private enum FlowControllerMediatorSection {

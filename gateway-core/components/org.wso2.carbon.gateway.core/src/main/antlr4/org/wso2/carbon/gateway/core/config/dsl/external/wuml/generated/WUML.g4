@@ -216,7 +216,11 @@ argument
     ;
 
 returnTypes
-    :   ( type | classType ) ( ',' ( type | classType ) )*
+    :   returnType ( ',' returnType )*
+    ;
+
+returnType
+    :   ( type | classType )
     ;
 
 throwsClause
@@ -351,7 +355,7 @@ returnStatement
     ;
 
 returningIdentifiers
-    :   Identifier  (',' Identifier)
+    :   Identifier  (',' Identifier)*
     ;
 
 // expression, which will be used to build the parExpression used inside if condition
