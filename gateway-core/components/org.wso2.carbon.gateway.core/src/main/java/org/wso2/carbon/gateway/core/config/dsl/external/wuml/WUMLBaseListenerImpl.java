@@ -44,6 +44,7 @@ import org.wso2.carbon.gateway.core.flow.Subroutine;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.Condition;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.FilterMediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.Source;
+import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.SubroutineCallMediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.TryBlockMediator;
 import org.wso2.carbon.gateway.core.flow.templates.uri.URITemplate;
 import org.wso2.carbon.gateway.core.flow.templates.uri.URITemplateException;
@@ -1004,6 +1005,31 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
                 .stream()
                 .map(i -> i.getText())
                 .collect(Collectors.toList()));
+    }
+
+    @Override public void exitMultipleVariableReturnStatement(WUMLParser.MultipleVariableReturnStatementContext ctx) {
+        SubroutineCallMediator subroutineCallMediator = new SubroutineCallMediator();
+        // Set subroutine name
+        subroutineCallMediator.setSubroutineId(ctx.Identifier().getText());
+        // Set returning Identifier names
+        if (ctx.returningIdentifiers() != null) {
+            subroutineCallMediator.setReturnValueIdentifiers(
+                    ctx.returningIdentifiers().Identifier().stream().map(identifier -> identifier.getText())
+                            .collect(Collectors.toList()));
+        }
+        // Set input parameter names
+        if (ctx.inputParameters() != null) {
+            subroutineCallMediator.setInputParameters(ctx.inputParameters().parameter().stream().map(parameter -> {
+                if (parameter.Identifier() != null) {
+                    return parameter.Identifier().getText();
+                } else if (parameter.literal().StringLiteral() != null) {
+                    return StringParserUtil.getValueWithinDoubleQuotes(parameter.literal().StringLiteral().getText());
+                }
+                return parameter.literal().getText();
+            }).collect(Collectors.toList()));
+        }
+
+        dropMediatorFilterAware(subroutineCallMediator);
     }
 
 

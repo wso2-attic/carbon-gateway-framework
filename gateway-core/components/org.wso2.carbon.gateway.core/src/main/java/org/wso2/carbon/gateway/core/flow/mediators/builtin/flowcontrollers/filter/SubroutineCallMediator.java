@@ -53,6 +53,8 @@ public class SubroutineCallMediator extends AbstractFlowController {
     /**
      * List of input parameter identifiers
      */
+    //TODO: This list should be able to contain any type of object.
+    //TODO: For now only identifiers are supported inside subroutine calls
     private List<String> inputParameters = new ArrayList<>();
 
     /**
@@ -63,10 +65,12 @@ public class SubroutineCallMediator extends AbstractFlowController {
     /**
      * Constructor
      */
-    public SubroutineCallMediator() {}
+    public SubroutineCallMediator() {
+    }
 
     @Override
-    public boolean receive (CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
+    public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
+
         return next(carbonMessage, carbonCallback);
     }
 
@@ -78,5 +82,32 @@ public class SubroutineCallMediator extends AbstractFlowController {
     @Override
     public String getName() {
         return "subroutinecall";
+    }
+
+    /**
+     * Set the Subroutine name
+     *
+     * @param subroutineId
+     */
+    public void setSubroutineId(String subroutineId) {
+        this.subroutineId = subroutineId;
+    }
+
+    /**
+     * Set the list of return values assigning variable names
+     *
+     * @param returnValueIdentifiers
+     */
+    public void setReturnValueIdentifiers(List<String> returnValueIdentifiers) {
+        this.returnValueIdentifiers = returnValueIdentifiers;
+    }
+
+    /**
+     * Set input arguments names which are used when calling the subroutine
+     *
+     * @param inputParameters
+     */
+    public void setInputParameters(List<String> inputParameters) {
+        this.inputParameters = inputParameters;
     }
 }

@@ -237,6 +237,7 @@ blockStatement
     :   localVariableDeclarationStatement   //  eg: int i;
     |   localVariableInitializationStatement    // eg: string endpoint = "my_endpoint";
     |   localVariableAssignmentStatement    //  eg: i =45; msgModification mediators also falls under this
+    |   multipleVariableReturnStatement     // eg: var_1, var_2 = func.my_func(param_1, param_2, param3);
     |   messageModificationStatement    //  eg: response.setHeader(HTTP.StatusCode, 500);
     |   replyStatement //  eg: reply response;
     |   mediatorCallStatement // eg: log(level="custom", log_value="log message");
@@ -343,6 +344,21 @@ keyValuePair
 // Message Modification statements
 messageModificationStatement
     :   Identifier  '.' Identifier '('  messagePropertyName ','  literal ')' ';'
+    ;
+
+// Statemet that will catch multiple return values from a subroutine
+// this will reuse "returningIdentifiers"
+multipleVariableReturnStatement
+    :    ( returningIdentifiers '=')? 'func' ':' Identifier '(' inputParameters? ')' ';'
+    ;
+
+inputParameters
+    : parameter (',' parameter)*
+    ;
+
+parameter
+    : literal
+    | Identifier
     ;
 
 //return (reply) Statement specification
