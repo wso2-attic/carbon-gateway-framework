@@ -631,29 +631,10 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
         if (mediator != null) {
             ParameterHolder parameterHolder  = new ParameterHolder();
-            String key, value;
+
             // passing all the mediator input arguments
-            if (ctx.keyValuePairs() != null) {
-                for (WUMLParser.KeyValuePairContext keyValuePair : ctx.keyValuePairs().keyValuePair()) {
-                    if (keyValuePair.literal() != null) {
-                        if (keyValuePair.literal().StringLiteral() != null) {
-                            value = StringParserUtil
-                                    .getValueWithinDoubleQuotes(keyValuePair.literal().StringLiteral().getText());
-                        } else {
-                            value = keyValuePair.literal().getText();
-                        }
-                    } else {
-                        value = keyValuePair.Identifier(keyValuePair.Identifier().size() - 1).getText();
-                    }
-                    // if the key is a classType (eg: 'endpoint' or 'message')
-                    if (keyValuePair.classType() != null) {
-                        key = keyValuePair.classType().getText();
-                    } else {
-                        key = keyValuePair.Identifier(0).getText();
-                    }
-                    parameterHolder.addParameter(new Parameter(key, value));
-                }
-            }
+            processKeyValuePairs(ctx.keyValuePairs(), parameterHolder);
+
             //Adding the return variable key
             if (ctx.parent instanceof WUMLParser.LocalVariableInitializationStatementContext) {
                 parameterHolder.addParameter(new Parameter(Constants.RETURN_VALUE,
@@ -980,6 +961,38 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
             }
         } else {
             this.currentResource.getDefaultWorker().addMediator(mediator);
+        }
+    }
+
+    /**
+     * Read all key-value pairs and put those into the given ParameterHolder
+     *
+     * @param keyValuePairs KeyValuePairs object
+     * @param parameterHolder ParameterHolder object that key-value pairs should be stored
+     */
+    private void processKeyValuePairs(WUMLParser.KeyValuePairsContext keyValuePairs,
+            ParameterHolder parameterHolder) {
+        String key, value;
+        if (keyValuePairs != null) {
+            for (WUMLParser.KeyValuePairContext keyValuePair : keyValuePairs.keyValuePair()) {
+                if (keyValuePair.literal() != null) {
+                    if (keyValuePair.literal().StringLiteral() != null) {
+                        value = StringParserUtil
+                                .getValueWithinDoubleQuotes(keyValuePair.literal().StringLiteral().getText());
+                    } else {
+                        value = keyValuePair.literal().getText();
+                    }
+                } else {
+                    value = keyValuePair.Identifier(keyValuePair.Identifier().size() - 1).getText();
+                }
+                // if the key is a classType (eg: 'endpoint' or 'message')
+                if (keyValuePair.classType() != null) {
+                    key = keyValuePair.classType().getText();
+                } else {
+                    key = keyValuePair.Identifier(0).getText();
+                }
+                parameterHolder.addParameter(new Parameter(key, value));
+            }
         }
     }
 
