@@ -75,7 +75,7 @@ public class IntegrationFlowTest {
     @Configuration
     public Option[] createConfiguration() {
         return new Option[]{
-                copyPassthroughSampleOption(),
+                copySampleOption(),
                 copyDropinsBundle(maven().artifactId("mockito-all").groupId("org.mockito")
                         .versionAsInProject())
         };
@@ -106,14 +106,14 @@ public class IntegrationFlowTest {
     /**
      * Deploy the simple passThrough sample
      */
-    private Option copyPassthroughSampleOption() {
-        Path passthroughSamplePath;
+    private Option copySampleOption() {
+        Path samplePath;
 
         String basedir = System.getProperty("basedir");
         if (basedir == null) {
             basedir = Paths.get(".").toString();
         }
-        passthroughSamplePath = Paths.get(basedir, "src", "test", "resources", "artifacts", "simpleflow.ballerina");
-        return copyFile(passthroughSamplePath, Paths.get("deployment", "integration-flows", "simpleflow.ballerina"));
+        samplePath = Paths.get(basedir, "src", "test", "resources", "artifacts", "simpleflow.ballerina");
+        return copyFile(samplePath, Paths.get("deployment", "integration-flows", "simpleflow.ballerina"));
     }
 }
