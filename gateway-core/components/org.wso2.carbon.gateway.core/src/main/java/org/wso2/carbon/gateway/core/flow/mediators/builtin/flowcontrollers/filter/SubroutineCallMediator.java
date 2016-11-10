@@ -19,13 +19,17 @@ package org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filt
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.gateway.core.config.IntegrationConfigRegistry;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
 import org.wso2.carbon.gateway.core.flow.AbstractFlowController;
-import org.wso2.carbon.gateway.core.flow.MediatorCollection;
+import org.wso2.carbon.gateway.core.flow.FlowControllerSubroutineCallback;
+import org.wso2.carbon.gateway.core.flow.Subroutine;
+import org.wso2.carbon.gateway.core.util.VariableUtil;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -34,11 +38,6 @@ import java.util.List;
 public class SubroutineCallMediator extends AbstractFlowController {
 
     private static final Logger log = LoggerFactory.getLogger(SubroutineCallMediator.class);
-
-    /**
-     * Mediation collection to hold mediators inside subroutine
-     */
-    private MediatorCollection subroutineMediators;
 
     /**
      * Name of the subroutine
@@ -70,8 +69,36 @@ public class SubroutineCallMediator extends AbstractFlowController {
 
     @Override
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
+        /* Here we will look for mentioned Subroutine inside this Integrations' local Subroutines Map */
+        Subroutine referredSubroutine = IntegrationConfigRegistry.getInstance().getIntegrationConfig(this.integrationId)
+                .getSubroutine(this.subroutineId);
+        //TODO:if referredSubroutine is not found we should look in the global level, global level Map should implement
 
-        return next(carbonMessage, carbonCallback);
+        // if incorrect number of arguments are given or subroutine is not present, skip the subroutine call
+        if (referredSubroutine == null || referredSubroutine.getInputArgs().size() != inputParameters.size()) {
+            log.error("Invalid subroutine call to " + subroutineId);
+            return next(carbonMessage, carbonCallback);
+        }
+
+        // Retrieve input parameter objects
+        List<Object> inputParameterObjects = new ArrayList<>();
+        inputParameters.forEach(
+                inputParameter -> inputParameterObjects.add(getObjectFromContext(carbonMessage, inputParameter)));
+
+        super.receive(carbonMessage, carbonCallback);
+        VariableUtil.removeParentMap(carbonMessage);
+
+        // Put retrieved objects to the new map
+        Iterator<String> subroutineArguments = referredSubroutine.getInputArgs().keySet().iterator();
+        inputParameterObjects.forEach(inputParameterObject -> VariableUtil
+                .addVariable(carbonMessage, subroutineArguments.next(), inputParameterObject));
+
+        // Forward the carbon message to Subroutines' MediatorCollection with new FlowControllerSubroutineCallback
+        CarbonCallback callback = new FlowControllerSubroutineCallback(carbonCallback, this,
+                VariableUtil.getVariableStack(carbonMessage), referredSubroutine);
+        referredSubroutine.getSubroutineMediators().getFirstMediator().receive(carbonMessage, callback);
+
+        return true;
     }
 
     @Override
@@ -94,12 +121,48 @@ public class SubroutineCallMediator extends AbstractFlowController {
     }
 
     /**
+     * Get Subroutine name
+     *
+     * @return
+     */
+    public String getSubroutineId() {
+        return this.subroutineId;
+    }
+
+    /**
+     * Set the Integration name
+     *
+     * @param integrationId
+     */
+    public void setIntegrationId(String integrationId) {
+        this.integrationId = integrationId;
+    }
+
+    /**
+     * Get Integration Name
+     *
+     * @return
+     */
+    public String getIntegrationId() {
+        return this.integrationId;
+    }
+
+    /**
      * Set the list of return values assigning variable names
      *
      * @param returnValueIdentifiers
      */
     public void setReturnValueIdentifiers(List<String> returnValueIdentifiers) {
         this.returnValueIdentifiers = returnValueIdentifiers;
+    }
+
+    /**
+     * Get the list of return values assigning variable names
+     *
+     * @return
+     */
+    public List<String> getReturnValueIdentifiers() {
+        return this.returnValueIdentifiers;
     }
 
     /**
@@ -110,4 +173,5 @@ public class SubroutineCallMediator extends AbstractFlowController {
     public void setInputParameters(List<String> inputParameters) {
         this.inputParameters = inputParameters;
     }
+
 }

@@ -19,8 +19,8 @@ package org.wso2.carbon.gateway.core.flow;
 
 import org.wso2.carbon.gateway.core.Constants;
 
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Class that will hold data regarding a subroutine
@@ -34,8 +34,9 @@ public class Subroutine {
     private List<Constants.TYPES> returnTypes;
     /* Return identifiers of the subroutine */
     private List<String> returnVariables;
-    /* Input types and identifiers of the subroutine */
-    private Map<String, Constants.TYPES> inputArgs;
+    /* Input types and identifiers of the subroutine
+    * LinkedHashMap is used to preserve the original arguments order */
+    private LinkedHashMap<String, Constants.TYPES> inputArgs;
     /* Thrown Exception types in the subroutine*/
     private List<String> exceptionsList;
 
@@ -83,7 +84,7 @@ public class Subroutine {
      * Setting inputArgs Map
      * @param inputArgs
      */
-    public void setInputArgs(Map<String, Constants.TYPES> inputArgs) {
+    public void setInputArgs(LinkedHashMap<String, Constants.TYPES> inputArgs) {
         this.inputArgs = inputArgs;
     }
 
@@ -91,7 +92,7 @@ public class Subroutine {
      * Get Input arguments map
      * @return
      */
-    public Map<String, Constants.TYPES> getInputArgs() {
+    public LinkedHashMap<String, Constants.TYPES> getInputArgs() {
         return this.inputArgs;
     }
 

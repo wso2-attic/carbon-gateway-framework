@@ -57,6 +57,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -949,7 +950,8 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     }
 
     @Override public void exitSubroutine(WUMLParser.SubroutineContext ctx) {
-        Map<String, Constants.TYPES> inputArgs = new HashMap<>();
+        //LinkedHashMap is used to preserve the order or input arguments
+        LinkedHashMap<String, Constants.TYPES> inputArgs = new LinkedHashMap<>();
         List<Constants.TYPES> returnTypes = new ArrayList<>();
         List<String> exceptionsList = new ArrayList<>();
         // Parse input arguments
@@ -1009,6 +1011,8 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
     @Override public void exitMultipleVariableReturnStatement(WUMLParser.MultipleVariableReturnStatementContext ctx) {
         SubroutineCallMediator subroutineCallMediator = new SubroutineCallMediator();
+        // Set integration name
+        subroutineCallMediator.setIntegrationId(this.integrationName);
         // Set subroutine name
         subroutineCallMediator.setSubroutineId(ctx.Identifier().getText());
         // Set returning Identifier names

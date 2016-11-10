@@ -38,8 +38,8 @@ public abstract class AbstractMediator implements Mediator {
 
     /* Pointer for the next sibling in the pipeline*/ Mediator nextMediator = null;
 
+    /* If this mediator call returns to a Variable, its identifier is stored here */
     protected String returnedOutput;
-
     /**
      * Check whether a sibling is present after this in the pipeline
      *

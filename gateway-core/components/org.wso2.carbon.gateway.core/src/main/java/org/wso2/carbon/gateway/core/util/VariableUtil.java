@@ -292,4 +292,19 @@ public class VariableUtil {
         }
     }
 
+    /**
+     * Method is used to remove the parent map pointer from the top of the stack map, This is done to stop the
+     * variable search traversal from at the given point, without going further.
+     *
+     * @param cMsg CarbonMessage
+     */
+    public static void removeParentMap(CarbonMessage cMsg) {
+        // check if stack exists in cMsg,
+        Stack<Map<String, Object>> variableStack;
+        if (cMsg.getProperty(Constants.VARIABLE_STACK) != null) {
+            variableStack = (Stack<Map<String, Object>>) cMsg.getProperty(Constants.VARIABLE_STACK);
+            variableStack.peek().remove(Constants.GW_GT_SCOPE);
+        }
+    }
+
 }
