@@ -879,25 +879,26 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     public void exitLocalVariableInitializationStatement(WUMLParser.LocalVariableInitializationStatementContext ctx) {
         String type = null;
         String variableName = null;
-        String variableValue;
+        String variableValue = null;
         ParameterHolder parameterHolder = new ParameterHolder();
         Mediator propertyMediator = MediatorProviderRegistry.getInstance()
                 .getMediator(Constants.PROPERTY_MEDIATOR_NAME);
 
-        if (ctx.type() != null) { // pattern of " type Identifier '=' literal ';' "
+        if (ctx.type() != null) { // pattern of " type Identifier "
             type = ctx.type().getText();
             variableName = ctx.Identifier().getText();
-            variableValue = (ctx.literal().StringLiteral() != null) ?
-                    StringParserUtil.getValueWithinDoubleQuotes(ctx.literal().getText()) :
-                    ctx.literal().getText();
+            if (ctx.literal() != null) {  // pattern of " string s = "abc"; "
+                variableValue = (ctx.literal().StringLiteral() != null) ?
+                        StringParserUtil.getValueWithinDoubleQuotes(ctx.literal().getText()) :
+                        ctx.literal().getText();
+            }
             parameterHolder.addParameter(new Parameter(Constants.VALUE, variableValue));
-        } else if (ctx.mediatorCall() != null) { // pattern of " message n = invoke(Ep,m) ';'"
+        } else if (ctx.classType() != null) { // pattern of " classType Identifier ( mediatorCall | SubCall | etc. ) "
             type = ctx.classType().getText();
             variableName = ctx.Identifier().getText();
-        } else if (ctx.classType() != null && ctx.newTypeObjectCreation() != null) {
-            type = ctx.classType().getText();   // pattern of " message m '=' new message() ';' "
-            variableName = ctx.Identifier().getText();
-        }
+            //TODO: Include new object creation here as:  if (ctx.newTypeObjectCreation() != null)
+            // pattern of " message n = new message() ';'"
+        } //TODO: Add endpoint Initialization here as: if (ctx.endpointDeclaration() != null)
 
         parameterHolder.addParameter(new Parameter(Constants.KEY, variableName));
         parameterHolder.addParameter(new Parameter(Constants.TYPE, type));
@@ -1009,18 +1010,28 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
                 .collect(Collectors.toList()));
     }
 
-    @Override public void exitMultipleVariableReturnStatement(WUMLParser.MultipleVariableReturnStatementContext ctx) {
+    @Override public void exitSubroutineCall(WUMLParser.SubroutineCallContext ctx) {
         SubroutineCallMediator subroutineCallMediator = new SubroutineCallMediator();
         // Set integration name
         subroutineCallMediator.setIntegrationId(this.integrationName);
         // Set subroutine name
         subroutineCallMediator.setSubroutineId(ctx.Identifier().getText());
         // Set returning Identifier names
-        if (ctx.returningIdentifiers() != null) {
-            subroutineCallMediator.setReturnValueIdentifiers(
-                    ctx.returningIdentifiers().Identifier().stream().map(identifier -> identifier.getText())
-                            .collect(Collectors.toList()));
+        if (ctx.parent instanceof WUMLParser.MultipleVariableReturnStatementContext) {
+            // if this comes as a 0 or more variable assignment statement
+            WUMLParser.MultipleVariableReturnStatementContext parentCtx =
+                    (WUMLParser.MultipleVariableReturnStatementContext) ctx.parent;
+            if (parentCtx.returningIdentifiers() != null) {
+                subroutineCallMediator.setReturnValueIdentifiers(
+                        parentCtx.returningIdentifiers().Identifier().stream().map(identifier -> identifier.getText())
+                                .collect(Collectors.toList()));
+            }
+        } else if (ctx.parent instanceof WUMLParser.LocalVariableInitializationStatementContext) {
+            // If this comes as a variable initialization statement
+            subroutineCallMediator.getReturnValueIdentifiers()
+                    .add(((WUMLParser.LocalVariableInitializationStatementContext) ctx.parent).Identifier().getText());
         }
+
         // Set input parameter names
         if (ctx.inputParameters() != null) {
             subroutineCallMediator.setInputParameters(ctx.inputParameters().parameter().stream().map(parameter -> {

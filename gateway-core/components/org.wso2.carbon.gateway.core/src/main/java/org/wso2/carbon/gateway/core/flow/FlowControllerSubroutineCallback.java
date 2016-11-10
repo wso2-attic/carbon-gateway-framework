@@ -72,7 +72,8 @@ public class FlowControllerSubroutineCallback implements FlowControllerCallback 
             }
             // Set returning objects to parents' scope
             for (int i = 0; i < Math.min(mediator.getReturnValueIdentifiers().size(), retuningObjects.size()); i++) {
-                setObjectToContext(carbonMessage, mediator.getReturnValueIdentifiers().get(i), retuningObjects.get(i));
+                mediator.setObjectToContext(carbonMessage, mediator.getReturnValueIdentifiers().get(i),
+                        retuningObjects.get(i));
             }
             if (mediator.hasNext()) {
                 try {
@@ -107,20 +108,4 @@ public class FlowControllerSubroutineCallback implements FlowControllerCallback 
         return !carbonMessage.isFaulty();
     }
 
-    /**
-     * Put an object in the variable stack
-     *
-     * @param carbonMessage Carbon message with the stack
-     * @param objectName    Name of the object
-     * @param object        Object itself
-     */
-    public void setObjectToContext(CarbonMessage carbonMessage, String objectName, Object object) {
-        Map map = (Map) VariableUtil.getMap(carbonMessage, objectName);
-        if (map != null) {
-            map.put(objectName, object);
-        } else {
-            log.error("Variable " + objectName + " is not declared.");
-        }
-
-    }
 }

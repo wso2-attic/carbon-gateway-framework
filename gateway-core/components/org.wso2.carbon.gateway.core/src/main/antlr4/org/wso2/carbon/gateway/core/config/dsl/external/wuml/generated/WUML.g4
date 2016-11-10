@@ -237,7 +237,7 @@ blockStatement
     :   localVariableDeclarationStatement   //  eg: int i;
     |   localVariableInitializationStatement    // eg: string endpoint = "my_endpoint";
     |   localVariableAssignmentStatement    //  eg: i =45; msgModification mediators also falls under this
-    |   multipleVariableReturnStatement     // eg: var_1, var_2 = func.my_func(param_1, param_2, param3);
+    |   multipleVariableReturnStatement     // eg: var_1, var_2 = func:my_func(param_1, param_2, param3);
     |   messageModificationStatement    //  eg: response.setHeader(HTTP.StatusCode, 500);
     |   replyStatement //  eg: reply response;
     |   mediatorCallStatement // eg: log(level="custom", log_value="log message");
@@ -285,8 +285,7 @@ elseBlock
 
 // local variable handling statements
 localVariableDeclarationStatement
-    :   endpointDeclaration ';' // endpointDeclaration has given more priority over (classType Identifier)
-    |   (type|classType)    Identifier  ';'
+    :   (type|classType)    Identifier  ';'
     ;
 
 localVariableInitializationStatement
@@ -294,6 +293,7 @@ localVariableInitializationStatement
     |   endpointDeclaration '=' newTypeObjectCreation   ';'
     |   classType Identifier  '=' newTypeObjectCreation ';' // only used for new message creation
     |   classType Identifier '=' mediatorCall ';' // calling a mediator that will return a message
+    |   ( type | classType ) Identifier '=' subroutineCall ';' // calling a subroutine
     ;
 
 localVariableAssignmentStatement
@@ -349,7 +349,11 @@ messageModificationStatement
 // Statemet that will catch multiple return values from a subroutine
 // this will reuse "returningIdentifiers"
 multipleVariableReturnStatement
-    :    ( returningIdentifiers '=')? 'func' ':' Identifier '(' inputParameters? ')' ';'
+    :    ( returningIdentifiers '=')? subroutineCall ';'
+    ;
+
+subroutineCall
+    : 'func' ':' Identifier '(' inputParameters? ')'
     ;
 
 inputParameters

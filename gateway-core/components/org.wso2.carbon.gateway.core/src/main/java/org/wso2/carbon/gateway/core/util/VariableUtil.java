@@ -307,4 +307,25 @@ public class VariableUtil {
         }
     }
 
+    /**
+     * Validate if the both objects are in the same type which recognized in Gateway
+     *
+     * @param object1 first object
+     * @param object2 second object
+     * @return true if both are same type, false otherwise
+     */
+    public static boolean isBothSameType(Object object1, Object object2) {
+        if ((object1 instanceof String) && (object2 instanceof String) ||
+                (object1 instanceof Integer) && (object2 instanceof Integer) ||
+                (object1 instanceof Boolean) && (object2 instanceof Boolean) ||
+                (object1 instanceof Double) && (object2 instanceof Double) ||
+                (object1 instanceof Float) && (object2 instanceof Float) ||
+                (object1 instanceof Long) && (object2 instanceof Long) ||
+                (object1 instanceof Short) && (object2 instanceof Short) ||
+                (object1 instanceof CarbonMessage) && (object2 instanceof CarbonMessage)) {
+            return true;
+        }
+        return false;
+    }
+
 }
