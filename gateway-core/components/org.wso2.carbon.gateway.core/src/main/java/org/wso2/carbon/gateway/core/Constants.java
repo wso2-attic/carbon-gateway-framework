@@ -142,6 +142,19 @@ public class Constants {
 
     public static final String ENDPOINT_KEY = "endpointRef";
 
+    public static final String FORK_KEY = "forkRef";
+
+    public static final String CONDITION = "condition";
+
+    public static final String CONDITION_AND = "AND";
+
+    public static final String CONDITION_OR = "OR";
+
+    public static final String CONDITION_ANY_N = "ANY";
+
+    /* CarbonMessage properties*/
+    public static final String OBSERVABLES_MAP = "OBSERVABLES_MAP";
+
     /* Exception Types */
 
     public static final String CONN_CLOSED_EX = "ConnectionClosedException";

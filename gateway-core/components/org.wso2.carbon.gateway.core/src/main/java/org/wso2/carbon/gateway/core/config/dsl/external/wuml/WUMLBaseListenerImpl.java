@@ -40,12 +40,12 @@ import org.wso2.carbon.gateway.core.flow.AbstractFlowController;
 import org.wso2.carbon.gateway.core.flow.Mediator;
 import org.wso2.carbon.gateway.core.flow.MediatorProviderRegistry;
 import org.wso2.carbon.gateway.core.flow.Resource;
+import org.wso2.carbon.gateway.core.flow.Worker;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.Condition;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.FilterMediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.Source;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.TryBlockMediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.fork.ForkMediator;
-import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.fork.WorkerBlockMediator;
 import org.wso2.carbon.gateway.core.flow.templates.uri.URITemplate;
 import org.wso2.carbon.gateway.core.flow.templates.uri.URITemplateException;
 import org.wso2.carbon.gateway.core.inbound.InboundEPProviderRegistry;
@@ -781,20 +781,34 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     public void exitForkBlockName(WUMLParser.ForkBlockNameContext ctx) {
         ForkMediator forkMediator = new ForkMediator(ctx.Identifier().getText());
         dropMediatorFilterAware(forkMediator);
-        //push forkBlock on stacks
-        this.flowControllerMediatorSection.push(FlowControllerMediatorSection.forkBlock);
+        //push forkBlock on stack
         this.flowControllerStack.push(forkMediator);
-
     }
 
     @Override
     public void exitForkBlock(WUMLParser.ForkBlockContext ctx) {
-        //pop fork block from stacks
-        if (!this.flowControllerMediatorSection.empty()) {
-            this.flowControllerMediatorSection.pop();
-        }
 
         if (!this.flowControllerStack.empty()) {
+            if (this.flowControllerStack.peek() instanceof ForkMediator) {
+                ForkMediator fork = (ForkMediator) this.flowControllerStack.peek();
+                //retrieve input parameters : fork forkName (messageRef = MESSAGE_NAME) {}
+                //only {keyValuePair :  Identifier '='  Identifier} combination must exists for fork            ;
+                if (ctx.keyValuePair() != null && ctx.keyValuePair().Identifier().size() == 2) {
+                    //only one parameter (keyValuePair) must exists
+                    String key, value;
+                    ParameterHolder parameterHolder = new ParameterHolder();
+
+                    key = ctx.keyValuePair().Identifier(0).getText(); //messageRef
+                    value = ctx.keyValuePair().Identifier(1).getText(); //MESSAGE_NAME
+
+                    parameterHolder.addParameter(new Parameter(key, value));
+
+                    fork.setParameters(parameterHolder);
+                } else {
+                    log.error("Error in parameters of fork (" + fork.getName() + ") statement");
+                }
+
+            }
             this.flowControllerStack.pop();
         }
     }
@@ -809,26 +823,22 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
 
     @Override
     public void exitWorkerBlockName(WUMLParser.WorkerBlockNameContext ctx) {
-        WorkerBlockMediator workerBlockMediator = new WorkerBlockMediator(ctx.Identifier().getText());
-        if (!this.flowControllerMediatorSection.empty() && !this.flowControllerStack.empty() &&
-                                                            this.flowControllerStack.peek() instanceof ForkMediator) {
+        Worker workerBlock = new Worker(ctx.Identifier().getText());
+        if (!this.flowControllerStack.empty() && this.flowControllerStack.peek() instanceof ForkMediator) {
             //worker blocks can only be within forkBlocks
-            dropMediatorFilterAware(workerBlockMediator);
+            //Add worker to forkMediator
+            ((ForkMediator) this.flowControllerStack.peek()).addWorkerBlock(workerBlock);
             //push workerBlocks on stacks
             this.flowControllerMediatorSection.push(FlowControllerMediatorSection.workerBlock);
-            this.flowControllerStack.push(workerBlockMediator);
         }
     }
 
     @Override
     public void exitWorkerBlock(WUMLParser.WorkerBlockContext ctx) {
         //pop worker block from stacks
-        if (!this.flowControllerMediatorSection.empty()) {
+        if (!this.flowControllerMediatorSection.empty() &&
+                this.flowControllerMediatorSection.peek() == FlowControllerMediatorSection.workerBlock) {
             this.flowControllerMediatorSection.pop();
-        }
-
-        if (!this.flowControllerStack.empty()) {
-            this.flowControllerStack.pop();
         }
     }
 
@@ -1043,13 +1053,9 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
             case catchBlock:
                 ((TryBlockMediator) flowControllerStack.peek()).peekExceptionHandlers().addChildMediator(mediator);
                 break;
-            case forkBlock:
-                //only WorkerBlockMediators can be within ForkBlock
-                ((ForkMediator) this.flowControllerStack.peek()).addWorkerBlock((WorkerBlockMediator) mediator);
-                break;
             case workerBlock:
                 //Add the mediator wrapped worker in the WorkerBlockMediator
-                ((WorkerBlockMediator) flowControllerStack.peek()).getWorker().addMediator(mediator);
+                ((ForkMediator) flowControllerStack.peek()).addMediatorToLastWorker(mediator);
                 break;
             }
         } else {
@@ -1058,7 +1064,7 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     }
 
     private enum FlowControllerMediatorSection {
-        ifBlock, elseBlock, tryBlock, catchBlock, forkBlock, workerBlock
+        ifBlock, elseBlock, tryBlock, catchBlock, workerBlock
     }
 
 }

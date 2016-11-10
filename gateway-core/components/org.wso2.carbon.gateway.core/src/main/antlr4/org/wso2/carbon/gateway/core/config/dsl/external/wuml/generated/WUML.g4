@@ -207,12 +207,8 @@ blockStatement
     ;
 
 //fork definition
-/*forkClause
-    :   'fork' block
-    ;*/
-
 forkBlock
-    :   'fork' forkBlockName '(' ( keyValuePairs )? ')' '{' ( workerBlock )+ '}'
+    :   'fork' forkBlockName '(' keyValuePair ')' '{' ( workerBlock )+ '}'
     ;
 
 forkBlockName
@@ -225,10 +221,6 @@ workerBlock
 
 workerBlockName
     :   Identifier
-    ;
-
-joinCall
-    :   'join' '(' keyValuePairs ')'
     ;
 
 // try catch definition
@@ -285,7 +277,6 @@ localVariableAssignmentStatement
     :   Identifier  '='   literal ';'
     |   Identifier '='  newTypeObjectCreation ';'
     |   Identifier '=' mediatorCall ';'
-    |   Identifier '=' joinCall ';'
     ;
 
 mediatorCallStatement
