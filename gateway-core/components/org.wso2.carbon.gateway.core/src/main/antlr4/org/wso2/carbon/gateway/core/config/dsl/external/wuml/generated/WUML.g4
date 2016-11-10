@@ -203,6 +203,24 @@ blockStatement
     |   mediatorCallStatement // eg: log(level="custom", log_value="log message");
     |   tryCatchBlock   // flowControl Mediator
     |   ifElseBlock // flowControl Mediator
+    |   forkBlock //fork block
+    ;
+
+//fork definition
+forkBlock
+    :   'fork' forkBlockName '(' keyValuePair ')' '{' ( workerBlock )+ '}'
+    ;
+
+forkBlockName
+    :   Identifier
+    ;
+
+workerBlock
+    :   'worker' workerBlockName '(' 'message' Identifier ')' block
+    ;
+
+workerBlockName
+    :   Identifier
     ;
 
 // try catch definition

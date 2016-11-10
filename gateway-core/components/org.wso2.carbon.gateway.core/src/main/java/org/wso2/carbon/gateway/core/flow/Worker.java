@@ -21,6 +21,7 @@ package org.wso2.carbon.gateway.core.flow;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.fork.ObservableControllerCallback;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 import rx.Observable;
@@ -78,6 +79,21 @@ public class Worker {
 
         f.isDone();
         return behaviorSubject;
+    }
+
+    public Observable submit(UUID id, CarbonMessage cMsg, ObservableControllerCallback cCallback) {
+
+        Observable observable = cCallback.getObservable();
+        Future f = WORKER_EXECUTOR_SERVICE.submit(() -> {
+            try {
+                mediators.getFirstMediator().receive(cMsg, cCallback);
+            } catch (Exception e) {
+                log.error("Error while mediating", e);
+            }
+        });
+
+        f.isDone();
+        return observable;
     }
 
     public void addMediator(Mediator mediator) {

@@ -21,6 +21,7 @@ package org.wso2.carbon.gateway.core.flow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.FilterMediator;
+import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.fork.JoinMediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.invokers.CallMediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.invokers.RespondMediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.manipulators.EnrichMediator;
@@ -52,6 +53,7 @@ public class MediatorProviderRegistry implements ProviderRegistry {
             EnrichMediator.class,
             TransformMediator.class,
             PropertyMediator.class,
+            JoinMediator.class,
     };
 
     private MediatorProviderRegistry() {

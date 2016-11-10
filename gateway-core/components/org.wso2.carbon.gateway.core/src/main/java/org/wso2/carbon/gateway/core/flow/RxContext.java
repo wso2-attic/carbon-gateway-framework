@@ -9,6 +9,7 @@ import org.wso2.carbon.messaging.CarbonMessage;
 public class RxContext {
 
     private String id;
+    private String name;
     private CarbonMessage cMsg;
     private CarbonCallback cCallback;
 
@@ -16,6 +17,14 @@ public class RxContext {
         this.id = id;
         this.cMsg = cMsg;
         this.cCallback = cCallback;
+        this.name = null;
+    }
+
+    public RxContext(String id, CarbonMessage cMsg, String contextName) {
+        this.id = id;
+        this.name = contextName;
+        this.cMsg = cMsg;
+        this.cCallback = null;
     }
 
     public String getId() {
@@ -28,5 +37,9 @@ public class RxContext {
 
     public CarbonCallback getCarbonCallback() {
         return cCallback;
+    }
+
+    public String getName() {
+        return name;
     }
 }
