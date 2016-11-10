@@ -104,7 +104,7 @@ public class IntegrationFlowTest {
     }
 
     /**
-     * Deploy the simple passThrough sample
+     * Deploy the simple integration flow sample
      */
     private Option copySampleOption() {
         Path samplePath;
