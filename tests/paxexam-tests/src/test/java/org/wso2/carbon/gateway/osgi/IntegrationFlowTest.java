@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import org.wso2.carbon.container.CarbonContainerFactory;
-import org.wso2.carbon.container.options.CarbonDistributionOption;
 import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
@@ -77,7 +76,6 @@ public class IntegrationFlowTest {
     public Option[] createConfiguration() {
         return new Option[]{
                 copyPassthroughSampleOption(),
-                CarbonDistributionOption.keepDirectory(),
                 copyDropinsBundle(maven().artifactId("mockito-all").groupId("org.mockito")
                         .versionAsInProject())
         };
