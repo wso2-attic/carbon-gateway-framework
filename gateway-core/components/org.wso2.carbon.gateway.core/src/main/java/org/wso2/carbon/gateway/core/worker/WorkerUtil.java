@@ -27,6 +27,7 @@ import org.wso2.carbon.gateway.core.inbound.Provider;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
 
@@ -44,11 +45,13 @@ public class WorkerUtil {
      */
     public static void dispatchToInboundEndpoint(CarbonMessage carbonMessage, CarbonCallback carbonCallback) {
 
+        Provider provider = null;
         carbonMessage.setProperty(Constants.VARIABLE_STACK, new Stack<Map<String, Object>>());
 
-        String protocol = "http";  //TODO: Take from cMsg
-
-        Provider provider = InboundEPProviderRegistry.getInstance().getProvider(protocol);
+        String protocol = (String) carbonMessage.getProperty(org.wso2.carbon.messaging.Constants.PROTOCOL);
+        if (null != protocol) {
+            provider = InboundEPProviderRegistry.getInstance().getProvider(protocol.toLowerCase(Locale.getDefault()));
+        }
 
         if (provider == null) {
             logger.error("Cannot handle protocol : " + protocol + " , Provider not found");
