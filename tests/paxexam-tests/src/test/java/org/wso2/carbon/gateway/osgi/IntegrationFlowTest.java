@@ -86,6 +86,7 @@ public class IntegrationFlowTest {
         CarbonMessage carbonMessage = mock(CarbonMessage.class);
         CarbonCallback carbonCallback = mock(CarbonCallback.class);
 
+        when(carbonMessage.getProperty(Constants.PROTOCOL)).thenReturn("HTTP");
         when(carbonMessage.getProperty(Constants.LISTENER_INTERFACE_ID)).thenReturn("default");
         when(carbonMessage.getProperty(Constants.TO)).thenReturn("/stocks/getStocks");
         when(carbonMessage.getProperty("HTTP_METHOD")).thenReturn("GET");
