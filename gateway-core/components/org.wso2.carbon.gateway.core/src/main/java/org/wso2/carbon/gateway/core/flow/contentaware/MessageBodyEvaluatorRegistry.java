@@ -47,17 +47,9 @@ public class MessageBodyEvaluatorRegistry {
 
     public void addMessageBodyEvaluator(String pathLanguage,
             MessageBodyEvaluator messageBodyEvaluator) {
-        //TODO: Should we support adding a type of "path language" as an extension point??
-        //And does a new version of a path language (say XPath 4.0!) be considered as a
-        //another path language??
-
-        //In that case grammar also will need changes and we can't keep a path language enum.
-        //And can't just put any registered evaluator without checking if there already is
-        //a evaluator for that specific language.
         if (log.isDebugEnabled()) {
             log.debug("Adding message body evaluator: {}", messageBodyEvaluator);
         }
-        //TODO:
         messageBodyEvaluators.put(pathLanguage, messageBodyEvaluator);
     }
 

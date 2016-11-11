@@ -28,8 +28,9 @@ import org.wso2.carbon.gateway.core.flow.contentaware.messagereaders.Reader;
 import org.wso2.carbon.gateway.core.flow.contentaware.messagereaders.ReaderRegistryImpl;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.Source;
 import org.wso2.carbon.messaging.CarbonMessage;
-import org.wso2.carbon.messaging.MessageDataSource;
+import org.wso2.carbon.messaging.MessageUtil;
 
+import java.io.InputStream;
 import java.util.regex.Pattern;
 
 /**
@@ -64,6 +65,10 @@ public class Evaluator {
      * @throws Exception
      */
     public static boolean isPathMatched(CarbonMessage carbonMessage, Source source, Pattern pattern) throws Exception {
+        // TODO: Once we sort out whether we are using a canonical model, how exactly are we going to
+        // reuse the message once built, etc this should be changed as appropriate
+        // Cloning the message here will have an effect on memory
+        InputStream inputStream = MessageUtil.cloneCarbonMessageWithData(carbonMessage).getInputStream();
         MessageBodyEvaluator messageBodyEvaluator = MessageBodyEvaluatorRegistry.getInstance()
                 .getMessageBodyEvaluator(source.getPathLanguage());
         if (messageBodyEvaluator != null) {
@@ -71,11 +76,7 @@ public class Evaluator {
             if (reader != null) {
                 String contentType = reader.getContentType();
                 if (messageBodyEvaluator.isContentTypeSupported(contentType)) {
-                    MessageDataSource messageDataSource = carbonMessage.getMessageDataSource();
-                    Object dataObject = messageDataSource != null ?
-                            messageDataSource.getDataObject() :
-                            reader.makeMessageReadable(carbonMessage).getDataObject();
-                    Object result = messageBodyEvaluator.evaluate(dataObject, source.getKey());
+                    Object result = messageBodyEvaluator.evaluate(inputStream, source.getKey());
                     return result != null && pattern.matcher(result.toString()).matches();
                 } else {
                     throw new MessageBodyEvaluationException(messageBodyEvaluator.getPathLanguage()

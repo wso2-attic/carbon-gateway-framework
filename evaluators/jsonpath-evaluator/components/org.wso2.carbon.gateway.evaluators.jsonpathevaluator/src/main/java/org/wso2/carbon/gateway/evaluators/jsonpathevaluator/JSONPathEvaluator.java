@@ -38,23 +38,18 @@ public class JSONPathEvaluator implements MessageBodyEvaluator {
     /**
      * This evaluates a JSON message against a provided JSONPath expression.
      *
-     * @param inputStreamObject JSON input stream
+     * @param inputStream JSON input stream
      * @param expression JSON expression to evaluate the JSON message against
      * @return The resulting value
      * @throws MessageBodyEvaluationException
      */
     @Override
-    public Object evaluate(Object inputStreamObject, String expression) throws MessageBodyEvaluationException {
+    public Object evaluate(InputStream inputStream, String expression) throws MessageBodyEvaluationException {
         JsonPath jsonPath = JsonPath.compile(expression);
         try {
-            if (inputStreamObject instanceof InputStream) {
-                return jsonPath.read((InputStream) inputStreamObject);
-            } else {
-                throw new MessageBodyEvaluationException("The type " + inputStreamObject.getClass()
-                        + "is not supported");
-            }
+            return jsonPath.read(inputStream);
         } catch (IOException e) {
-            throw new MessageBodyEvaluationException(e);
+            throw new MessageBodyEvaluationException("There is a problem evaluating the XPath", e);
         }
     }
 

@@ -24,13 +24,13 @@ import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmNode;
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.soap.SOAPEnvelope;
 import org.wso2.carbon.gateway.core.flow.contentaware.MIMEType;
 import org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext.MessageBodyEvaluator;
 import org.wso2.carbon.gateway.core.flow.contentaware.exceptions.MessageBodyEvaluationException;
 
-import java.io.StringReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import javax.xml.transform.stream.StreamSource;
 
 /**
@@ -57,28 +57,22 @@ public class XPathEvaluator implements MessageBodyEvaluator {
     /**
      * This evaluates an XML message against a provided XPath expression.
      *
-     * @param omElementObject OMElement object to be evaluated
+     * @param inputStream input stream to be evaluated
      * @param xpathExpression XPath expression to evaluate the OMElement against
      * @return The resulting value
      * @throws MessageBodyEvaluationException
      */
     @Override
-    public Object evaluate(Object omElementObject, String xpathExpression)
-            throws MessageBodyEvaluationException {
-        if (omElementObject instanceof OMElement) {
-            try {
-                OMElement messageBody = ((SOAPEnvelope) omElementObject).getBody().getFirstElement();
-                StringReader reader = new StringReader(messageBody.toString());
-                DocumentBuilder builder = processor.newDocumentBuilder();
-                XdmNode doc = builder.build(new StreamSource(reader));
-                XPathSelector selector = xPathCompiler.compile(xpathExpression).load();
-                selector.setContextItem(doc);
-                return selector.evaluate();
-            } catch (SaxonApiException e) {
-                throw new MessageBodyEvaluationException("There is a problem evaluating the XPath", e);
-            }
-        } else {
-            throw new MessageBodyEvaluationException("The type " + omElementObject.getClass() + "is not supported");
+    public Object evaluate(InputStream inputStream, String xpathExpression) throws MessageBodyEvaluationException {
+        try {
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+            DocumentBuilder builder = processor.newDocumentBuilder();
+            XdmNode doc = builder.build(new StreamSource(inputStreamReader));
+            XPathSelector selector = xPathCompiler.compile(xpathExpression).load();
+            selector.setContextItem(doc);
+            return selector.evaluate();
+        } catch (SaxonApiException e) {
+            throw new MessageBodyEvaluationException("There is a problem evaluating the XPath", e);
         }
     }
 

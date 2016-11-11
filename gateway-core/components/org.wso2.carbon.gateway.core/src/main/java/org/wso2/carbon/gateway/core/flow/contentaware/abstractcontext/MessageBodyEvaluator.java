@@ -20,6 +20,8 @@ package org.wso2.carbon.gateway.core.flow.contentaware.abstractcontext;
 
 import org.wso2.carbon.gateway.core.flow.contentaware.exceptions.MessageBodyEvaluationException;
 
+import java.io.InputStream;
+
 /**
  * Any MessageBodyEvaluator such as XPathEvaluator should implement this interface.
  */
@@ -30,7 +32,7 @@ public interface MessageBodyEvaluator {
      * @param message message to be evaluated
      * @return Result of the evaluation
      */
-    Object evaluate(Object message, String expression) throws MessageBodyEvaluationException;
+    Object evaluate(InputStream message, String expression) throws MessageBodyEvaluationException;
 
     /**
      * Returns the relevant path language of the MessageBody evaluator.
