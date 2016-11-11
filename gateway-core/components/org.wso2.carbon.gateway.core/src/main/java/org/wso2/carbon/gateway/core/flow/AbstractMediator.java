@@ -145,11 +145,11 @@ public abstract class AbstractMediator implements Mediator {
     }
 
     /**
-     * Retrieve an object from the Variable stack
+     * Retrieve an object from the Variable stack. Users of this method are expected to handle null returns
      *
      * @param carbonMessage Carbon message with the stack
      * @param objectName    Name of the object
-     * @return Object itself
+     * @return Object itself, null if the object is not found
      */
     protected Object getObjectFromContext(CarbonMessage carbonMessage, String objectName) {
         return VariableUtil.getVariable(carbonMessage, objectName);

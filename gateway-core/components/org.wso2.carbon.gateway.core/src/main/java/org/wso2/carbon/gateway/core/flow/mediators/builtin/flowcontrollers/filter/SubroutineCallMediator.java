@@ -69,9 +69,15 @@ public class SubroutineCallMediator extends AbstractFlowController {
 
     @Override
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
-        /* Here we will look for mentioned Subroutine inside this Integrations' local Subroutines Map */
-        Subroutine referredSubroutine = IntegrationConfigRegistry.getInstance().getIntegrationConfig(this.integrationId)
-                .getSubroutine(this.subroutineId);
+        /* SubroutineCall can be either inside an Integration object or inside another Global level Subroutine
+           First we will check if its inside an Integration, if so first look for the Subroutine implementation in its
+           Integrations' local Map
+          */
+        Subroutine referredSubroutine = null;
+        if (this.integrationId != null) {
+            IntegrationConfigRegistry.getInstance().getIntegrationConfig(this.integrationId)
+                    .getSubroutine(this.subroutineId);
+        }
         //TODO:if referredSubroutine is not found we should look in the global level, global level Map should implement
 
         // if incorrect number of arguments are given or subroutine is not present, skip the subroutine call

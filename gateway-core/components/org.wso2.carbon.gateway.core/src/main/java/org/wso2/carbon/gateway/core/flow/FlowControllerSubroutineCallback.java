@@ -62,8 +62,10 @@ public class FlowControllerSubroutineCallback implements FlowControllerCallback 
         if (canProcess(carbonMessage)) {
             // Retrieve returning objects from the Subroutines' scope
             List<Object> retuningObjects = new ArrayList<>();
-            subroutine.getReturnVariables()
-                    .forEach(identifier -> retuningObjects.add(VariableUtil.getVariable(carbonMessage, identifier)));
+            if (subroutine.getReturnVariables() != null) {
+                subroutine.getReturnVariables().forEach(
+                        identifier -> retuningObjects.add(VariableUtil.getVariable(carbonMessage, identifier)));
+            }
             // Remove Subroutines' scope
             VariableUtil.popVariableStack(carbonMessage, variableStack);
             // Validate if correct number of returning values are specified at SubroutineMediatorCall

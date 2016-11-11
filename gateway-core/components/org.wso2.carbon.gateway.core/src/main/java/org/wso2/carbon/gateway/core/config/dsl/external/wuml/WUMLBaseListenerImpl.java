@@ -955,33 +955,25 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         LinkedHashMap<String, Constants.TYPES> inputArgs = new LinkedHashMap<>();
         List<Constants.TYPES> returnTypes = new ArrayList<>();
         List<String> exceptionsList = new ArrayList<>();
+
         // Parse input arguments
         WUMLParser.ArgumentsContext arguments = ctx.subroutineDeclaration().arguments();
         if (arguments != null && !arguments.argument().isEmpty()) {
-            String type, identifier;
-            for (WUMLParser.ArgumentContext argument: arguments.argument()) {
-                if (argument.type() != null) {
-                    type = argument.type().getText();
-                } else {
-                    type = argument.classType().getText();
-                }
-                identifier = argument.Identifier().getText();
-                inputArgs.put(identifier, getTypeConstant(type));
-            }
+            arguments.argument().forEach(argument -> {
+                String type = (argument.type() != null) ? argument.type().getText() : argument.classType().getText();
+                inputArgs.put(argument.Identifier().getText(), getTypeConstant(type));
+            });
         }
 
         // Parse output types
         WUMLParser.ReturnTypesContext returnValues = ctx.subroutineDeclaration().returnTypes();
         if (returnValues != null && !returnValues.returnType().isEmpty()) {
-            String type;
-            for (WUMLParser.ReturnTypeContext returnType: returnValues.returnType()) {
-                if (returnType.type() != null) {
-                    type = returnType.type().getText();
-                } else {
-                    type = returnType.classType().getText();
-                }
+            returnValues.returnType().forEach(returnValue -> {
+                String type = (returnValue.type() != null) ?
+                        returnValue.type().getText() :
+                        returnValue.classType().getText();
                 returnTypes.add(getTypeConstant(type));
-            }
+            });
         }
 
         // Parse thrown NelExceptions

@@ -67,6 +67,11 @@ public class HeaderMediator extends AbstractMediator {
     @Override
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
         CarbonMessage inputCarbonMessage = (CarbonMessage) getObjectFromContext(carbonMessage, messageKey);
+        // If inputCarbonMessage is null, skip the HEADER mediator
+        if (inputCarbonMessage == null) {
+            logger.error("Message with identifier: " + messageKey + ", not found in this context or value is null.");
+            return next(carbonMessage, carbonCallback);
+        }
         if (action == Action.REMOVE && scope == Scope.TRANSPORT) {
             inputCarbonMessage.removeHeader(name);
         } else if (action == Action.SET && scope == Scope.TRANSPORT) {
