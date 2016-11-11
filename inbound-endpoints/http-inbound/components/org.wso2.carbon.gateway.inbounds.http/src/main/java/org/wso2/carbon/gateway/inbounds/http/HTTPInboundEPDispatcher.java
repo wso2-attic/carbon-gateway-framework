@@ -72,7 +72,7 @@ public class HTTPInboundEPDispatcher implements Dispatcher, ConfigRegistryObserv
         }
 
         if (!foundMatchingEndpoint) {
-            callback.done(createErrorMessage("Cannot found matching  Resource", 404));
+            callback.done(createErrorMessage("Cannot find a matching Resource", 404));
         }
 
         return false;
