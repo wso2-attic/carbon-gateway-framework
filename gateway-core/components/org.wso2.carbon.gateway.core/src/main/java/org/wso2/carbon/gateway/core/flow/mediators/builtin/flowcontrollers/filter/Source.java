@@ -23,15 +23,48 @@ package org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filt
  */
 public class Source {
 
+    /**
+     * This is, as the the variable name itself suggests, the scope of the message
+     * being evaluated. eg: $header, $body
+     */
     private Scope scope;
 
+    /**
+     * This is what we evaluate the message against.
+     * eg: In case of content based routing, given the eval expression "$body:/quote/text()[1]"
+     * The key would be "/quote/text()[1]"
+     */
     private String key;
 
+    /**
+     * This is the part of the key without the scope value.
+     * i.e. given the eval expression "$body:/quote/text()[1]" the value would be /quote/text()[1]
+     */
     private String value;
+
+    /**
+     * This is the path language eg: XPath in case of content based routing.
+     */
+    private String pathLanguage;
 
     public Source(String key, Scope scope) {
         this.scope = scope;
         this.key = key;
+    }
+
+    /**
+     * This is the constructor to be used when an XPath/JSONPath based eval expression is encountered.
+     *
+     * @param value This corresponds to the "value" variable.
+     * @param pathLanguage This corresponds to the "pathLanguage" variable
+     */
+    public Source(String value, String pathLanguage) {
+        this.value = value;
+        this.pathLanguage = pathLanguage;
+        if (this.value.contains("$body")) {
+            key = this.value.substring(this.value.indexOf(":") + 1);
+            scope = Scope.BODY;
+        }
     }
 
     public Source(String value) {
@@ -49,5 +82,9 @@ public class Source {
 
     public String getKey() {
         return key;
+    }
+
+    public String getPathLanguage() {
+        return pathLanguage;
     }
 }

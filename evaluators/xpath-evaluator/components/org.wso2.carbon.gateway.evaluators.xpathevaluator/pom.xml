@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ /*
+  ~ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~ *
+  ~ * Licensed under the Apache License, Version 2.0 (the "License");
+  ~ * you may not use this file except in compliance with the License.
+  ~ * You may obtain a copy of the License at
+  ~ *
+  ~ * http://www.apache.org/licenses/LICENSE-2.0
+  ~ *
+  ~ * Unless required by applicable law or agreed to in writing, software
+  ~ * distributed under the License is distributed on an "AS IS" BASIS,
+  ~ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ * See the License for the specific language governing permissions and
+  ~ * limitations under the License.
+  ~ */
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>org.wso2.carbon.gateway.evaluators.xpathevaluator.parent</artifactId>
+        <groupId>org.wso2.carbon.gateway</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>XPath Evaluator</name>
+    <groupId>org.wso2.carbon.gateway.evaluators</groupId>
+    <artifactId>org.wso2.carbon.gateway.evaluators.xpathevaluator</artifactId>
+    <packaging>bundle</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.eclipse.osgi</groupId>
+            <artifactId>org.eclipse.osgi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.eclipse.osgi</groupId>
+            <artifactId>org.eclipse.osgi.services</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.gateway</groupId>
+            <artifactId>org.wso2.carbon.gateway.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.messaging</groupId>
+            <artifactId>org.wso2.carbon.messaging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ws.commons.axiom</groupId>
+            <artifactId>axiom-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.net.sf.saxon</groupId>
+            <artifactId>Saxon-HE</artifactId>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <bundle.activator>org.wso2.carbon.gateway.evaluators.xpathevaluator.internal.Activator
+        </bundle.activator>
+        <private.package>org.wso2.carbon.gateway.evaluators.xpathevaluator.internal</private.package>
+        <export.package>
+            !org.wso2.carbon.gateway.evaluators.xpathevaluator.internal,
+            org.wso2.carbon.gateway.evaluators.xpathevaluator;version="${carbon.gw.package.export.version}"
+        </export.package>
+        <import.package>
+            org.wso2.carbon.kernel.startupresolver.*;version="${carbon.kernel.package.import.version.range}",
+            org.osgi.framework.*;version="${osgi.framework.import.version.range}",
+            org.sample.dsl.*;version="1.0.0",
+            org.wso2.carbon.gateway.core.config.dsl.internal.*,
+            org.wso2.carbon.gateway.core.*;version="${carbon.gw.package.export.version}",
+            org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
+            org.wso2.carbon.messaging,
+            javax.xml.*;version=0.0.0,
+            org.apache.axiom.*;version="0.0.0",
+            net.sf.saxon.s9api.*;version="${saxon.wso2.version}"
+        </import.package>
+    </properties>
+
+</project>
