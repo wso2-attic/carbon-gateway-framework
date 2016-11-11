@@ -18,15 +18,19 @@
 package org.wso2.carbon.gateway.core.inbound;
 
 //import org.wso2.carbon.gateway.core.config.ConfigConstants;
+
+import org.wso2.carbon.gateway.core.Constants;
 import org.wso2.carbon.gateway.core.config.IntegrationConfigRegistry;
 import org.wso2.carbon.gateway.core.config.ParameterHolder;
+import org.wso2.carbon.gateway.core.config.annotations.Annotation;
 import org.wso2.carbon.gateway.core.flow.Resource;
-//import org.wso2.carbon.gateway.core.flow.triggers.EndpointTrigger;
 import org.wso2.carbon.gateway.core.util.VariableUtil;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 
 import java.util.HashMap;
+
+//import org.wso2.carbon.gateway.core.flow.triggers.EndpointTrigger;
 
 /**
  * Base for InboundEndpoints. All Inbound Endpoint types must extend this.
@@ -78,12 +82,17 @@ public abstract class InboundEndpoint {
 
         for (Resource r : IntegrationConfigRegistry.getInstance().getIntegrationConfig(configName)
                 .getResources().values()) {
-
-            if (r.matches(cMsg)) {
-                resource = r;
-                break;
+            String method = (String) cMsg.getProperty(Constants.SERVICE_METHOD);
+            String methodAnnotation = "@" + method;
+            Annotation annotation = r.getAnnotation(methodAnnotation);
+            if (annotation.getValue().equals(Boolean.TRUE)) {
+                if (r.matches(cMsg)) {
+                    resource = r;
+                    break;
+                }
+            } else {
+                return false;
             }
-
         }
 
         if (resource != null) {
