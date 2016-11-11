@@ -38,16 +38,16 @@ public class FlowControllerSubroutineCallback implements FlowControllerCallback 
 
     private static final Logger log = LoggerFactory.getLogger(FlowControllerSubroutineCallback.class);
     /* Incoming callback */
-    CarbonCallback parentCallback;
+    private CarbonCallback parentCallback;
 
     /* SubroutineCall Mediator */
-    SubroutineCallMediator mediator;
+    private SubroutineCallMediator mediator;
 
     /* Parents Variable Stack*/
-    Stack<Map<String, Object>> variableStack;
+    private Stack<Map<String, Object>> variableStack;
 
     /* Referred Subroutine by the SubroutineMediatorCall */
-    Subroutine subroutine;
+    private Subroutine subroutine;
 
     public FlowControllerSubroutineCallback(CarbonCallback parentCallback, SubroutineCallMediator mediator,
             Stack variableStack, Subroutine subroutine) {
@@ -97,10 +97,20 @@ public class FlowControllerSubroutineCallback implements FlowControllerCallback 
         }
     }
 
+    /**
+     * Get Mediator which created this Callback
+     *
+     * @return
+     */
     public Mediator getMediator() {
         return mediator;
     }
 
+    /**
+     * Get parent of this Callback
+     *
+     * @return
+     */
     public CarbonCallback getParentCallback() {
         return parentCallback;
     }

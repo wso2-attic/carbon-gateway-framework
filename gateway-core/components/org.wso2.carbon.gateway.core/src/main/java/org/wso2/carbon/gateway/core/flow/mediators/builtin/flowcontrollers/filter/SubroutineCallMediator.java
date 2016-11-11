@@ -75,7 +75,7 @@ public class SubroutineCallMediator extends AbstractFlowController {
           */
         Subroutine referredSubroutine = null;
         if (this.integrationId != null) {
-            IntegrationConfigRegistry.getInstance().getIntegrationConfig(this.integrationId)
+            referredSubroutine = IntegrationConfigRegistry.getInstance().getIntegrationConfig(this.integrationId)
                     .getSubroutine(this.subroutineId);
         }
         //TODO:if referredSubroutine is not found we should look in the global level, global level Map should implement

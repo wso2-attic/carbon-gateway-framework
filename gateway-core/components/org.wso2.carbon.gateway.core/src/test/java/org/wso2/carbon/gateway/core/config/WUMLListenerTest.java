@@ -10,8 +10,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.deployment.engine.Artifact;
-import org.wso2.carbon.deployment.engine.exception.CarbonDeploymentException;
-import org.wso2.carbon.gateway.core.config.dsl.external.deployer.IFlowDeployer;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.WUMLBaseListenerImpl;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLLexer;
 import org.wso2.carbon.gateway.core.config.dsl.external.wuml.generated.WUMLParser;
@@ -73,7 +71,8 @@ public class WUMLListenerTest {
         String integrationName = "passthrough";
         String resourceName = "passthrough";
 
-        Assert.assertTrue("Error while deploying config :" + iFlowResource, deployArtifacts(iFlowResource));
+        Artifact testArtifact = new Artifact(new File(getClass().getResource(iFlowResource).getFile()));
+        Assert.assertTrue("Error while deploying config :" + iFlowResource, TestUtil.deployArtifacts(testArtifact));
 
         Integration sampleIntegration = IntegrationConfigRegistry.getInstance().getIntegrationConfig(integrationName);
         MediatorCollection generatedMediatorCollection = sampleIntegration.getResource(resourceName).getDefaultWorker()
@@ -102,7 +101,8 @@ public class WUMLListenerTest {
         String integrationName = "filter";
         String resourceName = "passthrough";
 
-        Assert.assertTrue("Error while deploying config :" + iFlowResource, deployArtifacts(iFlowResource));
+        Artifact testArtifact = new Artifact(new File(getClass().getResource(iFlowResource).getFile()));
+        Assert.assertTrue("Error while deploying config :" + iFlowResource, TestUtil.deployArtifacts(testArtifact));
 
         Integration sampleIntegration = IntegrationConfigRegistry.getInstance().getIntegrationConfig(integrationName);
         MediatorCollection generatedMediatorCollection = sampleIntegration.getResource(resourceName).getDefaultWorker()
@@ -149,18 +149,6 @@ public class WUMLListenerTest {
 
         // remove the created Integration
         IntegrationConfigRegistry.getInstance().removeIntegrationConfig(sampleIntegration);
-    }
-
-    private boolean deployArtifacts(String iFlowResource) {
-        Artifact testArtifact = new Artifact(new File(getClass().getResource(iFlowResource).getFile()));
-        IFlowDeployer iFlowDeployer = new IFlowDeployer();
-        try {
-            iFlowDeployer.deploy(testArtifact);
-        } catch (CarbonDeploymentException e) {
-            log.error("Deployment failed for the configuration: " + iFlowResource, e);
-            return false;
-        }
-        return true;
     }
 
     private boolean parseIflow(String iFlowResource) {
