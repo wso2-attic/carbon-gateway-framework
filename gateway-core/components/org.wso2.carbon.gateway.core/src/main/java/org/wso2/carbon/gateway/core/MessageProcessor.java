@@ -52,7 +52,7 @@ public class MessageProcessor implements CarbonMessageProcessor {
 
     @Override
     public String getId() {
-        return null;
+        return "message-processor";
     }
 
 }
