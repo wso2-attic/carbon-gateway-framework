@@ -38,8 +38,8 @@ public abstract class AbstractMediator implements Mediator {
 
     /* Pointer for the next sibling in the pipeline*/ Mediator nextMediator = null;
 
+    /* If this mediator call returns to a Variable, its identifier is stored here */
     protected String returnedOutput;
-
     /**
      * Check whether a sibling is present after this in the pipeline
      *
@@ -145,11 +145,11 @@ public abstract class AbstractMediator implements Mediator {
     }
 
     /**
-     * Retrieve an object from the Variable stack
+     * Retrieve an object from the Variable stack. Users of this method are expected to handle null returns
      *
      * @param carbonMessage Carbon message with the stack
      * @param objectName    Name of the object
-     * @return Object itself
+     * @return Object itself, null if the object is not found
      */
     protected Object getObjectFromContext(CarbonMessage carbonMessage, String objectName) {
         return VariableUtil.getVariable(carbonMessage, objectName);
@@ -165,11 +165,14 @@ public abstract class AbstractMediator implements Mediator {
     public void setObjectToContext(CarbonMessage carbonMessage, String objectName, Object object) {
         Map map = (Map) VariableUtil.getMap(carbonMessage, objectName);
         if (map != null) {
-            map.put(objectName, object);
+            if (VariableUtil.isBothSameType(map.get(objectName), object)) {
+                map.put(objectName, object);
+            } else {
+                log.error("Not a valid assignment to variable: " + objectName);
+            }
         } else {
-            log.error("Variable " + objectName + " is not declared.");
+            log.error("Variable is not declared: " + objectName);
         }
-
     }
 
     @Override

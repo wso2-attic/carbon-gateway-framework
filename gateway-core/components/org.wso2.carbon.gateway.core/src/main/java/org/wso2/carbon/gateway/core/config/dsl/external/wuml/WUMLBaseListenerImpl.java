@@ -40,9 +40,11 @@ import org.wso2.carbon.gateway.core.flow.AbstractFlowController;
 import org.wso2.carbon.gateway.core.flow.Mediator;
 import org.wso2.carbon.gateway.core.flow.MediatorProviderRegistry;
 import org.wso2.carbon.gateway.core.flow.Resource;
+import org.wso2.carbon.gateway.core.flow.Subroutine;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.Condition;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.FilterMediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.Source;
+import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.SubroutineCallMediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.TryBlockMediator;
 import org.wso2.carbon.gateway.core.flow.templates.uri.URITemplate;
 import org.wso2.carbon.gateway.core.flow.templates.uri.URITemplateException;
@@ -53,11 +55,14 @@ import org.wso2.carbon.gateway.core.outbound.OutboundEndpoint;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Implementation class of the ANTLR generated listener class
@@ -66,7 +71,10 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     private static final Logger log = LoggerFactory.getLogger(WUMLBaseListenerImpl.class);
     private Integration integration;
     private String integrationName;
+    /* This will hold the currently processing Resource until its copied to the Integration instance */
     private Resource currentResource;
+    /* This will hold the currently processing Subroutine until its copied to the Integration instance */
+    private Subroutine currentSubroutine;
     // Temporary reference for the currently processing filter mediator
     private Stack<AbstractFlowController> flowControllerStack;
     private Stack<FlowControllerMediatorSection> flowControllerMediatorSection;
@@ -413,6 +421,7 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         this.currentResource.getAnnotations().get(ConfigConstants.AN_BASE_PATH).setValue(path);
 
         integration.getResources().put(this.currentResource.getName(), this.currentResource);
+        currentResource = null;
     }
 
     @Override
@@ -660,7 +669,7 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
      * statements with 'reply'. It maps to a Respond mediator
      */
     @Override
-    public void exitReturnStatement(WUMLParser.ReturnStatementContext ctx) {
+    public void exitReplyStatement(WUMLParser.ReplyStatementContext ctx) {
         Mediator respondMediator = MediatorProviderRegistry.getInstance().getMediator(Constants.RESPOND_MEDIATOR_NAME);
         ParameterHolder parameterHolder = new ParameterHolder();
         if (ctx.Identifier() != null) {
@@ -879,25 +888,26 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
     public void exitLocalVariableInitializationStatement(WUMLParser.LocalVariableInitializationStatementContext ctx) {
         String type = null;
         String variableName = null;
-        String variableValue;
+        String variableValue = null;
         ParameterHolder parameterHolder = new ParameterHolder();
         Mediator propertyMediator = MediatorProviderRegistry.getInstance()
                 .getMediator(Constants.PROPERTY_MEDIATOR_NAME);
 
-        if (ctx.type() != null) { // pattern of " type Identifier '=' literal ';' "
+        if (ctx.type() != null) { // pattern of " type Identifier "
             type = ctx.type().getText();
             variableName = ctx.Identifier().getText();
-            variableValue = (ctx.literal().StringLiteral() != null) ?
-                    StringParserUtil.getValueWithinDoubleQuotes(ctx.literal().getText()) :
-                    ctx.literal().getText();
+            if (ctx.literal() != null) {  // pattern of " string s = "abc"; "
+                variableValue = (ctx.literal().StringLiteral() != null) ?
+                        StringParserUtil.getValueWithinDoubleQuotes(ctx.literal().getText()) :
+                        ctx.literal().getText();
+            }
             parameterHolder.addParameter(new Parameter(Constants.VALUE, variableValue));
-        } else if (ctx.mediatorCall() != null) { // pattern of " message n = invoke(Ep,m) ';'"
+        } else if (ctx.classType() != null) { // pattern of " classType Identifier ( mediatorCall | SubCall | etc. ) "
             type = ctx.classType().getText();
             variableName = ctx.Identifier().getText();
-        } else if (ctx.classType() != null && ctx.newTypeObjectCreation() != null) {
-            type = ctx.classType().getText();   // pattern of " message m '=' new message() ';' "
-            variableName = ctx.Identifier().getText();
-        }
+            //TODO: Include new object creation here as:  if (ctx.newTypeObjectCreation() != null)
+            // pattern of " message n = new message() ';'"
+        } //TODO: Add endpoint Initialization here as: if (ctx.endpointDeclaration() != null)
 
         parameterHolder.addParameter(new Parameter(Constants.KEY, variableName));
         parameterHolder.addParameter(new Parameter(Constants.TYPE, type));
@@ -943,6 +953,102 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
         dropMediatorFilterAware(propertyMediator);
     }
 
+    /* Handling Subroutine Declarations */
+
+    @Override public void exitSubroutineName(WUMLParser.SubroutineNameContext ctx) {
+        this.currentSubroutine = new Subroutine(ctx.Identifier().getText());
+    }
+
+    @Override public void exitSubroutine(WUMLParser.SubroutineContext ctx) {
+        //LinkedHashMap is used to preserve the order or input arguments
+        LinkedHashMap<String, Constants.TYPES> inputArgs = new LinkedHashMap<>();
+        List<Constants.TYPES> returnTypes = new ArrayList<>();
+        List<String> exceptionsList = new ArrayList<>();
+
+        // Parse input arguments
+        WUMLParser.ArgumentsContext arguments = ctx.subroutineDeclaration().arguments();
+        if (arguments != null && !arguments.argument().isEmpty()) {
+            arguments.argument().forEach(argument -> {
+                String type = (argument.type() != null) ? argument.type().getText() : argument.classType().getText();
+                inputArgs.put(argument.Identifier().getText(), getTypeConstant(type));
+            });
+        }
+
+        // Parse output types
+        WUMLParser.ReturnTypesContext returnValues = ctx.subroutineDeclaration().returnTypes();
+        if (returnValues != null && !returnValues.returnType().isEmpty()) {
+            returnValues.returnType().forEach(returnValue -> {
+                String type = (returnValue.type() != null) ?
+                        returnValue.type().getText() :
+                        returnValue.classType().getText();
+                returnTypes.add(getTypeConstant(type));
+            });
+        }
+
+        // Parse thrown NelExceptions
+        WUMLParser.ThrowsClauseContext exceptions = ctx.subroutineDeclaration().throwsClause();
+        if (exceptions != null) {
+            exceptionsList = exceptions.exceptionType()
+                    .stream()
+                    .map(exceptionTypeContext -> exceptionTypeContext.getText())
+                    .collect(Collectors.toList());
+        }
+
+        this.currentSubroutine.setInputArgs(inputArgs);
+        this.currentSubroutine.setReturnTypes(returnTypes);
+        this.currentSubroutine.setExceptionsList(exceptionsList);
+
+        // Add subroutine to subroutine Map
+        this.integration.addSubroutine(currentSubroutine);
+
+        this.currentSubroutine = null;
+    }
+
+    @Override public void exitReturnStatement(WUMLParser.ReturnStatementContext ctx) {
+        this.currentSubroutine.setReturnVariables(ctx.returningIdentifiers().Identifier()
+                .stream()
+                .map(i -> i.getText())
+                .collect(Collectors.toList()));
+    }
+
+    @Override public void exitSubroutineCall(WUMLParser.SubroutineCallContext ctx) {
+        SubroutineCallMediator subroutineCallMediator = new SubroutineCallMediator();
+        // Set integration name
+        subroutineCallMediator.setIntegrationId(this.integrationName);
+        // Set subroutine name
+        subroutineCallMediator.setSubroutineId(ctx.Identifier().getText());
+        // Set returning Identifier names
+        if (ctx.parent instanceof WUMLParser.MultipleVariableReturnStatementContext) {
+            // if this comes as a 0 or more variable assignment statement
+            WUMLParser.MultipleVariableReturnStatementContext parentCtx =
+                    (WUMLParser.MultipleVariableReturnStatementContext) ctx.parent;
+            if (parentCtx.returningIdentifiers() != null) {
+                subroutineCallMediator.setReturnValueIdentifiers(
+                        parentCtx.returningIdentifiers().Identifier().stream().map(identifier -> identifier.getText())
+                                .collect(Collectors.toList()));
+            }
+        } else if (ctx.parent instanceof WUMLParser.LocalVariableInitializationStatementContext) {
+            // If this comes as a variable initialization statement
+            subroutineCallMediator.getReturnValueIdentifiers()
+                    .add(((WUMLParser.LocalVariableInitializationStatementContext) ctx.parent).Identifier().getText());
+        }
+
+        // Set input parameter names
+        if (ctx.inputParameters() != null) {
+            subroutineCallMediator.setInputParameters(ctx.inputParameters().parameter().stream().map(parameter -> {
+                if (parameter.Identifier() != null) {
+                    return parameter.Identifier().getText();
+                } else if (parameter.literal().StringLiteral() != null) {
+                    return StringParserUtil.getValueWithinDoubleQuotes(parameter.literal().StringLiteral().getText());
+                }
+                return parameter.literal().getText();
+            }).collect(Collectors.toList()));
+        }
+
+        dropMediatorFilterAware(subroutineCallMediator);
+    }
+
+
     /* Util methods */
 
     /**
@@ -969,7 +1075,11 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
                 break;
             }
         } else {
-            this.currentResource.getDefaultWorker().addMediator(mediator);
+            if (this.currentResource != null) {
+                this.currentResource.getDefaultWorker().addMediator(mediator);
+            } else if (this.currentSubroutine != null) {
+                this.currentSubroutine.addSubroutineMediator(mediator);
+            }
         }
     }
 
@@ -1003,6 +1113,39 @@ public class WUMLBaseListenerImpl extends WUMLBaseListener {
                 parameterHolder.addParameter(new Parameter(key, value));
             }
         }
+    }
+
+    /**
+     * Get the matching Constant.TYPE according to the Integration Configuration
+     *
+     * @param type Type that is mentioned in the Integration Configuration
+     * @return  Matched Constant.TYPE
+     */
+    public Constants.TYPES getTypeConstant(String type) {
+        Constants.TYPES typeConstant =  null;
+        switch (type) {
+        case Constants.INTEGER:
+            typeConstant = Constants.TYPES.INTEGER;
+            break;
+        case Constants.DOUBLE:
+            typeConstant = Constants.TYPES.DOUBLE;
+            break;
+        case Constants.BOOLEAN:
+            typeConstant = Constants.TYPES.BOOLEAN;
+            break;
+        case Constants.STRING:
+            typeConstant = Constants.TYPES.STRING;
+            break;
+        case Constants.MESSAGE:
+            typeConstant = Constants.TYPES.MESSAGE;
+            break;
+        case Constants.ENDPOINT:
+            typeConstant = Constants.TYPES.ENDPOINT;
+            break;
+        default:
+            log.error("Invalid type declaration: " + type);
+        }
+        return typeConstant;
     }
 
     private enum FlowControllerMediatorSection {
