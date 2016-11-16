@@ -31,7 +31,7 @@ public class Constants {
      * Enumeration of supported types.
      */
     public enum TYPES {
-        STRING, INTEGER, BOOLEAN, DOUBLE, FLOAT, LONG, SHORT, XML, JSON, UNKNOWN, MESSAGE
+        STRING, INTEGER, BOOLEAN, DOUBLE, FLOAT, LONG, SHORT, XML, JSON, UNKNOWN, MESSAGE, ENDPOINT
     }
 
     public static final String GW_GT_SCOPE = "GW_GT_SCOPE";
@@ -161,4 +161,16 @@ public class Constants {
     public static final String TYPE = "type";
 
     public static final String ASSIGNMENT = "assignment";
+
+    /* Integration Configuration types */
+
+    public static final String INTEGER = "int";
+
+    public static final String DOUBLE = "double";
+
+    public static final String STRING = "string";
+
+    public static final String BOOLEAN = "boolean";
+
+    public static final String MESSAGE = "message";
 }

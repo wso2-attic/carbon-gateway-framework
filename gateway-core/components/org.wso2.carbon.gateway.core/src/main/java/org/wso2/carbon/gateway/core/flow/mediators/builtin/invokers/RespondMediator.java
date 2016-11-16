@@ -57,7 +57,7 @@ public class RespondMediator extends AbstractMediator implements Invoker {
         if (carbonMessage != null) {
             parentCallback.done(carbonMessage);
         } else {
-            log.error("Message: " + messageId + " not found in the context.");
+            log.error("Message: " + messageId + " not found in the context or value is null.");
         }
 
         return true;

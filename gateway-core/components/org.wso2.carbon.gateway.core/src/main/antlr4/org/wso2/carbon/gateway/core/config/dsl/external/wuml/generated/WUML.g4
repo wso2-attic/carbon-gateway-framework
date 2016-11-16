@@ -6,6 +6,7 @@ sourceFile
         constants?
         globalVariables?
         resources
+        subroutines?
         EOF
     ;
 
@@ -26,6 +27,10 @@ globalVariables
 
 resources
     :   resource+
+    ;
+
+subroutines
+    :   subroutine+
     ;
 
 packageDef
@@ -188,6 +193,40 @@ resourceName
     :   Identifier
     ;
 
+subroutine
+    :   '@' 'Description' StringLiteral
+        subroutineDeclaration
+    ;
+
+subroutineDeclaration
+    :   'function' subroutineName '(' arguments? ')' '(' returnTypes? ')' throwsClause?
+        block
+    ;
+
+subroutineName
+    :   Identifier
+    ;
+
+arguments
+    : argument (',' argument)*
+    ;
+
+argument
+    :   ( type | classType )    Identifier
+    ;
+
+returnTypes
+    :   returnType ( ',' returnType )*
+    ;
+
+returnType
+    :   ( type | classType )
+    ;
+
+throwsClause
+    : 'throws' exceptionType (',' exceptionType)*
+    ;
+
 // block is anything that starts with '{' and and ends with '}'
 block
     :   '{' blockStatement* '}'
@@ -198,11 +237,13 @@ blockStatement
     :   localVariableDeclarationStatement   //  eg: int i;
     |   localVariableInitializationStatement    // eg: string endpoint = "my_endpoint";
     |   localVariableAssignmentStatement    //  eg: i =45; msgModification mediators also falls under this
+    |   multipleVariableReturnStatement     // eg: var_1, var_2 = func:my_func(param_1, param_2, param3);
     |   messageModificationStatement    //  eg: response.setHeader(HTTP.StatusCode, 500);
-    |   returnStatement //  eg: reply response;
+    |   replyStatement //  eg: reply response;
     |   mediatorCallStatement // eg: log(level="custom", log_value="log message");
     |   tryCatchBlock   // flowControl Mediator
     |   ifElseBlock // flowControl Mediator
+    |   returnStatement // This is to parse return statements in sub-routines
     ;
 
 // try catch definition
@@ -244,8 +285,7 @@ elseBlock
 
 // local variable handling statements
 localVariableDeclarationStatement
-    :   endpointDeclaration ';' // endpointDeclaration has given more priority over (classType Identifier)
-    |   (type|classType)    Identifier  ';'
+    :   (type|classType)    Identifier  ';'
     ;
 
 localVariableInitializationStatement
@@ -253,6 +293,7 @@ localVariableInitializationStatement
     |   endpointDeclaration '=' newTypeObjectCreation   ';'
     |   classType Identifier  '=' newTypeObjectCreation ';' // only used for new message creation
     |   classType Identifier '=' mediatorCall ';' // calling a mediator that will return a message
+    |   ( type | classType ) Identifier '=' subroutineCall ';' // calling a subroutine
     ;
 
 localVariableAssignmentStatement
@@ -305,9 +346,36 @@ messageModificationStatement
     :   Identifier  '.' Identifier '('  messagePropertyName ','  literal ')' ';'
     ;
 
+// Statemet that will catch multiple return values from a subroutine
+// this will reuse "returningIdentifiers"
+multipleVariableReturnStatement
+    :    ( returningIdentifiers '=')? subroutineCall ';'
+    ;
+
+subroutineCall
+    : 'func' ':' Identifier '(' inputParameters? ')'
+    ;
+
+inputParameters
+    : parameter (',' parameter)*
+    ;
+
+parameter
+    : literal
+    | Identifier
+    ;
+
 //return (reply) Statement specification
-returnStatement
+replyStatement
     :   'reply' (Identifier | mediatorCall)? ';'
+    ;
+// return statement in sub-routines
+returnStatement
+    :   'return' returningIdentifiers ';'
+    ;
+
+returningIdentifiers
+    :   Identifier  (',' Identifier)*
     ;
 
 // expression, which will be used to build the parExpression used inside if condition
