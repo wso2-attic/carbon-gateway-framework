@@ -19,16 +19,9 @@ import org.wso2.ballerina.core.flow.mediators.builtin.invokers.CallMediator;
 import org.wso2.ballerina.core.flow.mediators.builtin.invokers.RespondMediator;
 import org.wso2.ballerina.core.flow.mediators.builtin.manipulators.PropertyMediator;
 import org.wso2.ballerina.core.flow.mediators.builtin.manipulators.log.LogMediator;
-import org.wso2.ballerina.core.inbound.Dispatcher;
-import org.wso2.ballerina.core.inbound.InboundEPDeployer;
 import org.wso2.ballerina.core.inbound.InboundEPProviderRegistry;
-import org.wso2.ballerina.core.inbound.InboundEndpoint;
-import org.wso2.ballerina.core.inbound.Provider;
-import org.wso2.ballerina.core.outbound.OutboundEPProvider;
 import org.wso2.ballerina.core.outbound.OutboundEPProviderRegistry;
 import org.wso2.carbon.deployment.engine.Artifact;
-import org.wso2.carbon.messaging.CarbonCallback;
-import org.wso2.carbon.messaging.CarbonMessage;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,11 +36,10 @@ public class WUMLListenerTest {
 
     private static final Logger log = LoggerFactory.getLogger(WUMLListenerTest.class);
 
-
     @Before
     public void setup() {
-        InboundEPProviderRegistry.getInstance().registerInboundEPProvider(new TestProvider());
-        OutboundEPProviderRegistry.getInstance().registerOutboundEPProvider(new TestOutboundEPProvider());
+        InboundEPProviderRegistry.getInstance().registerInboundEPProvider(new TestUtil.TestProvider());
+        OutboundEPProviderRegistry.getInstance().registerOutboundEPProvider(new TestUtil.TestOutboundEPProvider());
     }
 
     @Ignore
@@ -188,99 +180,6 @@ public class WUMLListenerTest {
                     return false;
                 }
             }
-        }
-    }
-
-    class TestProvider implements Provider {
-
-        @Override
-        public String getProtocol() {
-            return "http";
-        }
-
-        @Override
-        public InboundEPDeployer getInboundDeployer() {
-            return null;
-        }
-
-        @Override
-        public InboundEndpoint getInboundEndpoint() {
-            return new TestInboundEndpoint();
-        }
-
-        @Override
-        public Dispatcher getInboundEndpointDispatcher() {
-            return null;
-        }
-    }
-
-    class TestInboundEndpoint extends InboundEndpoint {
-
-        @Override
-        public boolean canReceive(CarbonMessage cMsg) {
-            return false;
-        }
-
-        @Override
-        public String getProtocol() {
-            return "http";
-        }
-
-        @Override
-        public void setParameters(ParameterHolder parameters) {
-        }
-    }
-
-    class TestOutboundEPProvider implements OutboundEPProvider {
-
-        @Override
-        public String getProtocol() {
-            return "http";
-        }
-
-        @Override
-        public OutboundEndpoint getEndpoint() {
-            return new OutboundEndpoint();
-        }
-    }
-
-    class OutboundEndpoint implements org.wso2.ballerina.core.outbound.OutboundEndpoint {
-
-        @Override
-        public int getTimeOut() {
-            return 0;
-        }
-
-        @Override
-        public void setTimeOut(int timeOut) {
-        }
-
-        @Override
-        public String getName() {
-            return "http";
-        }
-
-        @Override
-        public void setName(String name) {
-        }
-
-        @Override
-        public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
-            return false;
-        }
-
-        @Override
-        public void setParameters(ParameterHolder parameters) {
-        }
-
-        @Override
-        public String getUri() {
-            return null;
-        }
-
-        @Override
-        public void setUri(String uri) {
-
         }
     }
 }

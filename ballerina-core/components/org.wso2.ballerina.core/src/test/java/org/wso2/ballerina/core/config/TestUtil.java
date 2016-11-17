@@ -20,8 +20,15 @@ package org.wso2.ballerina.core.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.ballerina.core.config.dsl.external.deployer.IFlowDeployer;
+import org.wso2.ballerina.core.inbound.Dispatcher;
+import org.wso2.ballerina.core.inbound.InboundEPDeployer;
+import org.wso2.ballerina.core.inbound.InboundEndpoint;
+import org.wso2.ballerina.core.inbound.Provider;
+import org.wso2.ballerina.core.outbound.OutboundEPProvider;
 import org.wso2.carbon.deployment.engine.Artifact;
 import org.wso2.carbon.deployment.engine.exception.CarbonDeploymentException;
+import org.wso2.carbon.messaging.CarbonCallback;
+import org.wso2.carbon.messaging.CarbonMessage;
 
 /**
  * Class containing Util methods for Parser Testing
@@ -44,5 +51,98 @@ public class TestUtil {
             return false;
         }
         return true;
+    }
+
+    static class TestProvider implements Provider {
+
+        @Override
+        public String getProtocol() {
+            return "http";
+        }
+
+        @Override
+        public InboundEPDeployer getInboundDeployer() {
+            return null;
+        }
+
+        @Override
+        public InboundEndpoint getInboundEndpoint() {
+            return new TestUtil.TestInboundEndpoint();
+        }
+
+        @Override
+        public Dispatcher getInboundEndpointDispatcher() {
+            return null;
+        }
+    }
+
+    static class TestInboundEndpoint extends InboundEndpoint {
+
+        @Override
+        public boolean canReceive(CarbonMessage cMsg) {
+            return false;
+        }
+
+        @Override
+        public String getProtocol() {
+            return "http";
+        }
+
+        @Override
+        public void setParameters(ParameterHolder parameters) {
+        }
+    }
+
+    static class TestOutboundEPProvider implements OutboundEPProvider {
+
+        @Override
+        public String getProtocol() {
+            return "http";
+        }
+
+        @Override
+        public TestUtil.OutboundEndpoint getEndpoint() {
+            return new TestUtil.OutboundEndpoint();
+        }
+    }
+
+    static class OutboundEndpoint implements org.wso2.ballerina.core.outbound.OutboundEndpoint {
+
+        @Override
+        public int getTimeOut() {
+            return 0;
+        }
+
+        @Override
+        public void setTimeOut(int timeOut) {
+        }
+
+        @Override
+        public String getName() {
+            return "http";
+        }
+
+        @Override
+        public void setName(String name) {
+        }
+
+        @Override
+        public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
+            return false;
+        }
+
+        @Override
+        public void setParameters(ParameterHolder parameters) {
+        }
+
+        @Override
+        public String getUri() {
+            return null;
+        }
+
+        @Override
+        public void setUri(String uri) {
+
+        }
     }
 }

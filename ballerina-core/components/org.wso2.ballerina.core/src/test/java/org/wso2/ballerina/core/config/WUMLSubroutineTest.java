@@ -19,6 +19,7 @@
 package org.wso2.ballerina.core.config;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.wso2.ballerina.core.Constants;
 import org.wso2.ballerina.core.flow.Mediator;
@@ -26,6 +27,8 @@ import org.wso2.ballerina.core.flow.Subroutine;
 import org.wso2.ballerina.core.flow.mediators.builtin.flowcontrollers.filter.FilterMediator;
 import org.wso2.ballerina.core.flow.mediators.builtin.manipulators.PropertyMediator;
 import org.wso2.ballerina.core.flow.mediators.builtin.manipulators.log.LogMediator;
+import org.wso2.ballerina.core.inbound.InboundEPProviderRegistry;
+import org.wso2.ballerina.core.outbound.OutboundEPProviderRegistry;
 import org.wso2.carbon.deployment.engine.Artifact;
 
 import java.io.File;
@@ -35,6 +38,12 @@ import java.util.List;
  * This class test Configuration parsing and object model building for Subroutines
  */
 public class WUMLSubroutineTest {
+
+    @Before
+    public void setup() {
+        InboundEPProviderRegistry.getInstance().registerInboundEPProvider(new TestUtil.TestProvider());
+        OutboundEPProviderRegistry.getInstance().registerOutboundEPProvider(new TestUtil.TestOutboundEPProvider());
+    }
 
     @Test
     public void testSubroutineObjectCreation() {
@@ -84,7 +93,7 @@ public class WUMLSubroutineTest {
         String argumentOne = "m";
         String argumentTwo = "x";
         Assert.assertTrue("Argument object is not created in deployed subroutine",
-                          deployedSubroutine.getInputArgs().get(argumentOne) == Constants.TYPES.MESSAGE);
+                deployedSubroutine.getInputArgs().get(argumentOne) == Constants.TYPES.MESSAGE);
         Assert.assertTrue("Argument object is not created in deployed subroutine",
                 deployedSubroutine.getInputArgs().get(argumentTwo) == Constants.TYPES.STRING);
 
