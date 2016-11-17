@@ -18,20 +18,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon.gateway.mediators</groupId>
-        <artifactId>org.wso2.carbon.gateway.mediators.parent</artifactId>
+        <groupId>org.wso2.ballerina.mediators</groupId>
+        <artifactId>org.wso2.ballerina.mediators.parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <version>1.0.0-SNAPSHOT</version>
-    <artifactId>org.wso2.carbon.gateway.mediators.samplemediator.parent</artifactId>
+    <artifactId>org.wso2.ballerina.mediators.samplemediator.parent</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Gateway - Inbound Endpoint Module</name>
+    <name>WSO2 Ballerina - Inbound Endpoint Module</name>
     <url>http://wso2.org</url>
     <modules>
-        <module>components/org.wso2.carbon.gateway.mediators.samplemediator</module>
-        <module>features/org.wso2.carbon.gateway.mediators.samplemediator.feature</module>
+        <module>components/org.wso2.ballerina.mediators.samplemediator</module>
+        <module>features/org.wso2.ballerina.mediators.samplemediator.feature</module>
     </modules>
 </project>

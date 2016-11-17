@@ -18,20 +18,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon.gateway</groupId>
-        <artifactId>org.wso2.carbon.gateway.outbounds.parent</artifactId>
+        <groupId>org.wso2.ballerina</groupId>
+        <artifactId>org.wso2.ballerina.outbounds.parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <version>1.0.0-SNAPSHOT</version>
-    <artifactId>org.wso2.carbon.gateway.outbounds.http.parent</artifactId>
+    <artifactId>org.wso2.ballerina.outbounds.http.parent</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Gateway - HTTP Outbound</name>
+    <name>WSO2 Ballerina - HTTP Outbound</name>
     <url>http://wso2.org</url>
     <modules>
-        <module>components/org.wso2.carbon.gateway.outbounds.http</module>
-        <module>features/org.wso2.carbon.gateway.outbounds.http.feature</module>
+        <module>components/org.wso2.ballerina.outbounds.http</module>
+        <module>features/org.wso2.ballerina.outbounds.http.feature</module>
     </modules>
 </project>
