@@ -50,8 +50,8 @@
             <version>${equinox.osgi.services.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.gateway</groupId>
-            <artifactId>org.wso2.carbon.gateway.core</artifactId>
+            <groupId>org.wso2.ballerina</groupId>
+            <artifactId>org.wso2.ballerina.core</artifactId>
             <version>${carbon.gw.version}</version>
         </dependency>
         <dependency>
@@ -87,13 +87,13 @@
         </export.package>
         <import.package>
             org.osgi.framework.*;version="${osgi.framework.import.version.range}",
-            org.wso2.carbon.gateway.core.*,
+            org.wso2.ballerina.core.*,
             org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
         </import.package>
         <!-- This property is required to register the custom mediator at the mediator-provider -->
         <carbon.component>
             osgi.service;
-            objectClass="org.wso2.carbon.gateway.core.flow.MediatorProvider";requiredByComponentName="mediator-provider"
+            objectClass="org.wso2.ballerina.core.flow.MediatorProvider";requiredByComponentName="mediator-provider"
         </carbon.component>
     </properties>
 

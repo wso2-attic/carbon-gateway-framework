@@ -17,10 +17,10 @@
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="Carbon-Gateway-Core-Test-Suite">
-    <test name="carbon-gateway-core-tests" preserve-order="true" parallel="false">
+<suite name="Carbon-Ballerina-Core-Test-Suite">
+    <test name="carbon-ballerina-core-tests" preserve-order="true" parallel="false">
         <classes>
-            <class name="org.wso2.carbon.gateway.osgi.IntegrationFlowTest"/>
+            <class name="org.wso2.ballerina.osgi.IntegrationFlowTest"/>
         </classes>
     </test>
 </suite>

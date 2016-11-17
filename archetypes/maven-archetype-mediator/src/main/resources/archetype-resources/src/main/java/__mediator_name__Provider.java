@@ -18,11 +18,8 @@
 
 package $package;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.wso2.carbon.gateway.core.flow.Mediator;
-import org.wso2.carbon.gateway.core.flow.MediatorProvider;
+import org.wso2.ballerina.core.flow.MediatorProvider;
 
 /**
 * Mediator Provider Implementation

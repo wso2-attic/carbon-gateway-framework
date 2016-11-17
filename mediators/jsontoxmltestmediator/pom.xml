@@ -18,19 +18,19 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>org.wso2.carbon.gateway.mediators.parent</artifactId>
-        <groupId>org.wso2.carbon.gateway.mediators</groupId>
+        <artifactId>org.wso2.ballerina.mediators.parent</artifactId>
+        <groupId>org.wso2.ballerina.mediators</groupId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <name>WSO2 Gateway - JSON to XML Test Mediator Module</name>
-    <artifactId>org.wso2.carbon.gateway.mediators.jsontoxmltestmediator.parent</artifactId>
+    <name>WSO2 Ballerina - JSON to XML Test Mediator Module</name>
+    <artifactId>org.wso2.ballerina.mediators.jsontoxmltestmediator.parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>components/org.wso2.carbon.gateway.mediators.jsontoxmltestmediator</module>
-        <module>features/org.wso2.carbon.gateway.mediators.jsontoxmltestmediator.feature</module>
+        <module>components/org.wso2.ballerina.mediators.jsontoxmltestmediator</module>
+        <module>features/org.wso2.ballerina.mediators.jsontoxmltestmediator.feature</module>
     </modules>
 
 

@@ -21,15 +21,15 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>org.wso2.carbon.gateway.parent</artifactId>
-        <groupId>org.wso2.carbon.gateway</groupId>
+        <artifactId>org.wso2.ballerina.parent</artifactId>
+        <groupId>org.wso2.ballerina</groupId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>org.wso2.carbon.gateway.evaluators.parent</artifactId>
+    <artifactId>org.wso2.ballerina.evaluators.parent</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Gateway - Evaluator Module</name>
+    <name>WSO2 Ballerina - Evaluator Module</name>
 
     <modules>
         <module>xpath-evaluator</module>
