@@ -38,7 +38,7 @@ import org.wso2.carbon.messaging.TransportSender;
  * Service component for ballerina.
  */
 @Component(
-        name = "BallerinaServiceComponent",
+        name = "org.wso2.ballerina.core.service.BallerinaServiceComponent",
         immediate = true
 )
 public class BallerinaServiceComponent {

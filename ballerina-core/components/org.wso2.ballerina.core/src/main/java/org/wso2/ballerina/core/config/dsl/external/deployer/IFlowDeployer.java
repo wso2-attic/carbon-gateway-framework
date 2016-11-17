@@ -52,7 +52,7 @@ import static org.wso2.ballerina.core.Constants.EMPTY_STRING;
  * A class responsible for read the .iflow files and deploy them to the runtime Object model.
  */
 @Component(
-        name = "IFlowDeployer",
+        name = "org.wso2.ballerina.core.config.dsl.external.deployer.IFlowDeployer",
         immediate = true,
         service = Deployer.class)
 public class IFlowDeployer implements Deployer {

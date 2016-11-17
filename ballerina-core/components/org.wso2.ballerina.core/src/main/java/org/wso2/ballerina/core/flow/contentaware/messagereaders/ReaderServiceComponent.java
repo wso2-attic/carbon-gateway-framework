@@ -33,7 +33,7 @@ import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
  * This waits until all the builders get registered.
  */
 @Component(
-        name = "ReaderServiceComponent",
+        name = "org.wso2.ballerina.core.flow.contentaware.messagereaders.ReaderServiceComponent",
         immediate = true,
         property = {
                 "componentName=reader-provider"

@@ -35,7 +35,7 @@ import org.wso2.carbon.messaging.TransportListenerManager;
  * And also this is responsible for registering other required services
  */
 @Component(
-        name = "HTTPInboundEPProvider",
+        name = "org.wso2.ballerina.inbounds.http.HTTPInboundEPProvider",
         immediate = true,
         service = Provider.class
 )

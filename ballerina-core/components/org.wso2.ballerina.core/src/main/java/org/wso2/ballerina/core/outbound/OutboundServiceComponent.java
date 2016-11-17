@@ -32,7 +32,7 @@ import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
  * Service component for OutboundEndpoint Providers.
  */
 @Component(
-        name = "OutboundServiceComponent",
+        name = "org.wso2.ballerina.core.outbound.OutboundServiceComponent",
         immediate = true,
         property = {
                 "componentName=outbound-provider"

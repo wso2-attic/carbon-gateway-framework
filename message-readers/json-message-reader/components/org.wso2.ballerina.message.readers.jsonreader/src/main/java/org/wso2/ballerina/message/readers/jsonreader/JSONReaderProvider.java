@@ -32,7 +32,7 @@ import java.util.List;
  * A Service class which can be used to register JSONReader
  */
 @Component(
-        name = "JSONReaderProvider",
+        name = "org.wso2.ballerina.message.readers.jsonreader.JSONReaderProvider",
         immediate = true,
         service = ReaderProvider.class)
 public class JSONReaderProvider implements ReaderProvider {

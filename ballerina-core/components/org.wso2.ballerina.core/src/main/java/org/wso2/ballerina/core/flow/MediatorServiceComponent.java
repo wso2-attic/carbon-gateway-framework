@@ -36,7 +36,7 @@ import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
  *
  */
 @Component(
-        name = "MediatorServiceComponent",
+        name = "org.wso2.ballerina.core.flow.MediatorServiceComponent",
         immediate = true,
         property = {
                 "componentName=mediator-provider"
