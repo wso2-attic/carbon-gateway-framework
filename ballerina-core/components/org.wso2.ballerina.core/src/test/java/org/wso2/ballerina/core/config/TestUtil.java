@@ -30,7 +30,7 @@ public class TestUtil {
     private static final Logger log = LoggerFactory.getLogger(TestUtil.class);
 
     /**
-     * Deploy a given configuration file to the ballerina
+     * Deploy a given configuration file to the Ballerina
      *
      * @param testArtifact Test Artifact containing the configuration file
      * @return true if the deployment was successful, false otherwise

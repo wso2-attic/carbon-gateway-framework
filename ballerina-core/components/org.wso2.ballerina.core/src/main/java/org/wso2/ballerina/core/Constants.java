@@ -19,7 +19,7 @@
 package org.wso2.ballerina.core;
 
 /**
- * Constants for ballerina-core
+ * Constants for Ballerina Core
  */
 public class Constants {
 

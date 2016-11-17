@@ -27,7 +27,7 @@ import org.wso2.carbon.messaging.CarbonMessageProcessor;
 import org.wso2.carbon.messaging.TransportSender;
 
 /**
- * Message Processor Implementation for ballerina
+ * Message Processor Implementation for Ballerina
  */
 public class MessageProcessor implements CarbonMessageProcessor {
 

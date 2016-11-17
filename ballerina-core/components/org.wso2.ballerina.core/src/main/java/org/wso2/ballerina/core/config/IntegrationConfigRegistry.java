@@ -61,9 +61,9 @@ public class IntegrationConfigRegistry {
     }
 
     /**
-     * Remove a ballerina Artifact configuration
+     * Remove a Ballerina Artifact configuration
      *
-     * @param configHolder a ballerina Artifact
+     * @param configHolder a Ballerina Artifact
      */
     public void removeIntegrationConfig(Integration configHolder) {
         configurations.remove(configHolder.getName());
