@@ -134,7 +134,7 @@
                                 </bundle>
                                 <bundle>
                                     <symbolicName>org.wso2.ballerina.core</symbolicName>
-                                    <version>${carbon.gw.version}</version>
+                                    <version>${ballerina.version}</version>
                                 </bundle>
                                 <bundle>
                                     <symbolicName>antlr4-runtime</symbolicName>

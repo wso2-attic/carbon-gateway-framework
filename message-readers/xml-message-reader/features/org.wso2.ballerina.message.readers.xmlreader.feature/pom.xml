@@ -103,7 +103,7 @@
                             <bundles>
                                 <bundle>
                                     <symbolicName>org.wso2.ballerina.message.readers.xmlreader</symbolicName>
-                                    <version>${carbon.gw.version}</version>
+                                    <version>${ballerina.version}</version>
                                 </bundle>
                                 <bundle>
                                     <symbolicName>org.apache.ws.commons.axiom.axiom-api</symbolicName>

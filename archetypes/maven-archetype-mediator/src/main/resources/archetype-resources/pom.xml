@@ -52,7 +52,7 @@
         <dependency>
             <groupId>org.wso2.ballerina</groupId>
             <artifactId>org.wso2.ballerina.core</artifactId>
-            <version>${carbon.gw.version}</version>
+            <version>${ballerina.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.messaging</groupId>
@@ -73,7 +73,7 @@
 
 
     <properties>
-        <carbon.gw.version>1.0.0-SNAPSHOT</carbon.gw.version>
+        <ballerina.version>1.0.0-SNAPSHOT</ballerina.version>
         <slf4j.version>1.7.5</slf4j.version>
         <slf4j.logging.package.import.version.range>[1.7.1, 2.0.0)</slf4j.logging.package.import.version.range>
         <carbon.messaging.version>1.0.9</carbon.messaging.version>

@@ -74,7 +74,7 @@
                             <bundles>
                                 <bundle>
                                     <symbolicName>org.wso2.ballerina.mediators.headermediator</symbolicName>
-                                    <version>${carbon.gw.version}</version>
+                                    <version>${ballerina.version}</version>
                                 </bundle>
                             </bundles>
                         </configuration>

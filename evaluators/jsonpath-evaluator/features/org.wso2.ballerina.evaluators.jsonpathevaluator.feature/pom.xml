@@ -76,7 +76,7 @@
                             <bundles>
                                 <bundle>
                                     <symbolicName>org.wso2.ballerina.evaluators.jsonpathevaluator</symbolicName>
-                                    <version>${carbon.gw.version}</version>
+                                    <version>${ballerina.version}</version>
                                 </bundle>
                             </bundles>
                         </configuration>

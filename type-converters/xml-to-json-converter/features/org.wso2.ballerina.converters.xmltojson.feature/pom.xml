@@ -80,7 +80,7 @@
                             <bundles>
                                 <bundle>
                                     <symbolicName>org.wso2.ballerina.converters.xmltojson</symbolicName>
-                                    <version>${carbon.gw.version}</version>
+                                    <version>${ballerina.version}</version>
                                 </bundle>
                                 <bundle>
                                     <symbolicName>staxon-core</symbolicName>
