@@ -88,7 +88,7 @@
             com.jayway.*;version="${jayway.version}",
             org.apache.commons.io.*;version="${commons.io.version}",
             org.wso2.carbon.messaging.*;version="${carbon.messaging.package.import.version.range}",
-            org.wso2.ballerina.core.*;version="${carbon.gw.package.export.version}"
+            org.wso2.ballerina.core.*;version="${ballerina.package.export.version}"
         </import.package>
         <carbon.component>
             osgi.service; objectClass="org.wso2.ballerina.core.flow.contentaware.messagereaders.ReaderProvider"

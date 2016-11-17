@@ -393,7 +393,7 @@
         </carbon.kernel.package.import.version.range>
 
         <ballerina.version>1.0.0-SNAPSHOT</ballerina.version>
-        <carbon.gw.package.export.version>1.0.0</carbon.gw.package.export.version>
+        <ballerina.package.export.version>1.0.0</ballerina.package.export.version>
 
         <disruptor.version>3.3.2.wso2v2</disruptor.version>
         <disruptor.package.import.version.range>[3.3.2, 3.5.0)</disruptor.package.import.version.range>

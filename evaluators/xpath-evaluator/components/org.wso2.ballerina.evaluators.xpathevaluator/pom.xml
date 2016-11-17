@@ -85,14 +85,14 @@
         <private.package>org.wso2.ballerina.evaluators.xpathevaluator.internal</private.package>
         <export.package>
             !org.wso2.ballerina.evaluators.xpathevaluator.internal,
-            org.wso2.ballerina.evaluators.xpathevaluator;version="${carbon.gw.package.export.version}"
+            org.wso2.ballerina.evaluators.xpathevaluator;version="${ballerina.package.export.version}"
         </export.package>
         <import.package>
             org.wso2.carbon.kernel.startupresolver.*;version="${carbon.kernel.package.import.version.range}",
             org.osgi.framework.*;version="${osgi.framework.import.version.range}",
             org.sample.dsl.*;version="1.0.0",
             org.wso2.ballerina.core.config.dsl.internal.*,
-            org.wso2.ballerina.core.*;version="${carbon.gw.package.export.version}",
+            org.wso2.ballerina.core.*;version="${ballerina.package.export.version}",
             org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
             org.wso2.carbon.messaging,
             javax.xml.*;version=0.0.0,
