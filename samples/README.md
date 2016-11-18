@@ -1,10 +1,10 @@
-#WSO2 Integration Server
+#Ballerina Samples
 
 
 Running Samples
 ---------------
 
-To start the WSO2 Integration server with a selected sample configuration
+To start Ballerina with a selected sample configuration
 
 * Open a shell in Linux and go to the <CARBON_HOME>\bin directory.
 * Execute one of the following commands,  where <file_name> denotes the configuration file name.
@@ -14,11 +14,11 @@ For example, to start the Integration server with the passthrough sample configu
 ./run-sample.sh passthrough.ballerina
 
 
-Also configuration can be manually deployed to server by dropping any sample configuration file from <CARBON_HOME>/samples/basic-routing/
-to <CARBON_HOME>/deployment/integration-flows/ directory.
+Also configuration can be manually deployed to server by dropping any sample configuration file from <BALLERINA_HOME>/samples/basic-routing/
+to <BALLERINA_HOME>/deployment/integration-flows/ directory.
 
 MSF4J SimpleStockQuote fat jar sample is used as the backend service for the integration flow samples. Follow the instruction in the
-README.md resides in <CARBON_HOME>/samples/Services/StockquoteService/ to start the backend service.
+README.md resides in <BALLERINA_HOME>/samples/Services/StockquoteService/ to start the backend service.
 
 
 How to test the sample

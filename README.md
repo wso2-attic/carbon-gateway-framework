@@ -1,4 +1,7 @@
-#WSO2 Carbon Gateway Framework
+#Ballerina
+
+
+NOTE: Content on this page is outdated. New content will be updated soon....!!
 
 WSO2 Carbon Gateway Framework is a message-mediation-engine implementation that can receive/send Carbon-Messages from/to Carbon Transport and mediate messages.
 
