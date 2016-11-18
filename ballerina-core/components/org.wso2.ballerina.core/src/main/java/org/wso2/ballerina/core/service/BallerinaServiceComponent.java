@@ -48,14 +48,14 @@ public class BallerinaServiceComponent {
     @Activate
     protected void start(BundleContext bundleContext) {
         try {
-            log.info("Starting WSO2 Integration...!");
+            log.info("Starting Ballerina...!");
 
             //Creating the processor and registering the service
             bundleContext.registerService(CarbonMessageProcessor.class, new MessageProcessor(), null);
             ThreadModelConfiguration threadModelConfiguration = YAMLEngineConfigurationBuilder.build();
             threadModelConfiguration.configure();
         } catch (Exception ex) {
-            String msg = "Error while loading WSO2 Integration";
+            String msg = "Error while loading Ballerina";
             log.error(msg, ex);
             throw new RuntimeException(msg, ex);
         }
