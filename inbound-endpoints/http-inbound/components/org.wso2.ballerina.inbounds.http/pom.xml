@@ -20,7 +20,7 @@
 
     <parent>
         <groupId>org.wso2.ballerina</groupId>
-        <artifactId>org.wso2.ballerina.inbounds.http.parent</artifactId>
+        <artifactId>http-inbound</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
@@ -28,7 +28,6 @@
     <name>HTTP Inbound Endpoint</name>
     <groupId>org.wso2.ballerina.inbounds</groupId>
     <artifactId>org.wso2.ballerina.inbounds.http</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <dependencies>

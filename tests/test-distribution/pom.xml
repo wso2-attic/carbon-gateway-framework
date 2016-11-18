@@ -18,14 +18,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>tests</artifactId>
         <groupId>org.wso2.ballerina</groupId>
+        <artifactId>tests</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>wso2iserver-test-distribution</artifactId>
+    <artifactId>test-distribution</artifactId>
 
     <packaging>pom</packaging>
 
@@ -373,7 +373,7 @@
                     <descriptors>
                         <descriptor>${basedir}/src/assembly/bin.xml</descriptor>
                     </descriptors>
-                    <finalName>wso2iserver-test-${carbon.kernel.version}</finalName>
+                    <finalName>ballerina-test-${carbon.kernel.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
