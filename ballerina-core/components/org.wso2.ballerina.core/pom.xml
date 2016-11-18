@@ -22,7 +22,7 @@
 
     <parent>
         <groupId>org.wso2.ballerina</groupId>
-        <artifactId>org.wso2.ballerina.core.parent</artifactId>
+        <artifactId>ballerina-core</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>

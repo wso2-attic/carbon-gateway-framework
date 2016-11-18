@@ -17,7 +17,7 @@
   -->
 <assembly>
     <includeBaseDirectory>true</includeBaseDirectory>
-    <baseDirectory>ballerina-test-distribution-${project.version}</baseDirectory>
+    <baseDirectory>test-distribution-${project.version}</baseDirectory>
     <id>Integration Test Server</id>
     <formats>
         <format>zip</format>

@@ -20,15 +20,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.wso2.ballerina</groupId>
-        <artifactId>org.wso2.ballerina.outbounds.http.parent</artifactId>
+        <groupId>org.wso2.ballerina.outbounds</groupId>
+        <artifactId>http-outbound</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <groupId>org.wso2.ballerina.outbounds</groupId>
     <artifactId>org.wso2.ballerina.outbounds.http.feature</artifactId>
     <packaging>carbon-feature</packaging>
+
     <name>WSO2 Ballerina - HTTP outbound Feature</name>
     <url>http://wso2.org</url>
     <description>This feature contains the core bundles required by the HTTP outbound Endpoint</description>

@@ -18,14 +18,13 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>org.wso2.ballerina.mediators.jsontoxmltestmediator.parent</artifactId>
         <groupId>org.wso2.ballerina.mediators</groupId>
+        <artifactId>jsontoxmltestmediator</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.wso2.ballerina.mediators</groupId>
     <artifactId>org.wso2.ballerina.mediators.jsontoxmltestmediator.feature</artifactId>
     <packaging>carbon-feature</packaging>
     <name>WSO2 Ballerina - JSON to XML Test Mediator Feature</name>
