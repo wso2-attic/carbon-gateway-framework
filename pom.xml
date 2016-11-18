@@ -472,5 +472,6 @@
         <module>message-readers</module>
         <module>evaluators</module>
         <module>tests</module>
+        <module>product</module>
     </modules>
 </project>

@@ -17,8 +17,8 @@
   -->
 <assembly>
     <includeBaseDirectory>true</includeBaseDirectory>
-    <baseDirectory>ballerina-test-distribution-${project.version}</baseDirectory>
-    <id>Integration Test Server</id>
+    <baseDirectory>ballerina-${project.version}</baseDirectory>
+    <id>Integration Server</id>
     <formats>
         <format>zip</format>
     </formats>
@@ -67,8 +67,20 @@
             <fileMode>644</fileMode>
         </fileSet>
         <fileSet>
-            <directory>carbon-home/samples</directory>
+            <directory>../samples</directory>
             <outputDirectory>samples</outputDirectory>
+            <excludes>
+                <exclude>target/**</exclude>
+                <exclude>scripts/**</exclude>
+                <exclude>pom.xml</exclude>
+                <exclude>README.txt</exclude>
+                <exclude>LICENSE.txt</exclude>
+                <exclude>release-notes.html</exclude>
+                <exclude>**/*.ipr</exclude>
+                <exclude>**/*.iwr</exclude>
+                <exclude>**/*.eclipse</exclude>
+                <exclude>**/*.iml</exclude>
+            </excludes>
             <fileMode>644</fileMode>
         </fileSet>
         <fileSet>
@@ -79,5 +91,28 @@
                 <exclude>empty.txt</exclude>
             </excludes>
         </fileSet>
+        <fileSet>
+            <directory>../samples/scripts</directory>
+            <outputDirectory>bin</outputDirectory>
+            <includes>
+                <include>run-sample.sh</include>
+            </includes>
+            <fileMode>755</fileMode>
+        </fileSet>
     </fileSets>
+
+    <files>
+        <file>
+            <source>target/wso2carbon-kernel-${carbon.kernel.version}/bin/kernel-version.txt</source>
+            <outputDirectory>bin/</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>444</fileMode>
+        </file>
+        <file>
+            <source>target/wso2carbon-kernel-${carbon.kernel.version}/bin/README.txt</source>
+            <outputDirectory>bin/</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>444</fileMode>
+        </file>
+    </files>
 </assembly>

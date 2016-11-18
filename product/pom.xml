@@ -1,33 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- ~ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
- ~
- ~ Licensed under the Apache License, Version 2.0 (the "License");
- ~ you may not use this file except in compliance with the License.
- ~ You may obtain a copy of the License at
- ~
- ~      http://www.apache.org/licenses/LICENSE-2.0
- ~
- ~ Unless required by applicable law or agreed to in writing, software
- ~ distributed under the License is distributed on an "AS IS" BASIS,
- ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- ~ See the License for the specific language governing permissions and
- ~ limitations under the License.
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  ~ /*
+  ~ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~ *
+  ~ * Licensed under the Apache License, Version 2.0 (the "License");
+  ~ * you may not use this file except in compliance with the License.
+  ~ * You may obtain a copy of the License at
+  ~ *
+  ~ * http://www.apache.org/licenses/LICENSE-2.0
+  ~ *
+  ~ * Unless required by applicable law or agreed to in writing, software
+  ~ * distributed under the License is distributed on an "AS IS" BASIS,
+  ~ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ * See the License for the specific language governing permissions and
+  ~ * limitations under the License.
+  ~ */
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
-        <artifactId>tests</artifactId>
         <groupId>org.wso2.ballerina</groupId>
+        <artifactId>org.wso2.ballerina.parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>ballerina-test-distribution</artifactId>
-
+    <artifactId>ballerina</artifactId>
     <packaging>pom</packaging>
+    <name>WSO2 Ballerina - Distribution</name>
+    <description>WSO2 Ballerina - Distribution</description>
+    <url>http://wso2.org</url>
 
     <dependencies>
         <dependency>
@@ -48,12 +52,6 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.runtime.feature</artifactId>
             <version>${carbon.kernel.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.pax.exam.feature</artifactId>
-            <version>${carbon.kernel.pax.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
@@ -89,6 +87,12 @@
         <dependency>
             <groupId>org.wso2.ballerina.mediators</groupId>
             <artifactId>org.wso2.ballerina.mediators.samplemediator.feature</artifactId>
+            <version>${ballerina.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.ballerina.mediators</groupId>
+            <artifactId>org.wso2.ballerina.mediators.headermediator.feature</artifactId>
             <version>${ballerina.version}</version>
             <type>zip</type>
         </dependency>
@@ -138,10 +142,58 @@
             <version>${ballerina.version}</version>
             <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.ballerina.evaluators</groupId>
+            <artifactId>org.wso2.ballerina.evaluators.xpathevaluator</artifactId>
+            <version>${ballerina.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.ballerina.evaluators</groupId>
+            <artifactId>org.wso2.ballerina.evaluators.xpathevaluator.feature</artifactId>
+            <version>${ballerina.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.ballerina.evaluators</groupId>
+            <artifactId>org.wso2.ballerina.evaluators.jsonpathevaluator</artifactId>
+            <version>${ballerina.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.ballerina.evaluators</groupId>
+            <artifactId>org.wso2.ballerina.evaluators.jsonpathevaluator.feature</artifactId>
+            <version>${ballerina.version}</version>
+            <type>zip</type>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>1-unpack-p2-agent-distribution</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.eclipse.equinox</groupId>
+                                    <artifactId>org.eclipse.equinox.executable</artifactId>
+                                    <version>3.5.0.v20110530-7P7NFUFFLWUl76mart</version>
+                                    <type>zip</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>target</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.wso2.carbon.maven</groupId>
                 <artifactId>carbon-feature-plugin</artifactId>
@@ -159,10 +211,6 @@
                                 <feature>
                                     <id>org.wso2.carbon.kernel.feature</id>
                                     <version>${carbon.kernel.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.pax.exam.feature</id>
-                                    <version>${carbon.kernel.pax.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.runtime.feature</id>
@@ -193,6 +241,10 @@
                                     <version>${ballerina.version}</version>
                                 </feature>
                                 <feature>
+                                    <id>org.wso2.ballerina.mediators.headermediator.feature</id>
+                                    <version>${ballerina.version}</version>
+                                </feature>
+                                <feature>
                                     <id>org.wso2.ballerina.mediators.jsontoxmltestmediator.feature</id>
                                     <version>${ballerina.version}</version>
                                 </feature>
@@ -214,6 +266,14 @@
                                 </feature>
                                 <feature>
                                     <id>org.wso2.ballerina.message.readers.xmlreader.feature</id>
+                                    <version>${ballerina.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.ballerina.evaluators.xpathevaluator.feature</id>
+                                    <version>${ballerina.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.ballerina.evaluators.jsonpathevaluator.feature</id>
                                     <version>${ballerina.version}</version>
                                 </feature>
                             </features>
@@ -259,32 +319,29 @@
                         <configuration>
                             <profile>profiles/default</profile>
                             <repositoryURL>file:${basedir}/target/p2-repo</repositoryURL>
-                            <destination>${basedir}/target/wso2carbon-kernel-${carbon.kernel.version}/osgi/
+                            <destination>
+                                ${basedir}/target/wso2carbon-kernel-${carbon.kernel.version}/osgi
                             </destination>
                             <deleteOldProfileFiles>true</deleteOldProfileFiles>
                             <features>
                                 <feature>
-                                    <id>org.wso2.carbon.kernel.feature</id>
+                                    <id>org.wso2.carbon.kernel.feature.group</id>
                                     <version>${carbon.kernel.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>org.wso2.carbon.pax.exam.feature</id>
-                                    <version>${carbon.kernel.pax.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.runtime.feature</id>
+                                    <id>org.wso2.carbon.runtime.feature.group</id>
                                     <version>${carbon.kernel.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>org.wso2.ballerina.core.feature</id>
+                                    <id>org.wso2.ballerina.core.feature.group</id>
                                     <version>${ballerina.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>org.wso2.carbon.transport.http.netty.feature</id>
+                                    <id>org.wso2.carbon.transport.http.netty.feature.group</id>
                                     <version>${carbon.transport.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>org.wso2.carbon.messaging.feature</id>
+                                    <id>org.wso2.carbon.messaging.feature.group</id>
                                     <version>${carbon.messaging.version}</version>
                                 </feature>
                                 <feature>
@@ -297,6 +354,10 @@
                                 </feature>
                                 <feature>
                                     <id>org.wso2.ballerina.mediators.samplemediator.feature</id>
+                                    <version>${ballerina.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.ballerina.mediators.headermediator.feature</id>
                                     <version>${ballerina.version}</version>
                                 </feature>
                                 <feature>
@@ -323,11 +384,20 @@
                                     <id>org.wso2.ballerina.message.readers.xmlreader.feature</id>
                                     <version>${ballerina.version}</version>
                                 </feature>
+                                <feature>
+                                    <id>org.wso2.ballerina.evaluators.xpathevaluator.feature</id>
+                                    <version>${ballerina.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.ballerina.evaluators.jsonpathevaluator.feature</id>
+                                    <version>${ballerina.version}</version>
+                                </feature>
                             </features>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -364,28 +434,34 @@
                             <goal>run</goal>
                         </goals>
                     </execution>
+
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptors>
-                        <descriptor>${basedir}/src/assembly/bin.xml</descriptor>
-                    </descriptors>
-                    <finalName>ballerina-test-${carbon.kernel.version}</finalName>
-                    <appendAssemblyId>false</appendAssemblyId>
-                </configuration>
+                <version>2.5.2</version>
                 <executions>
                     <execution>
-                        <id>make-assembly</id>
+                        <id>distribution</id>
                         <phase>package</phase>
                         <goals>
                             <goal>attached</goal>
                         </goals>
+                        <configuration>
+                            <filters>
+                                <filter>${basedir}/src/assembly/filter.properties</filter>
+                            </filters>
+                            <descriptors>
+                                <descriptor>${basedir}/src/assembly/bin.xml</descriptor>
+                            </descriptors>
+                            <appendAssemblyId>false</appendAssemblyId>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
+
         </plugins>
     </build>
 </project>
