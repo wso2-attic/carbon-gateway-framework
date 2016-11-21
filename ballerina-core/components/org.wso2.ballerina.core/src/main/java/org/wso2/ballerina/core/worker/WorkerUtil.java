@@ -38,7 +38,7 @@ public class WorkerUtil {
     private static final Logger logger = LoggerFactory.getLogger(WorkerUtil.class);
 
     /**
-     * Select the InboundEndpoint according to protocol and dispatch
+     * Select the InboundEndpoint according to protocol and switchDisruptor
      * @param carbonMessage
      * @param carbonCallback
      */

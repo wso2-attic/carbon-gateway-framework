@@ -19,11 +19,13 @@
 package org.wso2.ballerina.core.flow;
 
 /**
- * A class represents the Mediator types
- * CPU_BOUND :- If mediator contains CPU bound code it should be CPU_BOUND
- * IO_BOUND :- If mediator contains IO bound code (e.g database writing)it should be IO_BOUND
+ * This class represents the Mediator Execution types
+ * <p>
+ * CPU_BOUND : If the mediator contains CPU bound code
+ * IO_BOUND : If the mediator contains IO bound code (e.g database access)
  */
-public enum MediatorType {
+public enum MediatorExecutionType {
 
     CPU_BOUND, IO_BOUND
+
 }

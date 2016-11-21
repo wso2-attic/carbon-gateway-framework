@@ -118,10 +118,10 @@ public class ThreadModelConfiguration {
             String id = disruptorConfiguration.getId();
             if (id.equals(Constants.CPU_BOUND)) {
                 DisruptorConfig disruptorConfig = createDisruptorConfig(disruptorConfiguration);
-                DisruptorManager.createDisruptors(DisruptorManager.DisruptorType.CPU_INBOUND, disruptorConfig);
+                DisruptorManager.createDisruptors(DisruptorManager.DisruptorType.CPU_BOUND, disruptorConfig);
             } else if (id.equals(Constants.IO_BOUND)) {
                 DisruptorConfig disruptorConfig = createDisruptorConfig(disruptorConfiguration);
-                DisruptorManager.createDisruptors(DisruptorManager.DisruptorType.IO_INBOUND, disruptorConfig);
+                DisruptorManager.createDisruptors(DisruptorManager.DisruptorType.IO_BOUND, disruptorConfig);
             }
 
         }

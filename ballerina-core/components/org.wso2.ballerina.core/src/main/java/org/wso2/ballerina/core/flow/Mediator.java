@@ -79,11 +79,11 @@ public interface Mediator {
     void setParameters(ParameterHolder parameters);
 
     /**
-
-     * Whether CPU bound or IO bound.
-     * @return Mediator Type
+     * Whether mediator is doing CPU bound or IO bound operation.
+     *
+     * @return Mediator execution Type
      */
-     MediatorType  getMediatorType();
+     MediatorExecutionType getMediatorExecutionType();
      /*
      * Returns object stored as variabe with name passed as argument.
      * @param carbonMessage

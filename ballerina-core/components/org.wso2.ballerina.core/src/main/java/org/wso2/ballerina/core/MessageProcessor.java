@@ -19,7 +19,6 @@ package org.wso2.ballerina.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.ballerina.core.flow.MediatorType;
 import org.wso2.ballerina.core.worker.WorkerModelDispatcher;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
@@ -39,8 +38,7 @@ public class MessageProcessor implements CarbonMessageProcessor {
         if (log.isDebugEnabled()) {
             log.debug("ballerina received a message");
         }
-
-        WorkerModelDispatcher.getInstance().receive(cMsg, callback, MediatorType.CPU_BOUND);
+        WorkerModelDispatcher.getInstance().receive(cMsg, callback);
 
         return false;
     }

@@ -11,7 +11,7 @@ import org.wso2.ballerina.core.exception.DefaultExceptionHandler;
 import org.wso2.ballerina.core.exception.FlowControllerExceptionCallback;
 import org.wso2.ballerina.core.flow.FlowControllerMediateCallback;
 import org.wso2.ballerina.core.flow.Mediator;
-import org.wso2.ballerina.core.flow.MediatorType;
+import org.wso2.ballerina.core.flow.MediatorExecutionType;
 import org.wso2.ballerina.core.flow.Resource;
 import org.wso2.ballerina.core.flow.mediators.builtin.flowcontrollers.filter.TryBlockMediator;
 import org.wso2.ballerina.core.flow.mediators.builtin.manipulators.log.LogMediator;
@@ -200,8 +200,8 @@ public class ExceptionTest {
         public void setParameters(ParameterHolder parameters) {}
 
         @Override
-        public MediatorType getMediatorType() {
-            return MediatorType.CPU_BOUND;
+        public MediatorExecutionType getMediatorExecutionType() {
+            return MediatorExecutionType.CPU_BOUND;
         }
 
         @Override

@@ -130,13 +130,11 @@ public class DisruptorManager {
         }
     }
 
-
-
     /**
      * Describe types of Disruptors.
      */
     public enum DisruptorType {
-        CPU_INBOUND, IO_INBOUND
+        CPU_BOUND, IO_BOUND
     }
 
 }

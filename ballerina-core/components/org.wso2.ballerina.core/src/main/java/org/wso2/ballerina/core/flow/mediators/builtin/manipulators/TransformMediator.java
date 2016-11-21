@@ -20,7 +20,7 @@ package org.wso2.ballerina.core.flow.mediators.builtin.manipulators;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.ballerina.core.flow.AbstractMediator;
-import org.wso2.ballerina.core.flow.MediatorType;
+import org.wso2.ballerina.core.flow.MediatorExecutionType;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 
@@ -43,7 +43,7 @@ public class TransformMediator extends AbstractMediator {
     }
 
     @Override
-    public MediatorType getMediatorType() {
-        return MediatorType.CPU_BOUND;
+    public MediatorExecutionType getMediatorExecutionType() {
+        return MediatorExecutionType.CPU_BOUND;
     }
 }

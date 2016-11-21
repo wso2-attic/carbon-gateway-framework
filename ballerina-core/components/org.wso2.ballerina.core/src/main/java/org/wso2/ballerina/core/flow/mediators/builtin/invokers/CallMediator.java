@@ -25,7 +25,7 @@ import org.wso2.ballerina.core.config.ParameterHolder;
 import org.wso2.ballerina.core.flow.AbstractMediator;
 import org.wso2.ballerina.core.flow.FlowControllerMediateCallback;
 import org.wso2.ballerina.core.flow.Invoker;
-import org.wso2.ballerina.core.flow.MediatorType;
+import org.wso2.ballerina.core.flow.MediatorExecutionType;
 import org.wso2.ballerina.core.outbound.OutboundEndpoint;
 import org.wso2.ballerina.core.util.VariableUtil;
 import org.wso2.carbon.messaging.CarbonCallback;
@@ -74,8 +74,8 @@ public class CallMediator extends AbstractMediator implements Invoker {
     }
 
     @Override
-    public MediatorType getMediatorType() {
-        return MediatorType.CPU_BOUND;
+    public MediatorExecutionType getMediatorExecutionType() {
+        return MediatorExecutionType.CPU_BOUND;
     }
 
     @Override

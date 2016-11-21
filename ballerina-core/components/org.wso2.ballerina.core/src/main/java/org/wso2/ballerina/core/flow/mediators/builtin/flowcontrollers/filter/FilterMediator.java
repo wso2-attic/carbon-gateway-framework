@@ -24,7 +24,7 @@ import org.wso2.ballerina.core.flow.AbstractFlowController;
 import org.wso2.ballerina.core.flow.FlowControllerMediateCallback;
 import org.wso2.ballerina.core.flow.Mediator;
 import org.wso2.ballerina.core.flow.MediatorCollection;
-import org.wso2.ballerina.core.flow.MediatorType;
+import org.wso2.ballerina.core.flow.MediatorExecutionType;
 import org.wso2.ballerina.core.flow.mediators.builtin.flowcontrollers.filter.evaluator.Evaluator;
 import org.wso2.ballerina.core.util.VariableUtil;
 import org.wso2.carbon.messaging.CarbonCallback;
@@ -145,8 +145,8 @@ public class FilterMediator extends AbstractFlowController {
     }
 
     @Override
-    public MediatorType getMediatorType() {
-        return MediatorType.CPU_BOUND;
+    public MediatorExecutionType getMediatorExecutionType() {
+        return MediatorExecutionType.CPU_BOUND;
     }
 
     public MediatorCollection getChildThenMediatorList() {

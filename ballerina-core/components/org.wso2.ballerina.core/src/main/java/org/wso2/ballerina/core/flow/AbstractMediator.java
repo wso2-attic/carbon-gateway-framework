@@ -85,18 +85,20 @@ public abstract class AbstractMediator implements Mediator {
 
     @Override
     public boolean receive(CarbonMessage carbonMessage, CarbonCallback carbonCallback) throws Exception {
-        Object obj = carbonMessage.getProperty(Constants.PARENT_TYPE);
-        if (obj != null) {
-            String val = (String) obj;
-            if (val.equals(Constants.CPU_BOUND)
-                    && getMediatorType() == MediatorType.IO_BOUND) {
-                WorkerModelDispatcher.getInstance().
-                        dispatch(carbonMessage, carbonCallback, this, MediatorType.IO_BOUND);
 
-            } else if (val.equals(Constants.IO_BOUND)
-                    && getMediatorType() == MediatorType.CPU_BOUND) {
+        Object parentDisruptorTypeObj = carbonMessage.getProperty(Constants.PARENT_DISRUPTOR_TYPE);
+        if (parentDisruptorTypeObj != null) {
+            //TODO: Are we deciding disruptor is in used by looking at this property ? this is not good
+            String parentDisruptorType = (String) parentDisruptorTypeObj;
+            if (Constants.CPU_BOUND.equals(parentDisruptorType)   // Can we remove this constant and use the same enum
+                    && getMediatorExecutionType() == MediatorExecutionType.IO_BOUND) {
                 WorkerModelDispatcher.getInstance().
-                        dispatch(carbonMessage, carbonCallback, this, MediatorType.CPU_BOUND);
+                        switchDisruptor(carbonMessage, carbonCallback, this, MediatorExecutionType.IO_BOUND);
+
+            } else if (Constants.IO_BOUND.equals(parentDisruptorType)
+                    && getMediatorExecutionType() == MediatorExecutionType.CPU_BOUND) {
+                WorkerModelDispatcher.getInstance().
+                        switchDisruptor(carbonMessage, carbonCallback, this, MediatorExecutionType.CPU_BOUND);
             }
         }
         return false;
@@ -177,8 +179,8 @@ public abstract class AbstractMediator implements Mediator {
     }
 
     @Override
-    public MediatorType getMediatorType() {
-        return MediatorType.IO_BOUND;
+    public MediatorExecutionType getMediatorExecutionType() {
+        return MediatorExecutionType.CPU_BOUND;
     }
 
     public String getReturnedOutput() {
