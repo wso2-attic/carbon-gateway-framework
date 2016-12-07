@@ -38,7 +38,7 @@ public class WUMLSubroutineTest {
 
     @Test
     public void testSubroutineObjectCreation() {
-        String iFlowResource = "/integration-flows/subroutine.ballerina";
+        String iFlowResource = "/integration-flows/subroutine.iflow";
         String integrationName = "subroutine";
         String subroutineName = "sampleSubroutine";
 

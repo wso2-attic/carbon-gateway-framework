@@ -114,7 +114,7 @@ public class IntegrationFlowTest {
         if (basedir == null) {
             basedir = Paths.get(".").toString();
         }
-        samplePath = Paths.get(basedir, "src", "test", "resources", "artifacts", "simpleflow.ballerina");
-        return copyFile(samplePath, Paths.get("deployment", "integration-flows", "simpleflow.ballerina"));
+        samplePath = Paths.get(basedir, "src", "test", "resources", "artifacts", "simpleflow.iflow");
+        return copyFile(samplePath, Paths.get("deployment", "integration-flows", "simpleflow.iflow"));
     }
 }
