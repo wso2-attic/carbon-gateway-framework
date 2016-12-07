@@ -19,6 +19,7 @@
 package org.wso2.carbon.gateway.core.config;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.wso2.carbon.deployment.engine.Artifact;
 import org.wso2.carbon.gateway.core.Constants;
@@ -27,6 +28,8 @@ import org.wso2.carbon.gateway.core.flow.Subroutine;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.flowcontrollers.filter.FilterMediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.manipulators.PropertyMediator;
 import org.wso2.carbon.gateway.core.flow.mediators.builtin.manipulators.log.LogMediator;
+import org.wso2.carbon.gateway.core.inbound.InboundEPProviderRegistry;
+import org.wso2.carbon.gateway.core.outbound.OutboundEPProviderRegistry;
 
 import java.io.File;
 import java.util.List;
@@ -35,6 +38,12 @@ import java.util.List;
  * This class test Configuration parsing and object model building for Subroutines
  */
 public class WUMLSubroutineTest {
+
+    @Before
+    public void setup() {
+        InboundEPProviderRegistry.getInstance().registerInboundEPProvider(new TestUtil.TestProvider());
+        OutboundEPProviderRegistry.getInstance().registerOutboundEPProvider(new TestUtil.TestOutboundEPProvider());
+    }
 
     @Test
     public void testSubroutineObjectCreation() {
