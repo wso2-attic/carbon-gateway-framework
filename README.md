@@ -1,6 +1,6 @@
 # Note
 
-Since [Ballerina](https://github.com/ballerinalang/ballerina) will be used for mediation, carbon-gateway-framework has been discontiuned and this repository has been moved to attic.
+[Ballerina](https://github.com/ballerinalang/ballerina) will be used as gateway-framework going forward. Hence, carbon-gateway-framework has been discontiuned and this repository has been moved to attic.
 
 # WSO2 Carbon Gateway Framework
 
