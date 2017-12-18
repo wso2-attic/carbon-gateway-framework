@@ -1,4 +1,8 @@
-#WSO2 Carbon Gateway Framework
+# Note
+
+[Ballerina](https://github.com/ballerinalang/ballerina) will be used as gateway-framework going forward. Hence, carbon-gateway-framework has been discontiuned and this repository has been moved to attic.
+
+# WSO2 Carbon Gateway Framework
 
 WSO2 Carbon Gateway Framework is a message-mediation-engine implementation that can receive/send Carbon-Messages from/to Carbon Transport and mediate messages.
 
